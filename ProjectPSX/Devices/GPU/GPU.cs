@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using ProjectPSX.Graphics;
 
 namespace ProjectPSX.Devices {
 
@@ -20,8 +21,9 @@ namespace ProjectPSX.Devices {
 
         private IHostWindow window;
 
-        private VRAM vram = new VRAM(1024, 512); //Vram is 8888 and we transform everything to it
-        private VRAM1555 vram1555 = new VRAM1555(1024, 512); //an un transformed 1555 to 8888 vram so we can fetch clut indexes without reverting to 1555
+        private readonly VRAM16 VRAM16 = new(1024, 512);
+
+        private readonly VRAM32 VRAM32 = new(1024, 512);
 
         public bool debug;
 
@@ -164,7 +166,7 @@ namespace ProjectPSX.Devices {
                         isOddLine = !isOddLine;
                     }
 
-                    window.Render(vram.Bits, vram1555.Bits);
+                    window.Render(VRAM32.Pixels, VRAM16.Pixels);
                     return true;
                 }
             }
@@ -284,8 +286,8 @@ namespace ProjectPSX.Devices {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private uint readFromVRAM() {
-            ushort pixel0 = vram.GetPixelBGR555(vramTransfer.x++ & 0x3FF, vramTransfer.y & 0x1FF);
-            ushort pixel1 = vram.GetPixelBGR555(vramTransfer.x++ & 0x3FF, vramTransfer.y & 0x1FF);
+            ushort pixel0 = VRAM16.GetPixel(vramTransfer.x++ & 0x3FF, vramTransfer.y & 0x1FF);
+            ushort pixel1 = VRAM16.GetPixel(vramTransfer.x++ & 0x3FF, vramTransfer.y & 0x1FF);
             if (vramTransfer.x == vramTransfer.origin_x + vramTransfer.w) {
                 vramTransfer.x -= vramTransfer.w;
                 vramTransfer.y++;
@@ -297,15 +299,21 @@ namespace ProjectPSX.Devices {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void drawVRAMPixel(ushort val) {
             if (checkMaskBeforeDraw) {
-                int bg = vram.GetPixelRGB888(vramTransfer.x, vramTransfer.y);
+                int bg = VRAM32.GetPixel(vramTransfer.x, vramTransfer.y);
 
                 if (bg >> 24 == 0) {
-                    vram.SetPixel(vramTransfer.x & 0x3FF, vramTransfer.y & 0x1FF, color1555to8888(val));
-                    vram1555.SetPixel(vramTransfer.x & 0x3FF, vramTransfer.y & 0x1FF, val);
+                    int y1 = vramTransfer.y & 0x1FF;
+                    int color = color1555to8888(val);
+                    VRAM32.SetPixel(vramTransfer.x & 0x3FF, y1, color);
+                    int y = vramTransfer.y & 0x1FF;
+                    VRAM16.SetPixel(vramTransfer.x & 0x3FF, y, val);
                 }
             } else {
-                vram.SetPixel(vramTransfer.x & 0x3FF, vramTransfer.y & 0x1FF, color1555to8888(val));
-                vram1555.SetPixel(vramTransfer.x & 0x3FF, vramTransfer.y & 0x1FF, val);
+                int y1 = vramTransfer.y & 0x1FF;
+                int color = color1555to8888(val);
+                VRAM32.SetPixel(vramTransfer.x & 0x3FF, y1, color);
+                int y = vramTransfer.y & 0x1FF;
+                VRAM16.SetPixel(vramTransfer.x & 0x3FF, y, val);
             }
 
             vramTransfer.x++;
@@ -412,8 +420,8 @@ namespace ProjectPSX.Devices {
 
             if (x + w <= 0x3FF && y + h <= 0x1FF)
             {
-                var span16 = new Span<ushort>(vram1555.Bits);
-                var span24 = new Span<int>(vram.Bits);
+                var span16 = new Span<ushort>(VRAM16.Pixels);
+                var span24 = new Span<int>(VRAM32.Pixels);
 
                 for (int yPos = y; yPos < h + y; yPos++)
                 {
@@ -428,8 +436,10 @@ namespace ProjectPSX.Devices {
                 {
                     for (int xPos = x; xPos < w + x; xPos++)
                     {
-                        vram.SetPixel(xPos & 0x3FF, yPos & 0x1FF, rgb888);
-                        vram1555.SetPixel(xPos & 0x3FF, yPos & 0x1FF, bgr555);
+                        int y2 = yPos & 0x1FF;
+                        VRAM32.SetPixel(xPos & 0x3FF, y2, rgb888);
+                        int y1 = yPos & 0x1FF;
+                        VRAM16.SetPixel(xPos & 0x3FF, y1, bgr555);
                     }
                 }
             }
@@ -565,7 +575,7 @@ namespace ProjectPSX.Devices {
 
                         //Check background mask
                         if (checkMaskBeforeDraw) {
-                            color0.val = (uint)vram.GetPixelRGB888(x, y); //back
+                            color0.val = (uint)VRAM32.GetPixel(x, y); //back
                             if (color0.m != 0) {
                                 w0 += A12;
                                 w1 += A20;
@@ -618,9 +628,10 @@ namespace ProjectPSX.Devices {
 
                         color |= maskWhileDrawing << 24;
 
-                        vram.SetPixel(x, y, color);
+                        VRAM32.SetPixel(x, y, color);
 
-                        vram1555.SetPixel(x, y, (ushort)Rgb888ToRgb555(color));
+                        ushort color3 = (ushort)Rgb888ToRgb555(color);
+                        VRAM16.SetPixel(x, y, color3);
                     }
                     // One step to the right
                     w0 += A12;
@@ -685,7 +696,7 @@ namespace ProjectPSX.Devices {
                 v2 = buffer[pointer++];
                 rasterizeLine(v1, v2, color1, color2, isTransparent);
                 //Console.WriteLine("RASTERIZE " + ++rasterizeline);
-                //window.update(VRAM.Bits);
+                //window.update(VRAM32.Bits);
                 //Console.ReadLine();
             }
 
@@ -743,8 +754,9 @@ namespace ProjectPSX.Devices {
 
                     color |= maskWhileDrawing << 24;
 
-                    vram.SetPixel(x, y, color);
-                    vram1555.SetPixel(x, y, (ushort)Rgb888ToRgb555(color));
+                    VRAM32.SetPixel(x, y, color);
+                    ushort color3 = (ushort)Rgb888ToRgb555(color);
+                    VRAM16.SetPixel(x, y, color3);
                 }
 
                 numerator += shortest;
@@ -846,7 +858,8 @@ namespace ProjectPSX.Devices {
                 for (int x = xOrigin, u = uOrigin; x < width; x++, u++) {
                     //Check background mask
                     if (checkMaskBeforeDraw) {
-                        color0.val = (uint)vram.GetPixelRGB888(x & 0x3FF, y & 0x1FF); //back
+                        int y1 = y & 0x1FF;
+                        color0.val = (uint)VRAM32.GetPixel(x & 0x3FF, y1); //back
                         if (color0.m != 0) continue;
                     }
 
@@ -878,8 +891,9 @@ namespace ProjectPSX.Devices {
 
                     color |= maskWhileDrawing << 24;
 
-                    vram.SetPixel(x, y, color);
-                    vram1555.SetPixel(x, y, (ushort)Rgb888ToRgb555(color));
+                    VRAM32.SetPixel(x, y, color);
+                    ushort color3 = (ushort)Rgb888ToRgb555(color);
+                    VRAM16.SetPixel(x, y, color3);
                 }
 
             }
@@ -902,18 +916,22 @@ namespace ProjectPSX.Devices {
 
             for (int yPos = 0; yPos < h; yPos++) {
                 for (int xPos = 0; xPos < w; xPos++) {
-                    var rgb888 = vram.GetPixelRGB888((sx + xPos) & 0x3FF, (sy + yPos) & 0x1FF);
-                    var bgr555 = vram.GetPixelBGR555((sx + xPos) & 0x3FF, (sy + yPos) & 0x1FF);
+                    int y1 = (sy + yPos) & 0x1FF;
+                    var rgb888 = VRAM32.GetPixel((sx + xPos) & 0x3FF, y1);
+                    var bgr555 = VRAM16.GetPixel((sx + xPos) & 0x3FF, (sy + yPos) & 0x1FF);
 
                     if (checkMaskBeforeDraw) {
-                        color0.val = (uint)vram.GetPixelRGB888((dx + xPos) & 0x3FF, (dy + yPos) & 0x1FF);
+                        int y2 = (dy + yPos) & 0x1FF;
+                        color0.val = (uint)VRAM32.GetPixel((dx + xPos) & 0x3FF, y2);
                         if (color0.m != 0) continue;
                     }
 
                     rgb888 |= maskWhileDrawing << 24;
 
-                    vram.SetPixel((dx + xPos) & 0x3FF, (dy + yPos) & 0x1FF, rgb888);
-                    vram1555.SetPixel((dx + xPos) & 0x3FF, (dy + yPos) & 0x1FF, bgr555);
+                    int y3 = (dy + yPos) & 0x1FF;
+                    VRAM32.SetPixel((dx + xPos) & 0x3FF, y3, rgb888);
+                    int y = (dy + yPos) & 0x1FF;
+                    VRAM16.SetPixel((dx + xPos) & 0x3FF, y, bgr555);
                 }
             }
         }
@@ -978,21 +996,25 @@ namespace ProjectPSX.Devices {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int get4bppTexel(int x, int y, Point2D clut, Point2D textureBase) {
-            ushort index = vram1555.GetPixel(x / 4 + textureBase.x, y + textureBase.y);
+            int y1 = y + textureBase.y;
+            ushort index = VRAM16.GetPixel(x / 4 + textureBase.x, y1);
             int p = (index >> (x & 3) * 4) & 0xF;
-            return vram.GetPixelRGB888(clut.x + p, clut.y);
+            return VRAM32.GetPixel(clut.x + p, clut.y);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int get8bppTexel(int x, int y, Point2D clut, Point2D textureBase) {
-            ushort index = vram1555.GetPixel(x / 2 + textureBase.x, y + textureBase.y);
+            int y1 = y + textureBase.y;
+            ushort index = VRAM16.GetPixel(x / 2 + textureBase.x, y1);
             int p = (index >> (x & 1) * 8) & 0xFF;
-            return vram.GetPixelRGB888(clut.x + p, clut.y);
+            return VRAM32.GetPixel(clut.x + p, clut.y);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int get16bppTexel(int x, int y, Point2D textureBase) {
-            return vram.GetPixelRGB888(x + textureBase.x, y + textureBase.y);
+        private int get16bppTexel(int x, int y, Point2D textureBase)
+        {
+            int y1 = y + textureBase.y;
+            return VRAM32.GetPixel(x + textureBase.x, y1);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1184,7 +1206,7 @@ namespace ProjectPSX.Devices {
         }
 
         private int handleSemiTransp(int x, int y, int color, int semiTranspMode) {
-            color0.val = (uint)vram.GetPixelRGB888(x, y); //back
+            color0.val = (uint)VRAM32.GetPixel(x, y); //back
             color1.val = (uint)color; //front
             switch (semiTranspMode) {
                 case 0: //0.5 x B + 0.5 x F    ;aka B/2+F/2

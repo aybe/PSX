@@ -2,4 +2,7 @@
 dotnet_remove_unnecessary_suppression_exclusions = category: ReSharper
 
 # ReSharper properties
+resharper_blank_lines_after_multiline_statements = 1
 resharper_blank_lines_around_single_line_auto_property = 1
+resharper_int_align_assignments = true
+resharper_place_simple_embedded_statement_on_same_line = false
