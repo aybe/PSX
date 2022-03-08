@@ -87,10 +87,12 @@ internal sealed partial class MainWindow
         EmulatorSoundStream = push;
     }
 
-    private static void CleanupSound()
+    private void CleanupSound()
     {
         if (!Bass.BASS_Free())
             throw new BassException("Couldn't free BASS.");
+
+        EmulatorSoundStream = 0;
     }
 
     private void InitializeEmulator()
@@ -204,10 +206,19 @@ internal sealed partial class MainWindow
 
     private void UpdateSampleData(byte[] buffer)
     {
+        if (EmulatorSoundStream is 0)
+            return;
+
         var data = Bass.BASS_StreamPutData(EmulatorSoundStream, buffer, buffer.Length);
-        if (data is -1)
+
+        if (data is not -1)
+            return;
+
+        var exception = new BassException("Couldn't put data in push stream.");
+
+        if (exception.Error is not BASSError.BASS_ERROR_HANDLE)
         {
-            throw new BassException("Couldn't put data in push stream.");
+            throw exception;
         }
     }
 
