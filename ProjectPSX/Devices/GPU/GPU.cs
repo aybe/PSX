@@ -393,28 +393,43 @@ namespace ProjectPSX.Devices {
         private void GP0_01_MemClearCache() => pointer++;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void GP0_02_FillRectVRAM(Span<uint> buffer) {
+        private void GP0_02_FillRectVRAM(Span<uint> buffer)
+            // GP0(02h) - Fill Rectangle in VRAM
+        {
             color0.val = buffer[pointer++];
-            uint yx = buffer[pointer++];
-            uint hw = buffer[pointer++];
 
-            ushort x = (ushort)(yx & 0x3F0);
-            ushort y = (ushort)((yx >> 16) & 0x1FF);
+            var yx = buffer[pointer++];
+            var hw = buffer[pointer++];
 
-            ushort w = (ushort)(((hw & 0x3FF) + 0xF) & ~0xF);
-            ushort h = (ushort)((hw >> 16) & 0x1FF);
+            var x = (ushort)(yx & 0x3F0);
+            var y = (ushort)((yx >> 16) & 0x1FF);
 
-            int color = color0.r << 16 | color0.g << 8 | color0.b;
+            var w = (ushort)(((hw & 0x3FF) + 0xF) & ~0xF);
+            var h = (ushort)((hw >> 16) & 0x1FF);
 
-            if(x + w <= 0x3FF && y + h <= 0x1FF) {
-                var vramSpan = new Span<int>(vram.Bits);
-                for (int yPos = y; yPos < h + y; yPos++) {
-                    vramSpan.Slice(x + (yPos * 1024), w).Fill(color);
+            var bgr555 = (ushort)((color0.b * 31 / 255 << 10) | (color0.g * 31 / 255 << 5) | (color0.r * 31 / 255 << 0));
+            var rgb888 = (color0.r << 16) | (color0.g << 8) | color0.b;
+
+            if (x + w <= 0x3FF && y + h <= 0x1FF)
+            {
+                var span16 = new Span<ushort>(vram1555.Bits);
+                var span24 = new Span<int>(vram.Bits);
+
+                for (int yPos = y; yPos < h + y; yPos++)
+                {
+                    var start = yPos * 1024 + x;
+                    span16.Slice(start, w).Fill(bgr555);
+                    span24.Slice(start, w).Fill(rgb888);
                 }
-            } else {
-                for (int yPos = y; yPos < h + y; yPos++) {
-                    for (int xPos = x; xPos < w + x; xPos++) {
-                        vram.SetPixel(xPos & 0x3FF, yPos & 0x1FF, color);
+            }
+            else
+            {
+                for (int yPos = y; yPos < h + y; yPos++)
+                {
+                    for (int xPos = x; xPos < w + x; xPos++)
+                    {
+                        vram.SetPixel(xPos & 0x3FF, yPos & 0x1FF, rgb888);
+                        vram1555.SetPixel(xPos & 0x3FF, yPos & 0x1FF, bgr555);
                     }
                 }
             }
@@ -604,6 +619,8 @@ namespace ProjectPSX.Devices {
                         color |= maskWhileDrawing << 24;
 
                         vram.SetPixel(x, y, color);
+
+                        vram1555.SetPixel(x, y, (ushort)Rgb888ToRgb555(color));
                     }
                     // One step to the right
                     w0 += A12;
@@ -616,7 +633,17 @@ namespace ProjectPSX.Devices {
                 w2_row += B01;
             }
         }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static short Rgb888ToRgb555(int color)
+        {
+            var r = ((color >> 00) & 0xFF) * 31 / 255;
+            var g = ((color >> 08) & 0xFF) * 31 / 255;
+            var b = ((color >> 16) & 0xFF) * 31 / 255;
 
+            return (short)((r << 10) | (g << 5) | b);
+        }
+      
         private void GP0_RenderLine(Span<uint> buffer) {
             //Console.WriteLine("size " + commandBuffer.Count);
             //int arguments = 0;
@@ -717,6 +744,7 @@ namespace ProjectPSX.Devices {
                     color |= maskWhileDrawing << 24;
 
                     vram.SetPixel(x, y, color);
+                    vram1555.SetPixel(x, y, (ushort)Rgb888ToRgb555(color));
                 }
 
                 numerator += shortest;
@@ -851,6 +879,7 @@ namespace ProjectPSX.Devices {
                     color |= maskWhileDrawing << 24;
 
                     vram.SetPixel(x, y, color);
+                    vram1555.SetPixel(x, y, (ushort)Rgb888ToRgb555(color));
                 }
 
             }
@@ -873,16 +902,18 @@ namespace ProjectPSX.Devices {
 
             for (int yPos = 0; yPos < h; yPos++) {
                 for (int xPos = 0; xPos < w; xPos++) {
-                    int color = vram.GetPixelRGB888((sx + xPos) & 0x3FF, (sy + yPos) & 0x1FF);
+                    var rgb888 = vram.GetPixelRGB888((sx + xPos) & 0x3FF, (sy + yPos) & 0x1FF);
+                    var bgr555 = vram.GetPixelBGR555((sx + xPos) & 0x3FF, (sy + yPos) & 0x1FF);
 
                     if (checkMaskBeforeDraw) {
                         color0.val = (uint)vram.GetPixelRGB888((dx + xPos) & 0x3FF, (dy + yPos) & 0x1FF);
                         if (color0.m != 0) continue;
                     }
 
-                    color |= maskWhileDrawing << 24;
+                    rgb888 |= maskWhileDrawing << 24;
 
-                    vram.SetPixel((dx + xPos) & 0x3FF, (dy + yPos) & 0x1FF, color);
+                    vram.SetPixel((dx + xPos) & 0x3FF, (dy + yPos) & 0x1FF, rgb888);
+                    vram1555.SetPixel((dx + xPos) & 0x3FF, (dy + yPos) & 0x1FF, bgr555);
                 }
             }
         }
