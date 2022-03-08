@@ -267,3 +267,6 @@ __pycache__/
 
 # Ignore user-specific debug configurations
 launchSettings.json
+
+# Ignore whatever dependencies
+.dependencies

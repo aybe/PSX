@@ -3,10 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ProjectPSX.WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
+        Title="ProjectPSX"
+        WindowStartupLocation="CenterScreen"
+        Width="1024" Height="512"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        RenderOptions.BitmapScalingMode="NearestNeighbor"
+        Loaded="MainWindow_OnLoaded"
+        Closed="MainWindow_OnClosed">
+    <Grid >
+        <Image x:Name="Image1" ></Image>
     </Grid>
 </Window>
