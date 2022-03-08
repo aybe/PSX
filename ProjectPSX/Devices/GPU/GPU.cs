@@ -1105,9 +1105,22 @@ namespace ProjectPSX.Devices {
             int horizontalRes = resolutions[horizontalResolution2 << 2 | horizontalResolution1];
             int verticalRes = isVerticalResolution480 ? 480 : 240;
 
+            
+            if (lastHr == horizontalRes && lastVr == verticalRes && last24 == is24BitDepth) 
+                return;
+
             window.SetDisplayMode(horizontalRes, verticalRes, is24BitDepth);
+            
+            Console.WriteLine($"[GPU] {nameof(IHostWindow.SetDisplayMode)}: {horizontalRes}, {verticalRes}, {is24BitDepth}");
+            
+            lastHr = horizontalRes;
+            lastVr = verticalRes;
+            last24 = is24BitDepth;
         }
 
+        private int lastHr;
+        private int lastVr;
+        private bool last24;
         private void GP1_09_TextureDisable(uint value) => isTextureDisabledAllowed = (value & 0x1) != 0;
 
         private void GP1_GPUInfo(uint value) {
