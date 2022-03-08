@@ -9,7 +9,7 @@ public partial class App
     {
         var window = new MainWindow();
 
-        window.Executable = e.Args.FirstOrDefault();
+        window.EmulatorExecutable = e.Args.FirstOrDefault();
 
         window.Show();
     }

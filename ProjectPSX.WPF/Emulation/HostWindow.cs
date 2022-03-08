@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Media.Imaging;
-using System.Windows.Threading;
-using Un4seen.Bass;
 
-namespace ProjectPSX.WPF;
+namespace ProjectPSX.WPF.Emulation;
 
-internal sealed class WpfHostWindow : IHostWindow
+internal sealed class HostWindow : IHostWindow
 {
-  
     private ushort DisplayVRamXStart { get; set; }
 
     private ushort DisplayVRamYStart { get; set; }
@@ -22,16 +16,25 @@ internal sealed class WpfHostWindow : IHostWindow
 
     private ushort DisplayY1 { get; set; }
 
-    public int StreamPush { get; set; }
+    public UpdateBitmapSize? UpdateBitmapSize { get; init; }
 
-    public int StreamMixer { get; set; }
-    
-    public UpdateBitmapSizeHandler UpdateBitmapSize { get; set; }
+    public UpdateBitmapData? UpdateBitmapData { get; init; }
 
-    public UpdateBitmapDataHandler UpdateBitmapData { get; set; }
+    public UpdateSampleData? UpdateSampleData { get; init; }
+
+    public void Play(byte[] samples)
+    {
+        if (UpdateSampleData is null)
+            throw new NullReferenceException(nameof(UpdateSampleData));
+
+        UpdateSampleData(samples);
+    }
 
     public void Render(int[] buffer24, ushort[] buffer16)
     {
+        if (UpdateBitmapData is null)
+            throw new NullReferenceException(nameof(UpdateBitmapData));
+
         var size = new IntSize(DisplayVRamXStart, DisplayVRamYStart);
         var rect = new IntRect(DisplayX1, DisplayY1, DisplayX2, DisplayY2);
         UpdateBitmapData(size, rect, buffer24, buffer16);
@@ -39,13 +42,10 @@ internal sealed class WpfHostWindow : IHostWindow
 
     public void SetDisplayMode(int horizontalRes, int verticalRes, bool is24BitDepth)
     {
-         UpdateBitmapSize(new IntSize(horizontalRes, verticalRes), is24BitDepth);
-    }
+        if (UpdateBitmapSize is null)
+            throw new NullReferenceException(nameof(UpdateBitmapSize));
 
-    public void SetVRAMStart(ushort displayVRAMXStart, ushort displayVRAMYStart)
-    {
-        DisplayVRamXStart = displayVRAMXStart;
-        DisplayVRamYStart = displayVRAMYStart;
+        UpdateBitmapSize(new IntSize(horizontalRes, verticalRes), is24BitDepth);
     }
 
     public void SetHorizontalRange(ushort displayX1, ushort displayX2)
@@ -60,12 +60,9 @@ internal sealed class WpfHostWindow : IHostWindow
         DisplayY2 = displayY2;
     }
 
-    public void Play(byte[] samples)
+    public void SetVRAMStart(ushort displayVRamStartX, ushort displayVRamStartY)
     {
-        var data = Bass.BASS_StreamPutData(StreamPush, samples, samples.Length);
-        if (data is -1)
-        {
-            throw new BassException();
-        }
+        DisplayVRamXStart = displayVRamStartX;
+        DisplayVRamYStart = displayVRamStartY;
     }
 }
