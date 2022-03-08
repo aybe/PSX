@@ -30,11 +30,11 @@ internal sealed class WpfHostWindow : IHostWindow
 
     public UpdateBitmapDataHandler UpdateBitmapData { get; set; }
 
-    public  void Render(int[] vram)
+    public void Render(int[] buffer24, ushort[] buffer16)
     {
         var size = new IntSize(DisplayVRamXStart, DisplayVRamYStart);
         var rect = new IntRect(DisplayX1, DisplayY1, DisplayX2, DisplayY2);
-        UpdateBitmapData(size, rect, vram);
+        UpdateBitmapData(size, rect, buffer24, buffer16);
     }
 
     public void SetDisplayMode(int horizontalRes, int verticalRes, bool is24BitDepth)
@@ -69,49 +69,3 @@ internal sealed class WpfHostWindow : IHostWindow
         }
     }
 }
-
-public readonly struct IntRect
-{
-    public int X1 { get; }
-
-    public int Y1 { get; }
-
-    public int X2 { get; }
-
-    public int Y2 { get; }
-
-    public IntRect(int x1, int y1, int x2, int y2)
-    {
-        X1 = x1;
-        Y1 = y1;
-        X2 = x2;
-        Y2 = y2;
-    }
-
-    public override string ToString()
-    {
-        return $"{nameof(X1)}: {X1}, {nameof(Y1)}: {Y1}, {nameof(X2)}: {X2}, {nameof(Y2)}: {Y2}";
-    }
-}
-
-public readonly struct IntSize
-{
-    public int X { get; }
-
-    public int Y { get; }
-
-    public IntSize(int x, int y)
-    {
-        X = x;
-        Y = y;
-    }
-
-    public override string ToString()
-    {
-        return $"{nameof(X)}: {X}, {nameof(Y)}: {Y}";
-    }
-}
-
-public delegate void UpdateBitmapDataHandler(IntSize size, IntRect rect, int[] pixels);
-
-public delegate void UpdateBitmapSizeHandler(IntSize size, bool bpp24);

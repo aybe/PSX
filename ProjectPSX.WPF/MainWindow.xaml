@@ -5,14 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="ProjectPSX"
-        WindowStartupLocation="CenterScreen"
-        Width="1024" Height="512"
+        WindowStartupLocation="Manual"
+        Left="0"
+        Top="0"
+        Width="640" Height="480"
         UseLayoutRounding="True"
         SnapsToDevicePixels="True"
         RenderOptions.BitmapScalingMode="NearestNeighbor"
         Loaded="MainWindow_OnLoaded"
         Closed="MainWindow_OnClosed">
-    <Grid >
-        <Image x:Name="Image1" ></Image>
+    <Grid Background="Gray">
+        <Image x:Name="Image1" />
     </Grid>
 </Window>
