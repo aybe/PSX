@@ -1,5 +1,25 @@
 # ProjectPSX
 
+## This fork
+
+### Changes
+
+#### General
+- add a command-line argument to OpenTK backend for directly launching some content
+- preliminary WPF backend
+
+#### Audio
+- rewrite of cue sheet parsing logic to support all cases
+- fixed incorrect audio playback for consolidated .BIN/.CUE images
+
+#### GPU
+- abstraction of VRAM logic
+- invoke SetDisplayMode only when necessary
+
+---
+
+## Original fork
+
 ![psx](https://user-images.githubusercontent.com/28767885/60985122-30e29900-a33d-11e9-8956-4b933a2745b4.PNG)
 
 **ProjectPSX is a C# coded emulator of the original Sony Playstation (Playstation 1/PS1/PSX)**
