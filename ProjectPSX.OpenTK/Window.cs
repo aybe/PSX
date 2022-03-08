@@ -12,7 +12,7 @@ namespace ProjectPSX.OpenTK {
         const int SYNC_CYCLES = 100;
         const int MIPS_UNDERCLOCK = 2;
 
-        private ProjectPSX psx;
+        private Emulator psx;
         private int[] displayBuffer;
         private Dictionary<Keys, GamepadInputsEnum> _gamepadKeyMap;
         private AudioPlayer audioPlayer = new AudioPlayer();
@@ -27,7 +27,7 @@ namespace ProjectPSX.OpenTK {
             string[] files = fileDrop.FileNames;
             string file = files[0];
             if(file.EndsWith(".bin") || file.EndsWith(".cue") || file.EndsWith(".exe")) {
-                psx = new ProjectPSX(this, file);
+                psx = new Emulator(this, file);
             }
         }
 
@@ -35,7 +35,7 @@ namespace ProjectPSX.OpenTK {
         {
             psx?.Dispose();
 
-            psx = new ProjectPSX(this, path);
+            psx = new Emulator(this, path);
         }
 
         protected override void OnLoad() {

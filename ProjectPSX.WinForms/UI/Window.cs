@@ -32,7 +32,7 @@ namespace ProjectPSX {
 
         private GdiBitmap display = new GdiBitmap(1024, 512);
 
-        private ProjectPSX psx;
+        private Emulator psx;
         private int fps;
         private bool isVramViewer;
 
@@ -96,7 +96,7 @@ namespace ProjectPSX {
             waveOutEvent.Init(bufferedWaveProvider);
 
             string diskFilename = GetDiskFilename();
-            psx = new ProjectPSX(this, diskFilename);
+            psx = new Emulator(this, diskFilename);
 
             var timer = new System.Timers.Timer(1000);
             timer.Elapsed += OnTimedEvent;

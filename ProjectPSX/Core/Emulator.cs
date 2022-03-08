@@ -4,7 +4,7 @@ using ProjectPSX.Devices.CdRom;
 using ProjectPSX.Devices.Input;
 
 namespace ProjectPSX {
-    public class ProjectPSX : IDisposable {
+    public class Emulator : IDisposable {
         const int PSX_MHZ = 33868800;
         const int SYNC_CYCLES = 100;
         const int MIPS_UNDERCLOCK = 3; //Testing: This compensates the ausence of HALT instruction on MIPS Architecture, may broke some games.
@@ -24,7 +24,7 @@ namespace ProjectPSX {
         private CD cd;
         private InterruptController interruptController;
 
-        public ProjectPSX(IHostWindow window, string diskFilename) {
+        public Emulator(IHostWindow window, string diskFilename) {
             controller = new DigitalController();
             memoryCard = new MemoryCard();
 
