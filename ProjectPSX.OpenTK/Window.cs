@@ -122,9 +122,9 @@ namespace ProjectPSX.OpenTK {
             return null;
         }
 
-        public void Render(int[] vram) {
+        public void Render(int[] buffer24, ushort[] buffer16) {
             vSyncCounter++;
-            displayBuffer = vram;
+            displayBuffer = buffer24;
         }
 
         public int GetVPS() {

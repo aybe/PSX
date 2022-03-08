@@ -142,7 +142,7 @@ namespace ProjectPSX {
         private void toggleDebug(object sender, MouseEventArgs e) => psx.toggleDebug();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Render(int[] vram) {
+        public void Render(int[] buffer24, ushort[] buffer16) {
             //Console.WriteLine($"x1 {displayX1} x2 {displayX2} y1 {displayY1} y2 {displayY2}");
 
             int horizontalEnd = horizontalRes;
@@ -152,11 +152,11 @@ namespace ProjectPSX {
                 horizontalEnd = 1024;
                 verticalEnd = 512;
                 
-                Marshal.Copy(vram, 0, display.BitmapData, 0x80000);
+                Marshal.Copy(buffer24, 0, display.BitmapData, 0x80000);
             } else if (is24BitDepth) {
-                blit24bpp(vram);
+                blit24bpp(buffer24);
             } else {
-                blit16bpp(vram);
+                blit16bpp(buffer24);
             }
 
             fps++;

@@ -72,7 +72,7 @@ public partial class MainWindow
         Task.Factory.StartNew(UpdateLoop, TaskCreationOptions.LongRunning);
     }
 
-    private void UpdateBitmapData(IntSize size, IntRect rect, int[] pixels)
+    private void UpdateBitmapData(IntSize size, IntRect rect, int[] buffer24, ushort[] buffer16)
     {
         Dispatcher.BeginInvoke(UpdateBitmapDataProc, size, rect, pixels);
     }
