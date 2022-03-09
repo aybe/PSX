@@ -1,30 +1,30 @@
 ﻿namespace ProjectPSX.Sound;
 
-public struct SPUVoiceADSR
+public struct SPUVoiceAdsr
 {
-    public ushort lo; //8
+    public ushort Lo; //8
    
-    public ushort hi; //A
+    public ushort Hi; //A
 
-    public bool isAttackModeExponential => ((lo >> 15) & 0x1) != 0;
+    public bool IsAttackModeExponential => ((Lo >> 15) & 0x1) != 0;
 
-    public int attackShift => (lo >> 10) & 0x1F;
+    public int AttackShift => (Lo >> 10) & 0x1F;
 
-    public int attackStep => (lo >> 8) & 0x3; //"+7,+6,+5,+4"
+    public int AttackStep => (Lo >> 8) & 0x3; //"+7,+6,+5,+4"
 
-    public int decayShift => (lo >> 4) & 0xF;
+    public int DecayShift => (Lo >> 4) & 0xF;
 
-    public int sustainLevel => lo & 0xF; //Level=(N+1)*800h
+    public int SustainLevel => Lo & 0xF; //Level=(N+1)*800h
 
-    public bool isSustainModeExponential => ((hi >> 15) & 0x1) != 0;
+    public bool IsSustainModeExponential => ((Hi >> 15) & 0x1) != 0;
 
-    public bool isSustainDirectionDecrease => ((hi >> 14) & 0x1) != 0;
+    public bool IsSustainDirectionDecrease => ((Hi >> 14) & 0x1) != 0;
 
-    public int sustainShift => (hi >> 8) & 0x1F;
+    public int SustainShift => (Hi >> 8) & 0x1F;
 
-    public int sustainStep => (hi >> 6) & 0x3;
+    public int SustainStep => (Hi >> 6) & 0x3;
 
-    public bool isReleaseModeExponential => ((hi >> 5) & 0x1) != 0;
+    public bool IsReleaseModeExponential => ((Hi >> 5) & 0x1) != 0;
 
-    public int releaseShift => hi & 0x1F;
+    public int ReleaseShift => Hi & 0x1F;
 }

@@ -14,7 +14,7 @@ public class SPU
     // clean up queue/list dequeues enqueues and casts
     // ...
 
-    private static readonly short[] gaussTable =
+    private static readonly short[] GaussTable =
     {
         -0x001, -0x001, -0x001, -0x001, -0x001, -0x001, -0x001, -0x001,
         -0x001, -0x001, -0x001, -0x001, -0x001, -0x001, -0x001, -0x001,
@@ -82,32 +82,32 @@ public class SPU
         0x5997, 0x599E, 0x59A4, 0x59A9, 0x59AD, 0x59B0, 0x59B2, 0x59B3
     };
 
-    private int captureBufferPos;
+    private int CaptureBufferPos;
 
-    private readonly Sector cdBuffer = new(Sector.XA_BUFFER);
+    private readonly Sector CdBuffer = new(Sector.XA_BUFFER);
 
-    private ushort cdVolumeLeft;
-    private ushort cdVolumeRight;
-    private uint channelNoiseMode;
-    private uint channelReverbMode;
+    private ushort CdVolumeLeft;
+    private ushort CdVolumeRight;
+    private uint ChannelNoiseMode;
+    private uint ChannelReverbMode;
 
-    private SPUControl control;
+    private SPUControl Control;
 
-    private int counter;
-    private ushort currentVolumeLeft;
-    private ushort currentVolumeRight;
-    private readonly int CYCLES_PER_SAMPLE = 0x300; //33868800 / 44100hz
-    private uint endx;
-    private ushort externVolumeLeft;
-    private ushort externVolumeRight;
-    private readonly InterruptController interruptController;
-    private uint keyOff;
+    private int Counter;
+    private ushort CurrentVolumeLeft;
+    private ushort CurrentVolumeRight;
+    private readonly int CyclesPerSample = 0x300; //33868800 / 44100hz
+    private uint EndX;
+    private ushort ExternVolumeLeft;
+    private ushort ExternVolumeRight;
+    private readonly InterruptController InterruptController;
+    private uint KeyOff;
 
-    private uint keyOn;
+    private uint KeyOn;
 
-    private ushort mainVolumeLeft;
-    private ushort mainVolumeRight;
-    private int noiseLevel;
+    private ushort MainVolumeLeft;
+    private ushort MainVolumeRight;
+    private int NoiseLevel;
 
     //Wait(1 cycle); at 44.1kHz clock
     //Timer=Timer-NoiseStep  ;subtract Step(4..7)
@@ -115,45 +115,45 @@ public class SPU
     //IF Timer<0 then NoiseLevel = NoiseLevel * 2 + ParityBit
     //IF Timer<0 then Timer = Timer + (20000h SHR NoiseShift); reload timer once
     //IF Timer<0 then Timer = Timer + (20000h SHR NoiseShift); reload again if needed
-    private int noiseTimer;
-    private uint pitchModulationEnableFlags;
+    private int NoiseTimer;
+    private uint PitchModulationEnableFlags;
 
-    private readonly byte[] ram = new byte[512 * 1024];
-    private ushort ramDataTransferAddress;
-    private uint ramDataTransferAddressInternal;
+    private readonly byte[] Ram = new byte[512 * 1024];
+    private ushort RamDataTransferAddress;
+    private uint RamDataTransferAddressInternal;
 
-    private ushort ramDataTransferControl;
-    private ushort ramDataTransferFifo;
-    private ushort ramIrqAddress;
+    private ushort RamDataTransferControl;
+    private ushort RamDataTransferFifo;
+    private ushort RamIrqAddress;
 
-    private ushort ramReverbStartAddress;
-    private ushort reverbOutputLeft;
-    private ushort reverbOutputRight;
+    private ushort RamReverbStartAddress;
+    private ushort ReverbOutputLeft;
+    private ushort ReverbOutputRight;
 
-    private readonly byte[] spuOutput = new byte[2048];
-    private int spuOutputPointer;
+    private readonly byte[] SPUOutput = new byte[2048];
+    private int SPUOutputPointer;
 
-    private SPUStatus status;
+    private SPUStatus Status;
 
-    private ushort unknownA0;
+    private ushort UnknownA0;
 
-    private uint unknownBC;
-    private readonly SPUVoice[] voices = new SPUVoice[24];
+    private uint UnknownBC;
+    private readonly SPUVoice[] Voices = new SPUVoice[24];
 
-    private readonly IHostWindow window;
+    private readonly IHostWindow Window;
 
     public SPU(IHostWindow window, InterruptController interruptController)
     {
-        this.window              = window;
-        this.interruptController = interruptController;
+        this.Window              = window;
+        this.InterruptController = interruptController;
 
-        for (var i = 0; i < voices.Length; i++)
+        for (var i = 0; i < Voices.Length; i++)
         {
-            voices[i] = new SPUVoice();
+            Voices[i] = new SPUVoice();
         }
     }
 
-    internal void write(uint addr, ushort value)
+    internal void Write(uint addr, ushort value)
     {
         switch (addr)
         {
@@ -164,177 +164,177 @@ public class SPU
                 switch (addr & 0xF)
                 {
                     case 0x0:
-                        voices[index].volumeLeft.register = value;
+                        Voices[index].VolumeLeft.Register = value;
                         break;
                     case 0x2:
-                        voices[index].volumeRight.register = value;
+                        Voices[index].VolumeRight.Register = value;
                         break;
                     case 0x4:
-                        voices[index].pitch = value;
+                        Voices[index].Pitch = value;
                         break;
                     case 0x6:
-                        voices[index].startAddress = value;
+                        Voices[index].StartAddress = value;
                         break;
                     case 0x8:
-                        voices[index].adsr.lo = value;
+                        Voices[index].Adsr.Lo = value;
                         break;
                     case 0xA:
-                        voices[index].adsr.hi = value;
+                        Voices[index].Adsr.Hi = value;
                         break;
                     case 0xC:
-                        voices[index].adsrVolume = value;
+                        Voices[index].AdsrVolume = value;
                         break;
                     case 0xE:
-                        voices[index].adpcmRepeatAddress = value;
+                        Voices[index].AdpcmRepeatAddress = value;
                         break;
                 }
 
                 break;
 
             case 0x1F801D80:
-                mainVolumeLeft = value;
+                MainVolumeLeft = value;
                 break;
 
             case 0x1F801D82:
-                mainVolumeRight = value;
+                MainVolumeRight = value;
                 break;
 
             case 0x1F801D84:
-                reverbOutputLeft = value;
+                ReverbOutputLeft = value;
                 break;
 
             case 0x1F801D86:
-                reverbOutputRight = value;
+                ReverbOutputRight = value;
                 break;
 
             case 0x1F801D88:
-                keyOn = (keyOn & 0xFFFF0000) | value;
+                KeyOn = (KeyOn & 0xFFFF0000) | value;
                 break;
 
             case 0x1F801D8A:
-                keyOn = (keyOn & 0xFFFF) | (uint)(value << 16);
+                KeyOn = (KeyOn & 0xFFFF) | (uint)(value << 16);
                 break;
 
             case 0x1F801D8C:
-                keyOff = (keyOff & 0xFFFF0000) | value;
+                KeyOff = (KeyOff & 0xFFFF0000) | value;
                 break;
 
             case 0x1F801D8E:
-                keyOff = (keyOff & 0xFFFF) | (uint)(value << 16);
+                KeyOff = (KeyOff & 0xFFFF) | (uint)(value << 16);
                 break;
 
             case 0x1F801D90:
                 //1F801D90h - Voice 0..23 Pitch Modulation Enable Flags(PMON)
-                pitchModulationEnableFlags = (pitchModulationEnableFlags & 0xFFFF0000) | value;
+                PitchModulationEnableFlags = (PitchModulationEnableFlags & 0xFFFF0000) | value;
                 break;
 
             case 0x1F801D92:
-                pitchModulationEnableFlags = (pitchModulationEnableFlags & 0xFFFF) | (uint)(value << 16);
+                PitchModulationEnableFlags = (PitchModulationEnableFlags & 0xFFFF) | (uint)(value << 16);
                 break;
 
             case 0x1F801D94:
-                channelNoiseMode = (channelNoiseMode & 0xFFFF0000) | value;
+                ChannelNoiseMode = (ChannelNoiseMode & 0xFFFF0000) | value;
                 break;
 
             case 0x1F801D96:
-                channelNoiseMode = (channelNoiseMode & 0xFFFF) | (uint)(value << 16);
+                ChannelNoiseMode = (ChannelNoiseMode & 0xFFFF) | (uint)(value << 16);
                 break;
 
             case 0x1F801D98:
-                channelReverbMode = (channelReverbMode & 0xFFFF0000) | value;
+                ChannelReverbMode = (ChannelReverbMode & 0xFFFF0000) | value;
                 break;
 
             case 0x1F801D9A:
-                channelReverbMode = (channelReverbMode & 0xFFFF) | (uint)(value << 16);
+                ChannelReverbMode = (ChannelReverbMode & 0xFFFF) | (uint)(value << 16);
                 break;
 
             case 0x1F801D9C:
-                endx = (endx & 0xFFFF0000) | value;
+                EndX = (EndX & 0xFFFF0000) | value;
                 break;
 
             case 0x1F801D9E:
-                endx = (endx & 0xFFFF) | (uint)(value << 16);
+                EndX = (EndX & 0xFFFF) | (uint)(value << 16);
                 break;
 
             case 0x1F801DA0:
-                unknownA0 = value;
+                UnknownA0 = value;
                 break;
 
             case 0x1F801DA2:
-                ramReverbStartAddress = value;
+                RamReverbStartAddress = value;
                 break;
 
             case 0x1F801DA4:
-                ramIrqAddress = value;
+                RamIrqAddress = value;
                 break;
 
             case 0x1F801DA6:
-                ramDataTransferAddress         = value;
-                ramDataTransferAddressInternal = (uint)(value * 8);
+                RamDataTransferAddress         = value;
+                RamDataTransferAddressInternal = (uint)(value * 8);
                 break;
 
             case 0x1F801DA8:
                 //Console.WriteLine($"[SPU] Manual DMA Write {ramDataTransferAddressInternal:x8} {value:x4}");
-                ramDataTransferFifo                   = value;
-                ram[ramDataTransferAddressInternal++] = (byte)value;
-                ram[ramDataTransferAddressInternal++] = (byte)(value >> 8);
+                RamDataTransferFifo                   = value;
+                Ram[RamDataTransferAddressInternal++] = (byte)value;
+                Ram[RamDataTransferAddressInternal++] = (byte)(value >> 8);
                 break;
 
             case 0x1F801DAA:
-                control.register = value;
+                Control.Register = value;
 
                 //Irq Flag is reseted on ack
-                if (!control.irq9Enabled)
-                    status.irq9Flag = false;
+                if (!Control.Irq9Enabled)
+                    Status.Irq9Flag = false;
 
                 //Status lower 5 bits are the same as control
-                status.register &= 0xFFE0;
-                status.register |= (ushort)(value & 0x1F);
+                Status.Register &= 0xFFE0;
+                Status.Register |= (ushort)(value & 0x1F);
                 break;
 
             case 0x1F801DAC:
-                ramDataTransferControl = value;
+                RamDataTransferControl = value;
                 break;
 
             case 0x1F801DAE:
-                status.register = value;
+                Status.Register = value;
                 break;
 
             case 0x1F801DB0:
-                cdVolumeLeft = value;
+                CdVolumeLeft = value;
                 break;
 
             case 0x1F801DB2:
-                cdVolumeRight = value;
+                CdVolumeRight = value;
                 break;
 
             case 0x1F801DB4:
-                externVolumeLeft = value;
+                ExternVolumeLeft = value;
                 break;
 
             case 0x1F801DB6:
-                externVolumeRight = value;
+                ExternVolumeRight = value;
                 break;
 
             case 0x1F801DB8:
-                currentVolumeLeft = value;
+                CurrentVolumeLeft = value;
                 break;
 
             case 0x1F801DBA:
-                currentVolumeRight = value;
+                CurrentVolumeRight = value;
                 break;
 
             case 0x1F801DBC:
-                unknownBC = (unknownBC & 0xFFFF0000) | value;
+                UnknownBC = (UnknownBC & 0xFFFF0000) | value;
                 break;
 
             case 0x1F801DBE:
-                unknownBC = (unknownBC & 0xFFFF) | (uint)(value << 16);
+                UnknownBC = (UnknownBC & 0xFFFF) | (uint)(value << 16);
                 break;
         }
     }
 
-    internal ushort load(uint addr)
+    internal ushort Load(uint addr)
     {
         switch (addr)
         {
@@ -344,195 +344,195 @@ public class SPU
 
                 switch (addr & 0xF)
                 {
-                    case 0x0: return voices[index].volumeLeft.register;
-                    case 0x2: return voices[index].volumeRight.register;
-                    case 0x4: return voices[index].pitch;
-                    case 0x6: return voices[index].startAddress;
-                    case 0x8: return voices[index].adsr.lo;
-                    case 0xA: return voices[index].adsr.hi;
-                    case 0xC: return voices[index].adsrVolume;
-                    case 0xE: return voices[index].adpcmRepeatAddress;
+                    case 0x0: return Voices[index].VolumeLeft.Register;
+                    case 0x2: return Voices[index].VolumeRight.Register;
+                    case 0x4: return Voices[index].Pitch;
+                    case 0x6: return Voices[index].StartAddress;
+                    case 0x8: return Voices[index].Adsr.Lo;
+                    case 0xA: return Voices[index].Adsr.Hi;
+                    case 0xC: return Voices[index].AdsrVolume;
+                    case 0xE: return Voices[index].AdpcmRepeatAddress;
                 }
 
                 return 0xFFFF;
 
             case 0x1F801D80:
-                return mainVolumeLeft;
+                return MainVolumeLeft;
 
             case 0x1F801D82:
-                return mainVolumeRight;
+                return MainVolumeRight;
 
             case 0x1F801D84:
-                return reverbOutputLeft;
+                return ReverbOutputLeft;
 
             case 0x1F801D86:
-                return reverbOutputRight;
+                return ReverbOutputRight;
 
             case 0x1F801D88:
-                return (ushort)keyOn;
+                return (ushort)KeyOn;
 
             case 0x1F801D8A:
-                return (ushort)(keyOn >> 16);
+                return (ushort)(KeyOn >> 16);
 
             case 0x1F801D8C:
-                return (ushort)keyOff;
+                return (ushort)KeyOff;
 
             case 0x1F801D8E:
-                return (ushort)(keyOff >> 16);
+                return (ushort)(KeyOff >> 16);
 
             case 0x1F801D90:
-                return (ushort)pitchModulationEnableFlags;
+                return (ushort)PitchModulationEnableFlags;
 
             case 0x1F801D92:
-                return (ushort)(pitchModulationEnableFlags >> 16);
+                return (ushort)(PitchModulationEnableFlags >> 16);
 
             case 0x1F801D94:
-                return (ushort)channelNoiseMode;
+                return (ushort)ChannelNoiseMode;
 
             case 0x1F801D96:
-                return (ushort)(channelNoiseMode >> 16);
+                return (ushort)(ChannelNoiseMode >> 16);
 
             case 0x1F801D98:
-                return (ushort)channelReverbMode;
+                return (ushort)ChannelReverbMode;
 
             case 0x1F801D9A:
-                return (ushort)(channelReverbMode >> 16);
+                return (ushort)(ChannelReverbMode >> 16);
 
             case 0x1F801D9C:
-                return (ushort)endx;
+                return (ushort)EndX;
 
             case 0x1F801D9E:
-                return (ushort)(endx >> 16);
+                return (ushort)(EndX >> 16);
 
             case 0x1F801DA0:
-                return unknownA0;
+                return UnknownA0;
 
             case 0x1F801DA2:
-                return ramReverbStartAddress;
+                return RamReverbStartAddress;
 
             case 0x1F801DA4:
-                return ramIrqAddress;
+                return RamIrqAddress;
 
             case 0x1F801DA6:
-                return ramDataTransferAddress;
+                return RamDataTransferAddress;
 
             case 0x1F801DA8:
-                return ramDataTransferFifo;
+                return RamDataTransferFifo;
 
             case 0x1F801DAA:
-                return control.register;
+                return Control.Register;
 
             case 0x1F801DAC:
-                return ramDataTransferControl;
+                return RamDataTransferControl;
 
             case 0x1F801DAE:
-                return status.register;
+                return Status.Register;
 
             case 0x1F801DB0:
-                return cdVolumeLeft;
+                return CdVolumeLeft;
 
             case 0x1F801DB2:
-                return cdVolumeRight;
+                return CdVolumeRight;
 
             case 0x1F801DB4:
-                return externVolumeLeft;
+                return ExternVolumeLeft;
 
             case 0x1F801DB6:
-                return externVolumeRight;
+                return ExternVolumeRight;
 
             case 0x1F801DB8:
-                return currentVolumeLeft;
+                return CurrentVolumeLeft;
 
             case 0x1F801DBA:
-                return currentVolumeRight;
+                return CurrentVolumeRight;
 
             case 0x1F801DBC:
-                return (ushort)unknownBC;
+                return (ushort)UnknownBC;
 
             case 0x1F801DBE:
-                return (ushort)(unknownBC >> 16);
+                return (ushort)(UnknownBC >> 16);
 
             default:
                 return 0xFFFF;
         }
     }
 
-    internal void pushCdBufferSamples(byte[] decodedXaAdpcm)
+    internal void PushCdBufferSamples(byte[] decodedXaAdpcm)
     {
-        cdBuffer.fillWith(decodedXaAdpcm);
+        CdBuffer.fillWith(decodedXaAdpcm);
     }
 
-    public bool tick(int cycles)
+    public bool Tick(int cycles)
     {
         var edgeTrigger = false;
-        counter += cycles;
+        Counter += cycles;
 
-        if (counter < CYCLES_PER_SAMPLE)
+        if (Counter < CyclesPerSample)
         {
             return false;
         }
 
-        counter -= CYCLES_PER_SAMPLE;
+        Counter -= CyclesPerSample;
 
         var sumLeft = 0;
         var sumRight = 0;
 
-        var edgeKeyOn = keyOn;
-        var edgeKeyOff = keyOff;
-        keyOn  = 0;
-        keyOff = 0;
+        var edgeKeyOn = KeyOn;
+        var edgeKeyOff = KeyOff;
+        KeyOn  = 0;
+        KeyOff = 0;
 
-        tickNoiseGenerator();
+        TickNoiseGenerator();
 
-        for (var i = 0; i < voices.Length; i++)
+        for (var i = 0; i < Voices.Length; i++)
         {
-            var v = voices[i];
+            var v = Voices[i];
 
             //keyOn and KeyOff are edge triggered on 0 to 1
             if ((edgeKeyOff & (0x1 << i)) != 0)
             {
-                v.keyOff();
+                v.KeyOff();
             }
 
             if ((edgeKeyOn & (0x1 << i)) != 0)
             {
-                endx &= ~(uint)(0x1 << i);
+                EndX &= ~(uint)(0x1 << i);
                 v.keyOn();
             }
 
-            if (v.adsrPhase == SPUVoicePhase.Off)
+            if (v.AdsrPhase == SPUVoicePhase.Off)
             {
-                v.latest = 0;
+                v.Latest = 0;
                 continue;
             }
 
             short sample;
-            if ((channelNoiseMode & (0x1 << i)) != 0)
+            if ((ChannelNoiseMode & (0x1 << i)) != 0)
             {
                 //Generated by tickNoiseGenerator
-                sample = (short)noiseLevel;
+                sample = (short)NoiseLevel;
             }
             else
             {
-                sample = sampleVoice(i);
+                sample = SampleVoice(i);
                 //Read irqAddress Irq
-                edgeTrigger  |= control.irq9Enabled && v.readRamIrq;
-                v.readRamIrq =  false;
+                edgeTrigger  |= Control.Irq9Enabled && v.ReadRamIrq;
+                v.ReadRamIrq =  false;
             }
 
             //Handle ADSR Envelope
-            sample = (short)((sample * v.adsrVolume) >> 15);
-            v.tickAdsr(i);
+            sample = (short)((sample * v.AdsrVolume) >> 15);
+            v.TickAdsr(i);
 
             //Save sample for possible pitch modulation
-            v.latest = sample;
+            v.Latest = sample;
 
             //Sum each voice sample
-            sumLeft  += (sample * v.processVolume(v.volumeLeft)) >> 15;
-            sumRight += (sample * v.processVolume(v.volumeRight)) >> 15;
+            sumLeft  += (sample * v.ProcessVolume(v.VolumeLeft)) >> 15;
+            sumRight += (sample * v.ProcessVolume(v.VolumeRight)) >> 15;
         }
 
-        if (!control.spuUnmuted)
+        if (!Control.SPUUnmuted)
         {
             //todo merge this on the for voice loop
             //On mute the spu still ticks but output is 0 for voices (not for cdInput)
@@ -543,108 +543,108 @@ public class SPU
         //Merge in CD audio (CDDA or XA)
         short cdL = 0;
         short cdR = 0;
-        if (control.cdAudioEnabled && cdBuffer.hasSamples())
+        if (Control.CdAudioEnabled && CdBuffer.hasSamples())
         {
             //Be sure theres something on the queue...
             //todo refactor the byte/short queues and casts
-            cdL = cdBuffer.readShort();
-            cdR = cdBuffer.readShort();
+            cdL = CdBuffer.readShort();
+            cdR = CdBuffer.readShort();
 
             //Apply Spu Cd In (CDDA/XA) Volume
-            cdL = (short)((cdL * cdVolumeLeft) >> 15);
-            cdR = (short)((cdR * cdVolumeRight) >> 15);
+            cdL = (short)((cdL * CdVolumeLeft) >> 15);
+            cdR = (short)((cdR * CdVolumeRight) >> 15);
 
             sumLeft  += cdL;
             sumRight += cdR;
         }
 
         //Write to capture buffers and check ram irq
-        edgeTrigger      |= handleCaptureBuffer(0 * 1024 + captureBufferPos, cdL);
-        edgeTrigger      |= handleCaptureBuffer(1 * 1024 + captureBufferPos, cdR);
-        edgeTrigger      |= handleCaptureBuffer(2 * 1024 + captureBufferPos, voices[1].latest);
-        edgeTrigger      |= handleCaptureBuffer(3 * 1024 + captureBufferPos, voices[3].latest);
-        captureBufferPos =  (captureBufferPos + 2) & 0x3FF;
+        edgeTrigger      |= HandleCaptureBuffer(0 * 1024 + CaptureBufferPos, cdL);
+        edgeTrigger      |= HandleCaptureBuffer(1 * 1024 + CaptureBufferPos, cdR);
+        edgeTrigger      |= HandleCaptureBuffer(2 * 1024 + CaptureBufferPos, Voices[1].Latest);
+        edgeTrigger      |= HandleCaptureBuffer(3 * 1024 + CaptureBufferPos, Voices[3].Latest);
+        CaptureBufferPos =  (CaptureBufferPos + 2) & 0x3FF;
 
         //Clamp sum
-        sumLeft  = (Math.Clamp(sumLeft, -0x8000, 0x7FFF) * mainVolumeLeft) >> 15;
-        sumRight = (Math.Clamp(sumRight, -0x8000, 0x7FFF) * mainVolumeRight) >> 15;
+        sumLeft  = (Math.Clamp(sumLeft, -0x8000, 0x7FFF) * MainVolumeLeft) >> 15;
+        sumRight = (Math.Clamp(sumRight, -0x8000, 0x7FFF) * MainVolumeRight) >> 15;
 
         //Add to samples bytes to output array
-        spuOutput[spuOutputPointer++] = (byte)sumLeft;
-        spuOutput[spuOutputPointer++] = (byte)(sumLeft >> 8);
-        spuOutput[spuOutputPointer++] = (byte)sumRight;
-        spuOutput[spuOutputPointer++] = (byte)(sumRight >> 8);
+        SPUOutput[SPUOutputPointer++] = (byte)sumLeft;
+        SPUOutput[SPUOutputPointer++] = (byte)(sumLeft >> 8);
+        SPUOutput[SPUOutputPointer++] = (byte)sumRight;
+        SPUOutput[SPUOutputPointer++] = (byte)(sumRight >> 8);
 
-        if (spuOutputPointer >= 2048)
+        if (SPUOutputPointer >= 2048)
         {
-            window.Play(spuOutput);
-            spuOutputPointer = 0;
+            Window.Play(SPUOutput);
+            SPUOutputPointer = 0;
         }
 
-        if (control.spuEnabled && control.irq9Enabled && edgeTrigger)
+        if (Control.SPUEnabled && Control.Irq9Enabled && edgeTrigger)
         {
-            status.irq9Flag = true;
+            Status.Irq9Flag = true;
         }
 
-        return control.spuEnabled && control.irq9Enabled && edgeTrigger; //todo move spuEnabled outside
+        return Control.SPUEnabled && Control.Irq9Enabled && edgeTrigger; //todo move spuEnabled outside
     }
 
-    private bool handleCaptureBuffer(int address, short sample)
+    private bool HandleCaptureBuffer(int address, short sample)
     {
-        ram[address]     = (byte)(sample & 0xFF);
-        ram[address + 1] = (byte)((sample >> 8) & 0xFF);
+        Ram[address]     = (byte)(sample & 0xFF);
+        Ram[address + 1] = (byte)((sample >> 8) & 0xFF);
 
-        return address >> 3 == ramIrqAddress;
+        return address >> 3 == RamIrqAddress;
     }
 
-    private void tickNoiseGenerator()
+    private void TickNoiseGenerator()
     {
-        var noiseStep = control.noiseFrequencyStep + 4;
-        var noiseShift = control.noiseFrequencyShift;
+        var noiseStep = Control.NoiseFrequencyStep + 4;
+        var noiseShift = Control.NoiseFrequencyShift;
 
-        noiseTimer -= noiseStep;
-        var parityBit = ((noiseLevel >> 15) & 0x1) ^ ((noiseLevel >> 12) & 0x1) ^ ((noiseLevel >> 11) & 0x1) ^
-                        ((noiseLevel >> 10) & 0x1) ^ 1;
+        NoiseTimer -= noiseStep;
+        var parityBit = ((NoiseLevel >> 15) & 0x1) ^ ((NoiseLevel >> 12) & 0x1) ^ ((NoiseLevel >> 11) & 0x1) ^
+                        ((NoiseLevel >> 10) & 0x1) ^ 1;
 
-        if (noiseTimer < 0) noiseLevel =  noiseLevel * 2 + parityBit;
-        if (noiseTimer < 0) noiseTimer += 0x20000 >> noiseShift;
-        if (noiseTimer < 0) noiseTimer += 0x20000 >> noiseShift;
+        if (NoiseTimer < 0) NoiseLevel =  NoiseLevel * 2 + parityBit;
+        if (NoiseTimer < 0) NoiseTimer += 0x20000 >> noiseShift;
+        if (NoiseTimer < 0) NoiseTimer += 0x20000 >> noiseShift;
     }
 
-    public short sampleVoice(int v)
+    public short SampleVoice(int v)
     {
-        var voice = voices[v];
+        var voice = Voices[v];
 
         //Decode samples if its empty / next block
-        if (!voice.hasSamples)
+        if (!voice.HasSamples)
         {
-            voice.decodeSamples(ram, ramIrqAddress);
-            voice.hasSamples = true;
+            voice.DecodeSamples(Ram, RamIrqAddress);
+            voice.HasSamples = true;
 
-            var flags = voice.spuAdpcm[1];
+            var flags = voice.SPUAdpcm[1];
             var loopStart = (flags & 0x4) != 0;
 
-            if (loopStart) voice.adpcmRepeatAddress = voice.currentAddress;
+            if (loopStart) voice.AdpcmRepeatAddress = voice.CurrentAddress;
         }
 
         //Get indexs for gauss interpolation
-        var interpolationIndex = voice.counter.interpolationIndex;
-        var sampleIndex = voice.counter.currentSampleIndex;
+        var interpolationIndex = voice.Counter.InterpolationIndex;
+        var sampleIndex = voice.Counter.CurrentSampleIndex;
 
         //Interpolate latest samples
         //this is why the latest 3 samples from the last block are saved
         int interpolated;
-        interpolated =   gaussTable[0x0FF - interpolationIndex] * voice.decodedSamples[sampleIndex + 0];
-        interpolated +=  gaussTable[0x1FF - interpolationIndex] * voice.decodedSamples[sampleIndex + 1];
-        interpolated +=  gaussTable[0x100 + interpolationIndex] * voice.decodedSamples[sampleIndex + 2];
-        interpolated +=  gaussTable[0x000 + interpolationIndex] * voice.decodedSamples[sampleIndex + 3];
+        interpolated =   GaussTable[0x0FF - interpolationIndex] * voice.DecodedSamples[sampleIndex + 0];
+        interpolated +=  GaussTable[0x1FF - interpolationIndex] * voice.DecodedSamples[sampleIndex + 1];
+        interpolated +=  GaussTable[0x100 + interpolationIndex] * voice.DecodedSamples[sampleIndex + 2];
+        interpolated +=  GaussTable[0x000 + interpolationIndex] * voice.DecodedSamples[sampleIndex + 3];
         interpolated >>= 15;
 
         //Pitch modulation: Starts at voice 1 as it needs the last voice
-        int step = voice.pitch;
-        if ((pitchModulationEnableFlags & (0x1 << v)) != 0 && v > 0)
+        int step = voice.Pitch;
+        if ((PitchModulationEnableFlags & (0x1 << v)) != 0 && v > 0)
         {
-            var factor = voices[v - 1].latest + 0x8000; //From previous voice
+            var factor = Voices[v - 1].Latest + 0x8000; //From previous voice
             step =  (step * factor) >> 15;
             step &= 0xFFFF;
         }
@@ -652,31 +652,31 @@ public class SPU
         if (step > 0x3FFF) step = 0x4000;
 
         //Console.WriteLine("step u " + ((uint)step).ToString("x8") + "step i" + ((int)step).ToString("x8") + " " + voice.counter.register.ToString("x8"));
-        voice.counter.register += (ushort)step;
+        voice.Counter.Register += (ushort)step;
 
-        if (voice.counter.currentSampleIndex >= 28)
+        if (voice.Counter.CurrentSampleIndex >= 28)
         {
             //Beyond the current adpcm sample block prepare to decode next
-            voice.counter.currentSampleIndex -= 28;
-            voice.currentAddress             += 2;
-            voice.hasSamples                 =  false;
+            voice.Counter.CurrentSampleIndex -= 28;
+            voice.CurrentAddress             += 2;
+            voice.HasSamples                 =  false;
 
             //LoopEnd and LoopRepeat flags are set after the "current block" set them as it's finished
-            var flags = voice.spuAdpcm[1];
+            var flags = voice.SPUAdpcm[1];
             var loopEnd = (flags & 0x1) != 0;
             var loopRepeat = (flags & 0x2) != 0;
 
             if (loopEnd)
             {
-                endx |= (uint)(0x1 << v);
+                EndX |= (uint)(0x1 << v);
                 if (loopRepeat)
                 {
-                    voice.currentAddress = voice.adpcmRepeatAddress;
+                    voice.CurrentAddress = voice.AdpcmRepeatAddress;
                 }
                 else
                 {
-                    voice.adsrPhase  = SPUVoicePhase.Off;
-                    voice.adsrVolume = 0;
+                    voice.AdsrPhase  = SPUVoicePhase.Off;
+                    voice.AdsrVolume = 0;
                 }
             }
         }
@@ -685,38 +685,38 @@ public class SPU
     }
 
 
-    public Span<uint> processDmaLoad(int size)
+    public Span<uint> ProcessDmaLoad(int size)
     {
         //todo trigger interrupt
-        var dma = ram.AsSpan().Slice((int)ramDataTransferAddressInternal, size);
+        var dma = Ram.AsSpan().Slice((int)RamDataTransferAddressInternal, size);
 
         //ramDataTransferAddressInternal and ramIrqAddress already are >> 3
         //so check if it's in the size range and trigger int
-        if (ramIrqAddress > ramDataTransferAddressInternal && ramIrqAddress < ramDataTransferAddressInternal + size)
+        if (RamIrqAddress > RamDataTransferAddressInternal && RamIrqAddress < RamDataTransferAddressInternal + size)
         {
-            interruptController.set(Interrupt.SPU);
+            InterruptController.set(Interrupt.SPU);
         }
 
-        ramDataTransferAddressInternal = (uint)(ramDataTransferAddressInternal + size * 4);
+        RamDataTransferAddressInternal = (uint)(RamDataTransferAddressInternal + size * 4);
 
         return MemoryMarshal.Cast<byte, uint>(dma);
     }
 
-    public void processDmaWrite(Span<uint> dma)
+    public void ProcessDmaWrite(Span<uint> dma)
     {
         //todo trigger interrupt
         //Tekken 3 and FF8 overflows SPU Ram
         var size = dma.Length * 4;
-        var destAddress = (int)ramDataTransferAddressInternal + size - 1;
+        var destAddress = (int)RamDataTransferAddressInternal + size - 1;
 
         var dmaSpan = MemoryMarshal.Cast<uint, byte>(dma);
 
-        var ramStartSpan = ram.AsSpan();
-        var ramDestSpan = ramStartSpan.Slice((int)ramDataTransferAddressInternal);
+        var ramStartSpan = Ram.AsSpan();
+        var ramDestSpan = ramStartSpan.Slice((int)RamDataTransferAddressInternal);
 
-        if (ramIrqAddress > ramDataTransferAddressInternal && ramIrqAddress < ramDataTransferAddressInternal + size)
+        if (RamIrqAddress > RamDataTransferAddressInternal && RamIrqAddress < RamDataTransferAddressInternal + size)
         {
-            interruptController.set(Interrupt.SPU);
+            InterruptController.set(Interrupt.SPU);
         }
 
         if (destAddress <= 0x7FFFF)
@@ -734,6 +734,6 @@ public class SPU
             overflowSpan.CopyTo(ramStartSpan);
         }
 
-        ramDataTransferAddressInternal = (uint)(ramDataTransferAddressInternal + size);
+        RamDataTransferAddressInternal = (uint)(RamDataTransferAddressInternal + size);
     }
 }

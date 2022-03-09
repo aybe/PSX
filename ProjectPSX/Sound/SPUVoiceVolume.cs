@@ -2,19 +2,19 @@
 
 public struct SPUVoiceVolume
 {
-    public ushort register;
+    public ushort Register;
 
-    public bool isSweepMode => ((register >> 15) & 0x1) != 0;
+    public bool IsSweepMode => ((Register >> 15) & 0x1) != 0;
 
-    public short fixedVolume => (short)(register << 1);
+    public short FixedVolume => (short)(Register << 1);
 
-    public bool isSweepExponential => ((register >> 14) & 0x1) != 0;
+    public bool IsSweepExponential => ((Register >> 14) & 0x1) != 0;
 
-    public bool isSweepDirectionDecrease => ((register >> 13) & 0x1) != 0;
+    public bool IsSweepDirectionDecrease => ((Register >> 13) & 0x1) != 0;
 
-    public bool isSweepPhaseNegative => ((register >> 12) & 0x1) != 0;
+    public bool IsSweepPhaseNegative => ((Register >> 12) & 0x1) != 0;
 
-    public int sweepShift => (register >> 2) & 0x1F;
+    public int SweepShift => (Register >> 2) & 0x1F;
 
-    public int sweepStep => register & 0x3;
+    public int SweepStep => Register & 0x3;
 }

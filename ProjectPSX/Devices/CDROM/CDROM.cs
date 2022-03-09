@@ -170,7 +170,7 @@ namespace ProjectPSX.Devices {
                     if (mode == Mode.Play) {
                         if (!mutedAudio && isCDDA) {
                             applyVolume(readSector);
-                            spu.pushCdBufferSamples(readSector);
+                            spu.PushCdBufferSamples(readSector);
                         }
 
                         if (isAutoPause && cd.isTrackChange) {
@@ -223,7 +223,7 @@ namespace ProjectPSX.Devices {
                             if (!mutedAudio && !mutedXAADPCM) {
                                 byte[] decodedXaAdpcm = XaAdpcm.Decode(readSector, sectorSubHeader.codingInfo);
                                 applyVolume(decodedXaAdpcm);
-                                spu.pushCdBufferSamples(decodedXaAdpcm);
+                                spu.PushCdBufferSamples(decodedXaAdpcm);
                             }
 
                             return false;

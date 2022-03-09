@@ -3,17 +3,17 @@
 public struct SPUVoiceCounter
 {
     //internal
-    public uint register;
+    public uint Register;
 
-    public uint currentSampleIndex
+    public uint CurrentSampleIndex
     {
-        get => (register >> 12) & 0x1F;
+        get => (Register >> 12) & 0x1F;
         set
         {
-            register =  (ushort)(register &= 0xFFF);
-            register |= value << 12;
+            Register =  (ushort)(Register &= 0xFFF);
+            Register |= value << 12;
         }
     }
 
-    public uint interpolationIndex => (register >> 3) & 0xFF;
+    public uint InterpolationIndex => (Register >> 3) & 0xFF;
 }

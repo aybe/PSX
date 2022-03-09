@@ -81,7 +81,7 @@ namespace ProjectPSX {
             } else if (addr == 0x1F80_1824) {
                 return mdec.readMDEC1_Status();
             } else if (addr < 0x1F80_2000) {
-                return spu.load(addr);
+                return spu.Load(addr);
             } else if (addr < 0x1F80_4000) {
                 Console.WriteLine($"[BUS] Read Unsupported to EXP2 address: {addr:x8}");
                 return 0xFFFF_FFFF;
@@ -126,7 +126,7 @@ namespace ProjectPSX {
             } else if (addr < 0x1F80_1830) {
                 mdec.write(addr, value);
             } else if (addr < 0x1F80_2000) {
-                spu.write(addr, (ushort)value);
+                spu.Write(addr, (ushort)value);
             } else if (addr < 0x1F80_4000) {
                 Console.WriteLine($"[BUS] Write Unsupported to EXP2: {addr:x8} Value: {value:x8}");
             } else if (addr == 0xFFFE_0130) {
@@ -167,7 +167,7 @@ namespace ProjectPSX {
             } else if (addr < 0x1F80_1830) {
                 mdec.write(addr, value);
             } else if (addr < 0x1F80_2000) {
-                spu.write(addr, value);
+                spu.Write(addr, value);
             } else if (addr < 0x1F80_4000) {
                 Console.WriteLine($"[BUS] Write Unsupported to EXP2: {addr:x8} Value: {value:x8}");
             } else if (addr == 0xFFFE_0130) {
@@ -208,7 +208,7 @@ namespace ProjectPSX {
             } else if (addr < 0x1F80_1830) {
                 mdec.write(addr, value);
             } else if (addr < 0x1F80_2000) {
-                spu.write(addr, value);
+                spu.Write(addr, value);
             } else if (addr < 0x1F80_4000) {
                 Console.WriteLine($"[BUS] Write Unsupported to EXP2: {addr:x8} Value: {value:x8}");
             } else if (addr == 0xFFFE_0130) {
@@ -313,7 +313,7 @@ namespace ProjectPSX {
             if (timers.tick(1, cycles)) interruptController.set(Interrupt.TIMER1);
             if (timers.tick(2, cycles)) interruptController.set(Interrupt.TIMER2);
             if (joypad.tick()) interruptController.set(Interrupt.CONTR);
-            if (spu.tick(cycles)) interruptController.set(Interrupt.SPU);
+            if (spu.Tick(cycles)) interruptController.set(Interrupt.SPU);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -387,12 +387,12 @@ namespace ProjectPSX {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void DmaToSpu(Span<uint> dma) {
-            spu.processDmaWrite(dma);
+            spu.ProcessDmaWrite(dma);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void DmaFromSpu(uint address, int size) {
-            var dma = spu.processDmaLoad(size);
+            var dma = spu.ProcessDmaLoad(size);
             var dest = new Span<uint>(ramPtr + (address & 0x1F_FFFC), size);
             dma.CopyTo(dest);
         }
