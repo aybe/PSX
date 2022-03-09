@@ -1,9 +1,10 @@
 ﻿namespace ProjectPSX.Devices.Spu;
 
-public enum SPUVoicePhase {
+public enum SPUVoicePhase
+{
     Attack,
     Decay,
     Sustain,
     Release,
-    Off,
+    Off
 }
