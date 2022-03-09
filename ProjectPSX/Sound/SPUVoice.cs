@@ -1,64 +1,26 @@
 ﻿using System;
 
 namespace ProjectPSX.Devices.Spu {
-    public class Voice {
+    public class SPUVoice {
 
         private static ReadOnlySpan<sbyte> positiveXaAdpcmTable => new sbyte[] { 0, 60, 115, 98, 122 };
         private static ReadOnlySpan<sbyte> negativeXaAdpcmTable => new sbyte[] { 0, 0, -52, -55, -60 };
 
-        public struct Volume {
-            public ushort register;
-            public bool isSweepMode => ((register >> 15) & 0x1) != 0;
-            public short fixedVolume => (short)(register << 1);
-            public bool isSweepExponential => ((register >> 14) & 0x1) != 0;
-            public bool isSweepDirectionDecrease => ((register >> 13) & 0x1) != 0;
-            public bool isSweepPhaseNegative => ((register >> 12) & 0x1) != 0;
-            public int sweepShift => (register >> 2) & 0x1F;
-            public int sweepStep => register & 0x3;
-        }
-        public Volume volumeLeft;           //0
-        public Volume volumeRight;          //2
+        public SPUVoiceVolume volumeLeft;           //0
+        public SPUVoiceVolume volumeRight;          //2
 
         public ushort pitch;                //4
         public ushort startAddress;         //6
         public ushort currentAddress;       //6 Internal
 
-        public struct ADSR {
-            public ushort lo;               //8
-            public ushort hi;               //A
-            public bool isAttackModeExponential => ((lo >> 15) & 0x1) != 0;
-            public int attackShift => (lo >> 10) & 0x1F;
-            public int attackStep => (lo >> 8) & 0x3; //"+7,+6,+5,+4"
-            public int decayShift => (lo >> 4) & 0xF;
-            public int sustainLevel => lo & 0xF; //Level=(N+1)*800h
-
-            public bool isSustainModeExponential => ((hi >> 15) & 0x1) != 0;
-            public bool isSustainDirectionDecrease => ((hi >> 14) & 0x1) != 0;
-            public int sustainShift => (hi >> 8) & 0x1F;
-            public int sustainStep => (hi >> 6) & 0x3;
-            public bool isReleaseModeExponential => ((hi >> 5) & 0x1) != 0;
-            public int releaseShift => hi & 0x1F;
-        }
-        public ADSR adsr;
+        public SPUVoiceADSR adsr;
 
         public ushort adsrVolume;           //C
         public ushort adpcmRepeatAddress;   //E
 
-        public struct Counter {            //internal
-            public uint register;
-            public uint currentSampleIndex {
-                get { return (register >> 12) & 0x1F; }
-                set {
-                    register = (ushort)(register &= 0xFFF);
-                    register |= value << 12;
-                }
-            }
+        public SPUVoiceCounter counter;
 
-            public uint interpolationIndex => (register >> 3) & 0xFF;
-        }
-        public Counter counter;
-
-        public Phase adsrPhase;
+        public SPUVoicePhase adsrPhase;
 
         public short old;
         public short older;
@@ -69,8 +31,8 @@ namespace ProjectPSX.Devices.Spu {
 
         public bool readRamIrq;
 
-        public Voice() {
-            adsrPhase = Phase.Off;
+        public SPUVoice() {
+            adsrPhase = SPUVoicePhase.Off;
         }
 
         public void keyOn() {
@@ -80,20 +42,12 @@ namespace ProjectPSX.Devices.Spu {
             currentAddress = startAddress;
             adsrCounter = 0;
             adsrVolume = 0;
-            adsrPhase = Phase.Attack;
+            adsrPhase = SPUVoicePhase.Attack;
         }
 
         public void keyOff() {
             adsrCounter = 0;
-            adsrPhase = Phase.Release;
-        }
-
-        public enum Phase {
-            Attack,
-            Decay,
-            Sustain,
-            Release,
-            Off,
+            adsrPhase = SPUVoicePhase.Release;
         }
 
         public byte[] spuAdpcm = new byte[16];
@@ -140,7 +94,7 @@ namespace ProjectPSX.Devices.Spu {
             return (value << 28) >> 28;
         }
 
-        internal short processVolume(Volume volume) {
+        internal short processVolume(SPUVoiceVolume volume) {
             if (!volume.isSweepMode) {
                 return volume.fixedVolume;
             } else {
@@ -150,7 +104,7 @@ namespace ProjectPSX.Devices.Spu {
 
         int adsrCounter;
         internal void tickAdsr(int v) {
-            if (adsrPhase == Phase.Off) {
+            if (adsrPhase == SPUVoicePhase.Off) {
                 adsrVolume = 0;
                 return;
             }
@@ -163,28 +117,28 @@ namespace ProjectPSX.Devices.Spu {
 
             //Todo move out of tick the actual change of phase
             switch (adsrPhase) {
-                case Phase.Attack:
+                case SPUVoicePhase.Attack:
                     adsrTarget = 0x7FFF;
                     adsrShift = adsr.attackShift;
                     adsrStep = 7 - adsr.attackStep; // reg is 0-3 but values are "+7,+6,+5,+4"
                     isDecreasing = false; // Allways increase till 0x7FFF
                     isExponential = adsr.isAttackModeExponential;
                     break;
-                case Phase.Decay:
+                case SPUVoicePhase.Decay:
                     adsrTarget = (adsr.sustainLevel + 1) * 0x800;
                     adsrShift = adsr.decayShift;
                     adsrStep = -8;
                     isDecreasing = true; // Allways decreases (till target)
                     isExponential = true; // Allways exponential
                     break;
-                case Phase.Sustain:
+                case SPUVoicePhase.Sustain:
                     adsrTarget = 0;
                     adsrShift = adsr.sustainShift;
                     adsrStep = adsr.isSustainDirectionDecrease? -8 + adsr.sustainStep: 7 - adsr.sustainStep;
                     isDecreasing = adsr.isSustainDirectionDecrease; //till keyoff
                     isExponential = adsr.isSustainModeExponential;
                     break;
-                case Phase.Release:
+                case SPUVoicePhase.Release:
                     adsrTarget = 0;
                     adsrShift = adsr.releaseShift;
                     adsrStep = -8;
@@ -219,7 +173,7 @@ namespace ProjectPSX.Devices.Spu {
             adsrCounter = envelopeCycles;
 
             bool nextPhase = isDecreasing ? (adsrVolume <= adsrTarget) : (adsrVolume >= adsrTarget);
-            if (nextPhase && adsrPhase != Phase.Sustain) {
+            if (nextPhase && adsrPhase != SPUVoicePhase.Sustain) {
                 adsrPhase++;
                 adsrCounter = 0;
             };

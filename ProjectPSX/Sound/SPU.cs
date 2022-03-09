@@ -87,7 +87,7 @@ namespace ProjectPSX.Devices {
         private Sector cdBuffer = new Sector(Sector.XA_BUFFER);
 
         private byte[] ram = new byte[512 * 1024];
-        private Voice[] voices = new Voice[24];
+        private SPUVoice[] voices = new SPUVoice[24];
 
         private ushort mainVolumeLeft;
         private ushort mainVolumeRight;
@@ -122,35 +122,9 @@ namespace ProjectPSX.Devices {
 
         private int captureBufferPos;
 
-        private struct Control {
-            public ushort register;
-            public bool spuEnabled => ((register >> 15) & 0x1) != 0;
-            public bool spuUnmuted => ((register >> 14) & 0x1) != 0;
-            public int noiseFrequencyShift => (register >> 10) & 0xF;
-            public int noiseFrequencyStep => (register >> 8) & 0x3;
-            public bool reverbMasterEnabled => ((register >> 7) & 0x1) != 0;
-            public bool irq9Enabled => ((register >> 6) & 0x1) != 0;
-            public int soundRamTransferMode => (register >> 4) & 0x3;
-            public bool externalAudioReverb => ((register >> 3) & 0x1) != 0;
-            public bool cdAudioReverb => ((register >> 2) & 0x1) != 0;
-            public bool externalAudioEnabled => ((register >> 1) & 0x1) != 0;
-            public bool cdAudioEnabled => (register & 0x1) != 0;
-        }
-        Control control;
+        SPUControl control;
 
-        private struct Status {
-            public ushort register;
-            public bool isSecondHalfCaptureBuffer => ((register >> 11) & 0x1) != 0;
-            public bool dataTransferBusyFlag => ((register >> 10) & 0x1) != 0;
-            public bool dataTransferDmaReadRequest => ((register >> 9) & 0x1) != 0;
-            public bool dataTransferDmaWriteRequest => ((register >> 8) & 0x1) != 0;
-            //  7     Data Transfer DMA Read/Write Request ;seems to be same as SPUCNT.Bit5 todo
-            public bool irq9Flag {
-                get { return ((register >> 6) & 0x1) != 0; }
-                set { register = value ? (ushort)(register | (1 << 6)) : (ushort)(register & ~(1 << 6)); }
-            }
-        }
-        Status status;
+        SPUStatus status;
 
         private IHostWindow window;
         private InterruptController interruptController;
@@ -160,7 +134,7 @@ namespace ProjectPSX.Devices {
             this.interruptController = interruptController;
 
             for (int i = 0; i < voices.Length; i++) {
-                voices[i] = new Voice();
+                voices[i] = new SPUVoice();
             }
         }
 
@@ -471,7 +445,7 @@ namespace ProjectPSX.Devices {
             tickNoiseGenerator();
 
             for (int i = 0; i < voices.Length; i++) {
-                Voice v = voices[i];
+                SPUVoice v = voices[i];
 
                 //keyOn and KeyOff are edge triggered on 0 to 1
                 if ((edgeKeyOff & (0x1 << i)) != 0) {
@@ -483,7 +457,7 @@ namespace ProjectPSX.Devices {
                     v.keyOn();
                 }
 
-                if (v.adsrPhase == Voice.Phase.Off) {
+                if (v.adsrPhase == SPUVoicePhase.Off) {
                     v.latest = 0;
                     continue;
                 }
@@ -588,7 +562,7 @@ namespace ProjectPSX.Devices {
         }
 
         public short sampleVoice(int v) {
-            Voice voice = voices[v];
+            SPUVoice voice = voices[v];
 
             //Decode samples if its empty / next block
             if (!voice.hasSamples) {
@@ -642,7 +616,7 @@ namespace ProjectPSX.Devices {
                     if(loopRepeat) {
                         voice.currentAddress = voice.adpcmRepeatAddress;
                     } else {
-                        voice.adsrPhase = Voice.Phase.Off;
+                        voice.adsrPhase = SPUVoicePhase.Off;
                         voice.adsrVolume = 0;
                     }
                 }
