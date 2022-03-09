@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using ProjectPSX.Input;
 using ProjectPSX.Sound;
 
 namespace ProjectPSX {
@@ -58,7 +59,7 @@ namespace ProjectPSX {
             } else if (addr < 0x1F80_1040) {
                 return load<uint>(addr & 0xF, memoryControl1);
             } else if (addr < 0x1F80_1050) {
-                return joypad.load(addr);
+                return joypad.Load(addr);
             } else if (addr < 0x1F80_1060) {
                 Console.WriteLine($"[BUS] Read Unsupported to SIO address: {addr:x8}");
                 return load<uint>(addr & 0xF, sio);
@@ -107,7 +108,7 @@ namespace ProjectPSX {
             } else if (addr < 0x1F80_1040) {
                 write(addr & 0x3F, value, memoryControl1);
             } else if (addr < 0x1F80_1050) {
-                joypad.write(addr, value);
+                joypad.Write(addr, value);
             } else if (addr < 0x1F80_1060) {
                 Console.WriteLine($"[BUS] Write Unsupported to SIO address: {addr:x8} : {value:x8}");
                 write(addr & 0xF, value, sio);
@@ -148,7 +149,7 @@ namespace ProjectPSX {
             } else if (addr < 0x1F80_1040) {
                 write(addr & 0x3F, value, memoryControl1);
             } else if (addr < 0x1F80_1050) {
-                joypad.write(addr, value);
+                joypad.Write(addr, value);
             } else if (addr < 0x1F80_1060) {
                 Console.WriteLine($"[BUS] Write Unsupported to SIO address: {addr:x8} : {value:x8}");
                 write(addr & 0xF, value, sio);
@@ -189,7 +190,7 @@ namespace ProjectPSX {
             } else if (addr < 0x1F80_1040) {
                 write(addr & 0x3F, value, memoryControl1);
             } else if (addr < 0x1F80_1050) {
-                joypad.write(addr, value);
+                joypad.Write(addr, value);
             } else if (addr < 0x1F80_1060) {
                 Console.WriteLine($"[BUS] Write Unsupported to SIO address: {addr:x8} : {value:x8}");
                 write(addr & 0xF, value, sio);
@@ -312,7 +313,7 @@ namespace ProjectPSX {
             if (timers.tick(0, cycles)) interruptController.set(Interrupt.TIMER0);
             if (timers.tick(1, cycles)) interruptController.set(Interrupt.TIMER1);
             if (timers.tick(2, cycles)) interruptController.set(Interrupt.TIMER2);
-            if (joypad.tick()) interruptController.set(Interrupt.CONTR);
+            if (joypad.Tick()) interruptController.set(Interrupt.CONTR);
             if (spu.Tick(cycles)) interruptController.set(Interrupt.SPU);
         }
 

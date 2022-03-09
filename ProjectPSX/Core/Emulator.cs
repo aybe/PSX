@@ -1,7 +1,7 @@
 ﻿using System;
 using ProjectPSX.Devices;
 using ProjectPSX.Devices.CdRom;
-using ProjectPSX.Devices.Input;
+using ProjectPSX.Input;
 using ProjectPSX.Sound;
 using ProjectPSX.Storage;
 
@@ -60,9 +60,9 @@ namespace ProjectPSX {
             }
         }
 
-        public void JoyPadUp(GamepadInputsEnum button) => controller.handleJoyPadUp(button);
+        public void JoyPadUp(KeyboardInput button) => controller.HandleJoyPadUp(button);
 
-        public void JoyPadDown(GamepadInputsEnum button) => controller.handleJoyPadDown(button);
+        public void JoyPadDown(KeyboardInput button) => controller.HandleJoyPadDown(button);
 
         public void toggleDebug() {
             cpu.debug = !cpu.debug;

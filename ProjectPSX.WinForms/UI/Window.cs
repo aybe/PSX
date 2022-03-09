@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
 using NAudio.Wave;
-using ProjectPSX.Devices.Input;
+using ProjectPSX.Input;
 using ProjectPSX.Interop.Gdi32;
 using ProjectPSX.Util;
 using Gdi32 = ProjectPSX.Interop.Gdi32.NativeMethods;
@@ -51,7 +51,7 @@ namespace ProjectPSX {
 
         private long cpuCyclesCounter;
 
-        Dictionary<Keys, GamepadInputsEnum> _gamepadKeyMap;
+        Dictionary<Keys, KeyboardInput> _gamepadKeyMap;
 
         private WaveOutEvent waveOutEvent = new WaveOutEvent();
         private BufferedWaveProvider bufferedWaveProvider = new BufferedWaveProvider(new WaveFormat());
@@ -72,23 +72,23 @@ namespace ProjectPSX {
             KeyDown += new KeyEventHandler(handleJoyPadDown);
             KeyUp += new KeyEventHandler(handleJoyPadUp);
 
-            _gamepadKeyMap = new Dictionary<Keys, GamepadInputsEnum>() {
-                { Keys.Space, GamepadInputsEnum.Space},
-                { Keys.Z , GamepadInputsEnum.Z },
-                { Keys.C , GamepadInputsEnum.C },
-                { Keys.Enter , GamepadInputsEnum.Enter },
-                { Keys.Up , GamepadInputsEnum.Up },
-                { Keys.Right , GamepadInputsEnum.Right },
-                { Keys.Down , GamepadInputsEnum.Down },
-                { Keys.Left , GamepadInputsEnum.Left },
-                { Keys.D1 , GamepadInputsEnum.D1 },
-                { Keys.D3 , GamepadInputsEnum.D3 },
-                { Keys.Q , GamepadInputsEnum.Q },
-                { Keys.E , GamepadInputsEnum.E },
-                { Keys.W , GamepadInputsEnum.W },
-                { Keys.D , GamepadInputsEnum.D },
-                { Keys.S , GamepadInputsEnum.S },
-                { Keys.A , GamepadInputsEnum.A },
+            _gamepadKeyMap = new Dictionary<Keys, KeyboardInput>() {
+                { Keys.Space, KeyboardInput.Space},
+                { Keys.Z , KeyboardInput.Z },
+                { Keys.C , KeyboardInput.C },
+                { Keys.Enter , KeyboardInput.Enter },
+                { Keys.Up , KeyboardInput.Up },
+                { Keys.Right , KeyboardInput.Right },
+                { Keys.Down , KeyboardInput.Down },
+                { Keys.Left , KeyboardInput.Left },
+                { Keys.D1 , KeyboardInput.D1 },
+                { Keys.D3 , KeyboardInput.D3 },
+                { Keys.Q , KeyboardInput.Q },
+                { Keys.E , KeyboardInput.E },
+                { Keys.W , KeyboardInput.W },
+                { Keys.D , KeyboardInput.D },
+                { Keys.S , KeyboardInput.S },
+                { Keys.A , KeyboardInput.A },
             };
 
             bufferedWaveProvider.DiscardOnBufferOverflow = true;
@@ -122,19 +122,19 @@ namespace ProjectPSX {
         }
 
         private void handleJoyPadUp(object sender, KeyEventArgs e) {
-            GamepadInputsEnum? button = GetGamepadButton(e.KeyCode);
+            KeyboardInput? button = GetGamepadButton(e.KeyCode);
             if(button != null)
                 psx.JoyPadUp(button.Value);
         }
 
-        private GamepadInputsEnum? GetGamepadButton(Keys keyCode) {
-            if (_gamepadKeyMap.TryGetValue(keyCode, out GamepadInputsEnum gamepadButtonValue))
+        private KeyboardInput? GetGamepadButton(Keys keyCode) {
+            if (_gamepadKeyMap.TryGetValue(keyCode, out KeyboardInput gamepadButtonValue))
                 return gamepadButtonValue;
             return null;
         }
 
         private void handleJoyPadDown(object sender, KeyEventArgs e) {
-            GamepadInputsEnum? button = GetGamepadButton(e.KeyCode);
+            KeyboardInput? button = GetGamepadButton(e.KeyCode);
             if (button != null)
                 psx.JoyPadDown(button.Value);
         }
