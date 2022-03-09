@@ -3,7 +3,7 @@
 public struct SPUVoiceAdsr
 {
     public ushort Lo; //8
-   
+
     public ushort Hi; //A
 
     public bool IsAttackModeExponential => ((Lo >> 15) & 0x1) != 0;

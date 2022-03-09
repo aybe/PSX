@@ -15,7 +15,9 @@ public class SPUVoice
     public ushort AdsrVolume; //C
 
     public SPUVoiceCounter Counter;
+
     public ushort CurrentAddress; //6 Internal
+
     public short[] DecodedSamples = new short[31]; //28 samples from current block + 3 to make room for interpolation
 
     public bool HasSamples;
@@ -23,6 +25,7 @@ public class SPUVoice
     public short Latest;
 
     public short Old;
+
     public short Older;
 
     public ushort Pitch; //4
@@ -30,9 +33,11 @@ public class SPUVoice
     public bool ReadRamIrq;
 
     public byte[] SPUAdpcm = new byte[16];
+
     public ushort StartAddress; //6
 
     public SPUVoiceVolume VolumeLeft; //0
+
     public SPUVoiceVolume VolumeRight; //2
 
     public SPUVoice()

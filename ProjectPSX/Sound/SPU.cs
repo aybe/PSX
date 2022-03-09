@@ -82,31 +82,52 @@ public class SPU
         0x5997, 0x599E, 0x59A4, 0x59A9, 0x59AD, 0x59B0, 0x59B2, 0x59B3
     };
 
-    private int CaptureBufferPos;
-
     private readonly Sector CdBuffer = new(Sector.XA_BUFFER);
 
+    private readonly int CyclesPerSample = 0x300; //33868800 / 44100hz
+
+    private readonly InterruptController InterruptController;
+
+    private readonly byte[] Ram = new byte[512 * 1024];
+
+    private readonly byte[] SPUOutput = new byte[2048];
+
+    private readonly SPUVoice[] Voices = new SPUVoice[24];
+
+    private readonly IHostWindow Window;
+
+    private int CaptureBufferPos;
+
     private ushort CdVolumeLeft;
+
     private ushort CdVolumeRight;
+
     private uint ChannelNoiseMode;
+
     private uint ChannelReverbMode;
 
     private SPUControl Control;
 
     private int Counter;
+
     private ushort CurrentVolumeLeft;
+
     private ushort CurrentVolumeRight;
-    private readonly int CyclesPerSample = 0x300; //33868800 / 44100hz
+
     private uint EndX;
+
     private ushort ExternVolumeLeft;
+
     private ushort ExternVolumeRight;
-    private readonly InterruptController InterruptController;
+
     private uint KeyOff;
 
     private uint KeyOn;
 
     private ushort MainVolumeLeft;
+
     private ushort MainVolumeRight;
+
     private int NoiseLevel;
 
     //Wait(1 cycle); at 44.1kHz clock
@@ -116,21 +137,25 @@ public class SPU
     //IF Timer<0 then Timer = Timer + (20000h SHR NoiseShift); reload timer once
     //IF Timer<0 then Timer = Timer + (20000h SHR NoiseShift); reload again if needed
     private int NoiseTimer;
+
     private uint PitchModulationEnableFlags;
 
-    private readonly byte[] Ram = new byte[512 * 1024];
     private ushort RamDataTransferAddress;
+
     private uint RamDataTransferAddressInternal;
 
     private ushort RamDataTransferControl;
+
     private ushort RamDataTransferFifo;
+
     private ushort RamIrqAddress;
 
     private ushort RamReverbStartAddress;
+
     private ushort ReverbOutputLeft;
+
     private ushort ReverbOutputRight;
 
-    private readonly byte[] SPUOutput = new byte[2048];
     private int SPUOutputPointer;
 
     private SPUStatus Status;
@@ -138,14 +163,11 @@ public class SPU
     private ushort UnknownA0;
 
     private uint UnknownBC;
-    private readonly SPUVoice[] Voices = new SPUVoice[24];
-
-    private readonly IHostWindow Window;
 
     public SPU(IHostWindow window, InterruptController interruptController)
     {
-        this.Window              = window;
-        this.InterruptController = interruptController;
+        Window              = window;
+        InterruptController = interruptController;
 
         for (var i = 0; i < Voices.Length; i++)
         {
