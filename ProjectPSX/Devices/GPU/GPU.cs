@@ -21,9 +21,9 @@ namespace ProjectPSX.Devices {
 
         private IHostWindow window;
 
-        private readonly VRAM16 VRAM16 = new(1024, 512);
+        private readonly IVRAM<ushort> VRAM16 = new VRAM16(1024, 512);
 
-        private readonly VRAM32 VRAM32 = new(1024, 512);
+        private readonly IVRAM<int> VRAM32 = new VRAM32(1024, 512);
 
         public bool debug;
 

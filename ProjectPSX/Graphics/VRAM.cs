@@ -2,7 +2,7 @@
 
 namespace ProjectPSX.Graphics;
 
-public abstract class VRAM<T> where T : unmanaged
+public abstract class VRAM<T> : IVRAM<T> where T : unmanaged
 {
     protected VRAM(int width, int height)
     {
@@ -23,6 +23,10 @@ public abstract class VRAM<T> where T : unmanaged
 
     public T[] Pixels { get; }
 
+    public abstract T GetPixel(int x, int y);
+
+    public abstract void SetPixel(int x, int y, T color);
+
     protected int GetIndex(int x, int y)
     {
         if (x < 0 || x >= Width)
@@ -35,8 +39,4 @@ public abstract class VRAM<T> where T : unmanaged
 
         return offset;
     }
-
-    public abstract T GetPixel(int x, int y);
-
-    public abstract void SetPixel(int x, int y, T color);
 }
