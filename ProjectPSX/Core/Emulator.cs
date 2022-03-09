@@ -3,6 +3,7 @@ using ProjectPSX.Devices;
 using ProjectPSX.Devices.CdRom;
 using ProjectPSX.Devices.Input;
 using ProjectPSX.Sound;
+using ProjectPSX.Storage;
 
 namespace ProjectPSX {
     public class Emulator : IDisposable {

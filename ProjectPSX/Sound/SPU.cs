@@ -305,7 +305,7 @@ public class SPU
             case 0x1F801DAA:
                 Control.Register = value;
 
-                //Irq Flag is reseted on ack
+                //Irq Flag is reseted on ACK
                 if (!Control.Irq9Enabled)
                     Status.Irq9Flag = false;
 

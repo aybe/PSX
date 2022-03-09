@@ -1,4 +1,5 @@
 ﻿using System;
+using ProjectPSX.Storage;
 
 namespace ProjectPSX {
     public class JOYPAD {
@@ -111,13 +112,13 @@ namespace ProjectPSX {
                             JOY_RX_DATA = controller.process(JOY_TX_DATA);
                             ackInputLevel = controller.ack;
                             if (ackInputLevel) counter = 500;
-                            //Console.WriteLine($"[JOYPAD] Conroller TICK Enqueued RX response {JOY_RX_DATA:x2} ack: {ackInputLevel}");
+                            //Console.WriteLine($"[JOYPAD] Conroller TICK Enqueued RX response {JOY_RX_DATA:x2} ACK: {ackInputLevel}");
                             //Console.ReadLine();
                         } else if(joypadDevice == JoypadDevice.MemoryCard) {
-                            JOY_RX_DATA = memoryCard.process(JOY_TX_DATA);
-                            ackInputLevel = memoryCard.ack;
+                            JOY_RX_DATA = memoryCard.Process(JOY_TX_DATA);
+                            ackInputLevel = memoryCard.ACK;
                             if (ackInputLevel) counter = 500;
-                            //Console.WriteLine($"[JOYPAD] MemCard TICK Enqueued RX response {JOY_RX_DATA:x2} ack: {ackInputLevel}");
+                            //Console.WriteLine($"[JOYPAD] MemCard TICK Enqueued RX response {JOY_RX_DATA:x2} ACK: {ackInputLevel}");
                             //Console.ReadLine();
                         } else {
                             ackInputLevel = false;
@@ -125,7 +126,7 @@ namespace ProjectPSX {
                         if (ackInputLevel == false) joypadDevice = JoypadDevice.None;
                     } else {
                         joypadDevice = JoypadDevice.None;
-                        memoryCard.resetToIdle();
+                        memoryCard.ResetToIdle();
                         controller.resetToIdle();
 
                         ackInputLevel = false;
@@ -178,7 +179,7 @@ namespace ProjectPSX {
                 //Console.WriteLine("[JOYPAD] CONTROL RESET");
                 joypadDevice = JoypadDevice.None;
                 controller.resetToIdle();
-                memoryCard.resetToIdle();
+                memoryCard.ResetToIdle();
                 fifoFull = false;
 
                 setJOY_MODE(0);
@@ -196,7 +197,7 @@ namespace ProjectPSX {
 
             if (!JoyOutput) {
                 joypadDevice = JoypadDevice.None;
-                memoryCard.resetToIdle();
+                memoryCard.ResetToIdle();
                 controller.resetToIdle();
             }
         }
@@ -239,7 +240,7 @@ namespace ProjectPSX {
             joy_ctrl |= (JoyOutput ? 1u : 0u) << 1;
             joy_ctrl |= (RXenable ? 1u : 0u) << 2;
             joy_ctrl |= (joyControl_unknow_bit3 ? 1u : 0u) << 3;
-            //joy_ctrl |= (ack ? 1u : 0u) << 4; // only writeable
+            //joy_ctrl |= (ACK ? 1u : 0u) << 4; // only writeable
             joy_ctrl |= (joyControl_unknow_bit5 ? 1u : 0u) << 5;
             //joy_ctrl |= (reset ? 1u : 0u) << 6; // only writeable
             //bit 7 allways 0

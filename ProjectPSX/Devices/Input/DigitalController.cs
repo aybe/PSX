@@ -49,7 +49,7 @@
                         //Console.WriteLine("[Controller] Changing to idle");
                         mode = Mode.Idle;
                     }
-                    //Console.WriteLine($"[Controller] Transfer Process value:{b:x2} response: {data:x2} queueCount: {transferDataFifo.Count} ack: {ack}");
+                    //Console.WriteLine($"[Controller] Transfer Process value:{b:x2} response: {data:x2} queueCount: {transferDataFifo.Count} ACK: {ACK}");
                     return data;
                 default:
                     //Console.WriteLine("[Controller] This should be unreachable");

@@ -3,7 +3,7 @@
 namespace ProjectPSX.Devices {
     public class InterruptController {
 
-        private uint ISTAT; //IF Trigger that needs to be ack
+        private uint ISTAT; //IF Trigger that needs to be ACK
         private uint IMASK; //IE Global Interrupt enable
 
         internal void set(Interrupt interrupt) {
