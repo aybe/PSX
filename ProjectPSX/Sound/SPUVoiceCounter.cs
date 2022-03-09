@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.Devices.Spu;
+﻿namespace ProjectPSX.Sound;
 
 public struct SPUVoiceCounter
 {

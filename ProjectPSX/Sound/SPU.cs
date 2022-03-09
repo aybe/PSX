@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using ProjectPSX.Devices;
 using ProjectPSX.Devices.CdRom;
-using ProjectPSX.Devices.Spu;
 
-namespace ProjectPSX.Devices;
+namespace ProjectPSX.Sound;
 
 public class SPU
 {

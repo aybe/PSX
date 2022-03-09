@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using ProjectPSX.Devices.CdRom;
+using ProjectPSX.Sound;
 using static ProjectPSX.Devices.CdRom.TrackBuilder;
 
 namespace ProjectPSX.Devices {
