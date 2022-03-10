@@ -6,12 +6,12 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using ProjectPSX.WPF.Emulation;
-using ProjectPSX.WPF.Interop;
+using ProjectPSX.WPF.Emulation.Messaging;
 using ProjectPSX.WPF.Sound;
 using Un4seen.Bass;
 using Un4seen.Bass.AddOn.Mix;
 
-namespace ProjectPSX.WPF;
+namespace ProjectPSX.WPF.Frontend;
 
 internal sealed partial class MainWindow
 {
@@ -20,7 +20,7 @@ internal sealed partial class MainWindow
         InitializeComponent();
     }
 
-    public string? EmulatorExecutable { get; set; }
+    private string? EmulatorExecutable { get; set; }
 
     private WriteableBitmap? EmulatorBitmap { get; set; }
 
@@ -34,15 +34,19 @@ internal sealed partial class MainWindow
 
     #region Window events
 
-    private void OnLoaded(object sender, RoutedEventArgs e)
+    protected override void OnLoaded(object sender, RoutedEventArgs e)
     {
+        base.OnLoaded(sender, e);
+
         InitializeConsole();
         InitializeSound();
         InitializeEmulator();
     }
 
-    private void OnClosed(object? sender, EventArgs e)
+    protected override void OnClosed(object? sender, EventArgs e)
     {
+        base.OnClosed(sender, e);
+
         CleanupEmulator();
         CleanupSound();
         CleanupConsole();
@@ -54,12 +58,12 @@ internal sealed partial class MainWindow
 
     private static void InitializeConsole()
     {
-        NativeMethods.AllocConsole();
+        //NativeMethods.AllocConsole();
     }
 
     private static void CleanupConsole()
     {
-        NativeMethods.FreeConsole();
+        // NativeMethods.FreeConsole();
     }
 
     private void InitializeSound()
@@ -99,12 +103,12 @@ internal sealed partial class MainWindow
     {
         if (EmulatorExecutable is null)
             return;
-
+        return;
         var window = new HostWindow
         {
-            UpdateBitmapSize = UpdateBitmapSize,
-            UpdateBitmapData = UpdateBitmapData,
-            UpdateSampleData = UpdateSampleData
+            UpdateVideoSizeHandler = UpdateBitmapSize,
+            UpdateVideoDataHandler = UpdateBitmapData,
+            UpdateAudioDataHandler = UpdateSampleData
         };
 
         Emulator = new Emulator(window, EmulatorExecutable);
@@ -143,6 +147,11 @@ internal sealed partial class MainWindow
         {
             Console.WriteLine(e);
         }
+    }
+
+    private void UpdateBitmapData(UpdateVideoDataMessage message)
+    {
+        throw new NotImplementedException();
     }
 
     private void UpdateBitmapData(IntSize size, IntRect rect, int[] buffer24, ushort[] buffer16)
@@ -188,6 +197,11 @@ internal sealed partial class MainWindow
         }
     }
 
+    private void UpdateBitmapSize(UpdateVideoSizeMessage message)
+    {
+        throw new NotImplementedException();
+    }
+
     private void UpdateBitmapSize(IntSize size, bool is24Bit)
     {
         Dispatcher.BeginInvoke(UpdateBitmapSizeProc, size, is24Bit);
@@ -202,6 +216,11 @@ internal sealed partial class MainWindow
         Image1.Source = EmulatorBitmap;
 
         Title = $"Width = {size.X}, Height = {size.Y}, 24-bit = {is24Bit}";
+    }
+
+    private void UpdateSampleData(UpdateAudioDataMessage message)
+    {
+        throw new NotImplementedException();
     }
 
     private void UpdateSampleData(byte[] buffer)

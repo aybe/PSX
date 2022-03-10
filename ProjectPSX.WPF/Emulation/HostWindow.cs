@@ -1,4 +1,4 @@
-﻿using System;
+﻿using ProjectPSX.WPF.Emulation.Messaging;
 
 namespace ProjectPSX.WPF.Emulation;
 
@@ -16,36 +16,37 @@ internal sealed class HostWindow : IHostWindow
 
     private ushort DisplayY1 { get; set; }
 
-    public UpdateBitmapSize? UpdateBitmapSize { get; init; }
+    public UpdateAudioDataMessageHandler? UpdateAudioDataHandler { get; init; }
 
-    public UpdateBitmapData? UpdateBitmapData { get; init; }
+    public UpdateVideoDataMessageHandler? UpdateVideoDataHandler { get; init; }
 
-    public UpdateSampleData? UpdateSampleData { get; init; }
+    public UpdateVideoSizeMessageHandler? UpdateVideoSizeHandler { get; init; }
 
     public void Play(byte[] samples)
     {
-        if (UpdateSampleData is null)
-            throw new NullReferenceException(nameof(UpdateSampleData));
+        if (UpdateAudioDataHandler is null)
+            return;
 
-        UpdateSampleData(samples);
+        UpdateAudioDataHandler(new UpdateAudioDataMessage(samples));
     }
 
     public void Render(int[] buffer24, ushort[] buffer16)
     {
-        if (UpdateBitmapData is null)
-            throw new NullReferenceException(nameof(UpdateBitmapData));
+        if (UpdateVideoDataHandler is null)
+            return;
 
         var size = new IntSize(DisplayVRamXStart, DisplayVRamYStart);
         var rect = new IntRect(DisplayX1, DisplayY1, DisplayX2, DisplayY2);
-        UpdateBitmapData(size, rect, buffer24, buffer16);
+
+        UpdateVideoDataHandler(new UpdateVideoDataMessage(size, rect, buffer24, buffer16));
     }
 
     public void SetDisplayMode(int horizontalRes, int verticalRes, bool is24BitDepth)
     {
-        if (UpdateBitmapSize is null)
-            throw new NullReferenceException(nameof(UpdateBitmapSize));
+        if (UpdateVideoSizeHandler is null)
+            return;
 
-        UpdateBitmapSize(new IntSize(horizontalRes, verticalRes), is24BitDepth);
+        UpdateVideoSizeHandler(new UpdateVideoSizeMessage(new IntSize(horizontalRes, verticalRes), is24BitDepth));
     }
 
     public void SetHorizontalRange(ushort displayX1, ushort displayX2)

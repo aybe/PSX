@@ -1,16 +1,36 @@
-﻿using System.Linq;
+﻿using System;
 using System.Windows;
+using Microsoft.Extensions.DependencyInjection;
+using ProjectPSX.WPF.Frontend;
+using ProjectPSX.WPF.Frontend.Services;
 
 namespace ProjectPSX.WPF;
 
 public partial class App
 {
-    private void App_OnStartup(object sender, StartupEventArgs e)
+    public App()
     {
-        var window = new MainWindow();
+        InitializeComponent();
+    }
 
-        window.EmulatorExecutable = e.Args.FirstOrDefault();
+    public IServiceProvider Services { get; } = ConfigureServices();
 
-        window.Show();
+    public new static App Current => (App)Application.Current;
+
+    private static ServiceProvider ConfigureServices()
+    {
+        var services = new ServiceCollection();
+
+        services.AddSingleton<IFilePickerService, FilePickerServiceWindows>();
+
+        services.AddTransient<MainModel>();
+
+        services.AddTransient<VideoOutputModel>();
+
+        services.AddTransient<VideoMemoryModel>();
+
+        var provider = services.BuildServiceProvider();
+
+        return provider;
     }
 }

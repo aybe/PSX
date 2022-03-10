@@ -1,0 +1,56 @@
+﻿<frontend:MainWindowShim
+    x:Class="ProjectPSX.WPF.Frontend.MainWindow"
+    x:ClassModifier="internal"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:frontend="clr-namespace:ProjectPSX.WPF.Frontend"
+    mc:Ignorable="d"
+    Title="ProjectPSX"
+    d:DataContext="{d:DesignInstance frontend:MainModel}"
+    d:DesignWidth="640"
+    d:DesignHeight="480"
+    WindowStartupLocation="{StaticResource DefaultWindowStartupLocation}"
+    Width="1280"
+    Height="720">
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding Commands.OpenExecutable}" Key="O" Modifiers="Control" />
+        <KeyBinding Command="{Binding Commands.Quit}" Key="Q" Modifiers="Control" />
+        <KeyBinding Command="{Binding Commands.EmulationStart}" Key="F5" />
+        <KeyBinding Command="{Binding Commands.EmulationPause}" Key="F6" />
+        <KeyBinding Command="{Binding Commands.EmulationContinue}" Key="F7" />
+        <KeyBinding Command="{Binding Commands.EmulationTerminate}" Key="F8" />
+        <KeyBinding Command="{Binding Commands.OpenVideoOutput}" Key="F1" />
+        <KeyBinding Command="{Binding Commands.OpenVideoMemory}" Key="F2" />
+        <KeyBinding Command="{Binding Commands.OpenConsole}" Key="F3" />
+    </Window.InputBindings>
+
+    <Grid Background="Gray">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Menu DataContext="{Binding Commands}">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open..." InputGestureText="Ctrl+O" Command="{Binding OpenExecutable}" />
+                <MenuItem Header="_Quit" InputGestureText="Ctrl+Q" Command="{Binding Quit}" />
+            </MenuItem>
+            <MenuItem Header="_Emulation">
+                <MenuItem Header="_Start" InputGestureText="F5" Command="{Binding EmulationStart}" />
+                <MenuItem Header="_Pause" InputGestureText="F6" Command="{Binding EmulationPause}" />
+                <MenuItem Header="_Continue" InputGestureText="F7" Command="{Binding EmulationContinue}" />
+                <MenuItem Header="_Terminate" InputGestureText="F8" Command="{Binding EmulationTerminate}" />
+            </MenuItem>
+            <MenuItem Header="_Windows">
+                <MenuItem Header="Video _Output" InputGestureText="F1" Command="{Binding OpenVideoOutput}" />
+                <MenuItem Header="Video _Memory" InputGestureText="F2" Command="{Binding OpenVideoMemory}" />
+                <MenuItem Header="_Console" InputGestureText="F3" Command="{Binding OpenConsole}" />
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About" Command="{Binding About}" />
+            </MenuItem>
+        </Menu>
+        <Image x:Name="Image1" Grid.Row="1" />
+    </Grid>
+</frontend:MainWindowShim>
