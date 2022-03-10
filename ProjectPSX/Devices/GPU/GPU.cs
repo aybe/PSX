@@ -1133,6 +1133,8 @@ namespace ProjectPSX.Devices {
             displayX1 = (ushort)(value & 0xFFF);
             displayX2 = (ushort)((value >> 12) & 0xFFF);
 
+            Console.WriteLine($"[GPU] {nameof(GP1_06_DisplayHorizontalRange)}: {nameof(displayX1)} = {displayX1}, {nameof(displayX2)} = {displayX2}");
+
             window.SetHorizontalRange(displayX1, displayX2);
         }
 
