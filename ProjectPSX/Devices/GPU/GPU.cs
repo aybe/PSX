@@ -1124,6 +1124,8 @@ namespace ProjectPSX.Devices {
             displayVRAMXStart = (ushort)(value & 0x3FE);
             displayVRAMYStart = (ushort)((value >> 10) & 0x1FE);
 
+            Console.WriteLine($"[GPU] {nameof(GP1_05_DisplayVRAMStart)}: {nameof(displayVRAMXStart)} = {displayVRAMXStart}, {nameof(displayVRAMYStart)} = {displayVRAMYStart}");
+
             window.SetVRAMStart(displayVRAMXStart, displayVRAMYStart);
         }
 
