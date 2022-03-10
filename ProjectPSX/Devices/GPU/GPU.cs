@@ -1159,8 +1159,8 @@ namespace ProjectPSX.Devices {
             int verticalRes = isVerticalResolution480 ? 480 : 240;
 
             
-            if (lastHr == horizontalRes && lastVr == verticalRes && last24 == is24BitDepth) 
-                return;
+            //if (lastHr == horizontalRes && lastVr == verticalRes && last24 == is24BitDepth) 
+            //    return;
 
             window.SetDisplayMode(horizontalRes, verticalRes, is24BitDepth);
             
