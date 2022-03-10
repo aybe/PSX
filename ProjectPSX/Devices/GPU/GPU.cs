@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using ProjectPSX.Graphics;
 
 namespace ProjectPSX.Devices {
-
     public class GPU {
 
         private uint GPUREAD;     //1F801810h-Read GPUREAD Receive responses to GP0(C0h) and GP1(10h) commands
@@ -34,14 +33,14 @@ namespace ProjectPSX.Devices {
         private Mode mode;
 
         private struct Primitive {
-            public bool isShaded;
-            public bool isTextured;
-            public bool isSemiTransparent;
-            public bool isRawTextured;//if not: blended
-            public int depth;
-            public int semiTransparencyMode;
-            public Point2D clut;
-            public Point2D textureBase;
+            public bool        isShaded;
+            public bool        isTextured;
+            public bool        isSemiTransparent;
+            public bool        isRawTextured;//if not: blended
+            public int         depth;
+            public int         semiTransparencyMode;
+            public GPU.Point2D clut;
+            public GPU.Point2D   textureBase;
         }
 
         private struct VramTransfer {
@@ -51,7 +50,7 @@ namespace ProjectPSX.Devices {
             public int origin_y;
             public int halfWords;
         }
-        private VramTransfer vramTransfer;
+        private GPU.VramTransfer vramTransfer;
 
 
         [StructLayout(LayoutKind.Explicit)]
@@ -59,8 +58,8 @@ namespace ProjectPSX.Devices {
             [FieldOffset(0)] public short x;
             [FieldOffset(2)] public short y;
         }
-        private Point2D min = new Point2D();
-        private Point2D max = new Point2D();
+        private GPU.Point2D min = new GPU.Point2D();
+        private GPU.Point2D   max = new GPU.Point2D();
 
         [StructLayout(LayoutKind.Explicit)]
         private struct TextureData {
@@ -68,7 +67,8 @@ namespace ProjectPSX.Devices {
             [FieldOffset(0)] public byte x;
             [FieldOffset(1)] public byte y;
         }
-        TextureData textureData = new TextureData();
+
+        GPU.TextureData textureData = new GPU.TextureData();
 
         [StructLayout(LayoutKind.Explicit)]
         private struct Color {
@@ -78,9 +78,9 @@ namespace ProjectPSX.Devices {
             [FieldOffset(2)] public byte b;
             [FieldOffset(3)] public byte m;
         }
-        private Color color0;
-        private Color color1;
-        private Color color2;
+        private GPU.Color color0;
+        private GPU.Color color1;
+        private GPU.Color   color2;
 
         private bool isTextureDisabledAllowed;
 
@@ -91,17 +91,10 @@ namespace ProjectPSX.Devices {
         private byte textureDepth;
         private bool isDithered;
         private bool isDrawingToDisplayAllowed;
-        private int maskWhileDrawing;
+        private int  maskWhileDrawing;
         private bool checkMaskBeforeDraw;
         private bool isInterlaceField;
-        private bool isReverseFlag;
         private bool isTextureDisabled;
-        private byte horizontalResolution2;
-        private byte horizontalResolution1;
-        private bool isVerticalResolution480;
-        private bool isPal;
-        private bool is24BitDepth;
-        private bool isVerticalInterlace;
         private bool isDisplayDisabled;
         private bool isInterruptRequested;
         private bool isDmaRequest;
@@ -155,14 +148,14 @@ namespace ProjectPSX.Devices {
                 videoCycles -= horizontalTiming;
                 scanLine++;
 
-                if (!isVerticalResolution480) {
+                if (!DisplayMode.IsVerticalResolution480) {
                     isOddLine = (scanLine & 0x1) != 0;
                 }
 
                 if (scanLine >= verticalTiming) {
                     scanLine = 0;
 
-                    if (isVerticalInterlace && isVerticalResolution480) {
+                    if (DisplayMode.IsVerticalInterlace && DisplayMode.IsVerticalResolution480) {
                         isOddLine = !isOddLine;
                     }
 
@@ -174,7 +167,7 @@ namespace ProjectPSX.Devices {
         }
 
         public (int dot, bool hblank, bool bBlank) getBlanksAndDot() { //test
-            int dot = dotClockDiv[horizontalResolution2 << 2 | horizontalResolution1];
+            int dot = dotClockDiv[DisplayMode.HorizontalResolution2 << 2 | DisplayMode.HorizontalResolution1];
             bool hBlank = videoCycles < displayX1 || videoCycles > displayX2;
             bool vBlank = scanLine < displayY1 || scanLine > displayY2;
 
@@ -193,14 +186,14 @@ namespace ProjectPSX.Devices {
             GPUSTAT |= (uint)maskWhileDrawing << 11;
             GPUSTAT |= (uint)(checkMaskBeforeDraw ? 1 : 0) << 12;
             GPUSTAT |= (uint)(isInterlaceField ? 1 : 0) << 13;
-            GPUSTAT |= (uint)(isReverseFlag ? 1 : 0) << 14;
+            GPUSTAT |= (uint)(DisplayMode.IsReverseFlag ? 1 : 0) << 14;
             GPUSTAT |= (uint)(isTextureDisabled ? 1 : 0) << 15;
-            GPUSTAT |= (uint)horizontalResolution2 << 16;
-            GPUSTAT |= (uint)horizontalResolution1 << 17;
-            GPUSTAT |= (uint)(isVerticalResolution480 ? 1 : 0);
-            GPUSTAT |= (uint)(isPal ? 1 : 0) << 20;
-            GPUSTAT |= (uint)(is24BitDepth ? 1 : 0) << 21;
-            GPUSTAT |= (uint)(isVerticalInterlace ? 1 : 0) << 22;
+            GPUSTAT |= (uint)DisplayMode.HorizontalResolution2 << 16;
+            GPUSTAT |= (uint)DisplayMode.HorizontalResolution1 << 17;
+            GPUSTAT |= (uint)(DisplayMode.IsVerticalResolution480 ? 1 : 0);
+            GPUSTAT |= (uint)(DisplayMode.IsPAL ? 1 : 0) << 20;
+            GPUSTAT |= (uint)(DisplayMode.Is24BitDepth ? 1 : 0) << 21;
+            GPUSTAT |= (uint)(DisplayMode.IsVerticalInterlace ? 1 : 0) << 22;
             GPUSTAT |= (uint)(isDisplayDisabled ? 1 : 0) << 23;
             GPUSTAT |= (uint)(isInterruptRequested ? 1 : 0) << 24;
             GPUSTAT |= (uint)(isDmaRequest ? 1 : 0) << 25;
@@ -462,7 +455,7 @@ namespace ProjectPSX.Devices {
             bool isSemiTransparent = (command & (1 << 25)) != 0;
             bool isRawTextured = (command & (1 << 24)) != 0;
 
-            Primitive primitive = new Primitive();
+            GPU.Primitive primitive = new GPU.Primitive();
             primitive.isShaded = isShaded;
             primitive.isTextured = isTextured;
             primitive.isSemiTransparent = isSemiTransparent;
@@ -470,8 +463,8 @@ namespace ProjectPSX.Devices {
 
             int vertexN = isQuad ? 4 : 3;
             Span<uint> c = stackalloc uint[vertexN];
-            Span<Point2D> v = stackalloc Point2D[vertexN];
-            Span<TextureData> t = stackalloc TextureData[vertexN];
+            Span<GPU.Point2D> v = stackalloc GPU.Point2D[vertexN];
+            Span<GPU.TextureData> t = stackalloc GPU.TextureData[vertexN];
 
             if (!isShaded) {
                 uint color = buffer[pointer++];
@@ -518,7 +511,7 @@ namespace ProjectPSX.Devices {
             if (isQuad) rasterizeTri(v[1], v[2], v[3], t[1], t[2], t[3], c[1], c[2], c[3], primitive);
         }
 
-        private void rasterizeTri(Point2D v0, Point2D v1, Point2D v2, TextureData t0, TextureData t1, TextureData t2, uint c0, uint c1, uint c2, Primitive primitive) {
+        private void rasterizeTri(GPU.Point2D v0, GPU.Point2D v1, GPU.Point2D v2, GPU.TextureData t0, GPU.TextureData t1, GPU.TextureData t2, uint c0, uint c1, uint c2, GPU.Primitive primitive) {
 
             int area = orient2d(v0, v1, v2);
 
@@ -785,7 +778,7 @@ namespace ProjectPSX.Devices {
             bool isSemiTransparent = (command & (1 << 25)) != 0;
             bool isRawTextured = (command & (1 << 24)) != 0;
 
-            Primitive primitive = new Primitive();
+            GPU.Primitive primitive = new GPU.Primitive();
             primitive.isTextured = isTextured;
             primitive.isSemiTransparent = isSemiTransparent;
             primitive.isRawTextured = isRawTextured;
@@ -832,18 +825,18 @@ namespace ProjectPSX.Devices {
             short y = signed11bit((uint)(yo + drawingYOffset));
             short x = signed11bit((uint)(xo + drawingXOffset));
 
-            Point2D origin;
+            GPU.Point2D origin;
             origin.x = x;
             origin.y = y;
 
-            Point2D size;
+            GPU.Point2D size;
             size.x = (short)(x + width);
             size.y = (short)(y + heigth);
 
             rasterizeRect(origin, size, textureData, color, primitive);
         }
 
-        private void rasterizeRect(Point2D origin, Point2D size, TextureData texture, uint bgrColor, Primitive primitive) {
+        private void rasterizeRect(GPU.Point2D origin, GPU.Point2D size, GPU.TextureData texture, uint bgrColor, GPU.Primitive primitive) {
             int xOrigin = Math.Max(origin.x, drawingAreaLeft);
             int yOrigin = Math.Max(origin.y, drawingAreaTop);
             int width = Math.Min(size.x, drawingAreaRight);
@@ -984,7 +977,7 @@ namespace ProjectPSX.Devices {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int getTexel(int x, int y, Point2D clut, Point2D textureBase, int depth) {
+        private int getTexel(int x, int y, GPU.Point2D clut, GPU.Point2D textureBase, int depth) {
             if (depth == 0) {
                 return get4bppTexel(x, y, clut, textureBase);
             } else if (depth == 1) {
@@ -995,7 +988,7 @@ namespace ProjectPSX.Devices {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int get4bppTexel(int x, int y, Point2D clut, Point2D textureBase) {
+        private int get4bppTexel(int x, int y, GPU.Point2D clut, GPU.Point2D textureBase) {
             int y1 = y + textureBase.y;
             ushort index = VRAM16.GetPixel(x / 4 + textureBase.x, y1);
             int p = (index >> (x & 3) * 4) & 0xF;
@@ -1003,7 +996,7 @@ namespace ProjectPSX.Devices {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int get8bppTexel(int x, int y, Point2D clut, Point2D textureBase) {
+        private int get8bppTexel(int x, int y, GPU.Point2D clut, GPU.Point2D textureBase) {
             int y1 = y + textureBase.y;
             ushort index = VRAM16.GetPixel(x / 2 + textureBase.x, y1);
             int p = (index >> (x & 1) * 8) & 0xFF;
@@ -1011,14 +1004,14 @@ namespace ProjectPSX.Devices {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int get16bppTexel(int x, int y, Point2D textureBase)
+        private int get16bppTexel(int x, int y, GPU.Point2D textureBase)
         {
             int y1 = y + textureBase.y;
             return VRAM32.GetPixel(x + textureBase.x, y1);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int orient2d(Point2D a, Point2D b, Point2D c) {
+        private static int orient2d(GPU.Point2D a, GPU.Point2D b, GPU.Point2D c) {
             return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
         }
 
@@ -1147,39 +1140,37 @@ namespace ProjectPSX.Devices {
             window.SetVerticalRange(displayY1, displayY2);
         }
 
-        private void GP1_08_DisplayMode(uint value) {
-            horizontalResolution1 = (byte)(value & 0x3);
-            isVerticalResolution480 = (value & 0x4) != 0;
-            isPal = (value & 0x8) != 0;
-            is24BitDepth = (value & 0x10) != 0;
-            isVerticalInterlace = (value & 0x20) != 0;
-            horizontalResolution2 = (byte)((value & 0x40) >> 6);
-            isReverseFlag = (value & 0x80) != 0;
+        private void GP1_08_DisplayMode(uint value)
+        {
+            DisplayMode = new DisplayMode(value);
+          
+            isInterlaceField = DisplayMode.IsVerticalInterlace;
 
-            isInterlaceField = isVerticalInterlace;
+            horizontalTiming = DisplayMode.IsPAL ? 3406 : 3413;
+            verticalTiming   = DisplayMode.IsPAL ? 314 : 263;
 
-            horizontalTiming = isPal ? 3406 : 3413;
-            verticalTiming = isPal ? 314 : 263;
-
-            int horizontalRes = resolutions[horizontalResolution2 << 2 | horizontalResolution1];
-            int verticalRes = isVerticalResolution480 ? 480 : 240;
+            int horizontalRes = resolutions[DisplayMode.HorizontalResolution2 << 2 | DisplayMode.HorizontalResolution1];
+            int verticalRes = DisplayMode.IsVerticalResolution480 ? 480 : 240;
 
             
             //if (lastHr == horizontalRes && lastVr == verticalRes && last24 == is24BitDepth) 
             //    return;
 
-            Console.WriteLine($"[GPU] {nameof(GP1_08_DisplayMode)}: {nameof(horizontalRes)} = {horizontalRes}, {nameof(verticalRes)} = {verticalRes}, {nameof(is24BitDepth)} = {is24BitDepth}");
+            Console.WriteLine($"[GPU] {nameof(GP1_08_DisplayMode)}: {nameof(horizontalRes)} = {horizontalRes}, {nameof(verticalRes)} = {verticalRes}, {nameof(DisplayMode.Is24BitDepth)} = {DisplayMode.Is24BitDepth}");
 
-            window.SetDisplayMode(horizontalRes, verticalRes, is24BitDepth);
+            window.SetDisplayMode(horizontalRes, verticalRes, DisplayMode.Is24BitDepth);
             
             lastHr = horizontalRes;
             lastVr = verticalRes;
-            last24 = is24BitDepth;
+            last24 = DisplayMode.Is24BitDepth;
         }
 
-        private int lastHr;
-        private int lastVr;
+        private int  lastHr;
+        private int  lastVr;
         private bool last24;
+        
+        private  DisplayMode DisplayMode { get; set; }
+        
         private void GP1_09_TextureDisable(uint value) => isTextureDisabledAllowed = (value & 0x1) != 0;
 
         private void GP1_GPUInfo(uint value) {
@@ -1258,7 +1249,7 @@ namespace ProjectPSX.Devices {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool isTopLeft(Point2D a, Point2D b) => a.y == b.y && b.x > a.x || b.y < a.y;
+        private static bool isTopLeft(GPU.Point2D a, GPU.Point2D b) => a.y == b.y && b.x > a.x || b.y < a.y;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int interpolate(uint c1, uint c2, float ratio) {
