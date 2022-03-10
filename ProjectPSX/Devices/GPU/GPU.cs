@@ -1142,6 +1142,8 @@ namespace ProjectPSX.Devices {
             displayY1 = (ushort)(value & 0x3FF);
             displayY2 = (ushort)((value >> 10) & 0x3FF);
 
+            Console.WriteLine($"[GPU] {nameof(GP1_07_DisplayVerticalRange)}: {nameof(displayY1)} = {displayY1}, {nameof(displayY2)} = {displayY2}");
+
             window.SetVerticalRange(displayY1, displayY2);
         }
 
