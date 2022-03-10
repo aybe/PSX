@@ -1,4 +1,5 @@
 ﻿using System;
+using ProjectPSX.Core;
 using ProjectPSX.Devices;
 using ProjectPSX.Devices.CdRom;
 using ProjectPSX.Input;

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using ProjectPSX.Core.Graphics;
 using ProjectPSX.Graphics;
 
-namespace ProjectPSX.Devices {
+namespace ProjectPSX.Core {
     public class GPU {
 
         private uint GPUREAD;     //1F801810h-Read GPUREAD Receive responses to GP0(C0h) and GP1(10h) commands
