@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using ProjectPSX.Core.Graphics;
 using ProjectPSX.Graphics;
 
@@ -27,61 +26,19 @@ namespace ProjectPSX.Core {
 
         public bool debug;
 
-        private enum Mode {
-            COMMAND,
-            VRAM
-        }
         private Mode mode;
 
-        private struct Primitive {
-            public bool        isShaded;
-            public bool        isTextured;
-            public bool        isSemiTransparent;
-            public bool        isRawTextured;//if not: blended
-            public int         depth;
-            public int         semiTransparencyMode;
-            public GPU.Point2D clut;
-            public GPU.Point2D   textureBase;
-        }
-
-        private struct VramTransfer {
-            public int x, y;
-            public ushort w, h;
-            public int origin_x;
-            public int origin_y;
-            public int halfWords;
-        }
-        private GPU.VramTransfer vramTransfer;
+        private VRamTransfer _vRamTransfer;
 
 
-        [StructLayout(LayoutKind.Explicit)]
-        private struct Point2D {
-            [FieldOffset(0)] public short x;
-            [FieldOffset(2)] public short y;
-        }
-        private GPU.Point2D min = new GPU.Point2D();
-        private GPU.Point2D   max = new GPU.Point2D();
+        private Point2D min = new Point2D();
+        private Point2D   max = new Point2D();
 
-        [StructLayout(LayoutKind.Explicit)]
-        private struct TextureData {
-            [FieldOffset(0)] public ushort val;
-            [FieldOffset(0)] public byte x;
-            [FieldOffset(1)] public byte y;
-        }
+        TextureData _textureData = new TextureData();
 
-        GPU.TextureData textureData = new GPU.TextureData();
-
-        [StructLayout(LayoutKind.Explicit)]
-        private struct Color {
-            [FieldOffset(0)] public uint val;
-            [FieldOffset(0)] public byte r;
-            [FieldOffset(1)] public byte g;
-            [FieldOffset(2)] public byte b;
-            [FieldOffset(3)] public byte m;
-        }
-        private GPU.Color color0;
-        private GPU.Color color1;
-        private GPU.Color   color2;
+        private Color _color0;
+        private Color _color1;
+        private Color _color2;
 
         private bool isTextureDisabledAllowed;
 
@@ -213,7 +170,7 @@ namespace ProjectPSX.Core {
         public uint loadGPUREAD() {
             //TODO check if correct and refact
             uint value;
-            if (vramTransfer.halfWords > 0) {
+            if (_vRamTransfer.HalfWords > 0) {
                 value = readFromVRAM();
             } else {
                 value = GPUREAD;
@@ -266,55 +223,55 @@ namespace ProjectPSX.Core {
             drawVRAMPixel(pixel0);
 
             //Force exit if we arrived to the end pixel (fixes weird artifacts on textures on Metal Gear Solid)
-            if (--vramTransfer.halfWords == 0) {
+            if (--_vRamTransfer.HalfWords == 0) {
                 mode = Mode.COMMAND;
                 return;
             }
 
             drawVRAMPixel(pixel1);
 
-            if (--vramTransfer.halfWords == 0) {
+            if (--_vRamTransfer.HalfWords == 0) {
                 mode = Mode.COMMAND;
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private uint readFromVRAM() {
-            ushort pixel0 = VRAM16.GetPixel(vramTransfer.x++ & 0x3FF, vramTransfer.y & 0x1FF);
-            ushort pixel1 = VRAM16.GetPixel(vramTransfer.x++ & 0x3FF, vramTransfer.y & 0x1FF);
-            if (vramTransfer.x == vramTransfer.origin_x + vramTransfer.w) {
-                vramTransfer.x -= vramTransfer.w;
-                vramTransfer.y++;
+            ushort pixel0 = VRAM16.GetPixel(_vRamTransfer.X++ & 0x3FF, _vRamTransfer.Y & 0x1FF);
+            ushort pixel1 = VRAM16.GetPixel(_vRamTransfer.X++ & 0x3FF, _vRamTransfer.Y & 0x1FF);
+            if (_vRamTransfer.X == _vRamTransfer.OriginX + _vRamTransfer.W) {
+                _vRamTransfer.X -= _vRamTransfer.W;
+                _vRamTransfer.Y++;
             }
-            vramTransfer.halfWords -= 2;
+            _vRamTransfer.HalfWords -= 2;
             return (uint)(pixel1 << 16 | pixel0);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void drawVRAMPixel(ushort val) {
             if (checkMaskBeforeDraw) {
-                int bg = VRAM32.GetPixel(vramTransfer.x, vramTransfer.y);
+                int bg = VRAM32.GetPixel(_vRamTransfer.X, _vRamTransfer.Y);
 
                 if (bg >> 24 == 0) {
-                    int y1 = vramTransfer.y & 0x1FF;
+                    int y1 = _vRamTransfer.Y & 0x1FF;
                     int color = color1555to8888(val);
-                    VRAM32.SetPixel(vramTransfer.x & 0x3FF, y1, color);
-                    int y = vramTransfer.y & 0x1FF;
-                    VRAM16.SetPixel(vramTransfer.x & 0x3FF, y, val);
+                    VRAM32.SetPixel(_vRamTransfer.X & 0x3FF, y1, color);
+                    int y = _vRamTransfer.Y & 0x1FF;
+                    VRAM16.SetPixel(_vRamTransfer.X & 0x3FF, y, val);
                 }
             } else {
-                int y1 = vramTransfer.y & 0x1FF;
+                int y1 = _vRamTransfer.Y & 0x1FF;
                 int color = color1555to8888(val);
-                VRAM32.SetPixel(vramTransfer.x & 0x3FF, y1, color);
-                int y = vramTransfer.y & 0x1FF;
-                VRAM16.SetPixel(vramTransfer.x & 0x3FF, y, val);
+                VRAM32.SetPixel(_vRamTransfer.X & 0x3FF, y1, color);
+                int y = _vRamTransfer.Y & 0x1FF;
+                VRAM16.SetPixel(_vRamTransfer.X & 0x3FF, y, val);
             }
 
-            vramTransfer.x++;
+            _vRamTransfer.X++;
 
-            if (vramTransfer.x == vramTransfer.origin_x + vramTransfer.w) {
-                vramTransfer.x -= vramTransfer.w;
-                vramTransfer.y++;
+            if (_vRamTransfer.X == _vRamTransfer.OriginX + _vRamTransfer.W) {
+                _vRamTransfer.X -= _vRamTransfer.W;
+                _vRamTransfer.Y++;
             }
         }
 
@@ -398,7 +355,7 @@ namespace ProjectPSX.Core {
         private void GP0_02_FillRectVRAM(Span<uint> buffer)
             // GP0(02h) - Fill Rectangle in VRAM
         {
-            color0.val = buffer[pointer++];
+            _color0.Value = buffer[pointer++];
 
             var yx = buffer[pointer++];
             var hw = buffer[pointer++];
@@ -409,8 +366,8 @@ namespace ProjectPSX.Core {
             var w = (ushort)(((hw & 0x3FF) + 0xF) & ~0xF);
             var h = (ushort)((hw >> 16) & 0x1FF);
 
-            var bgr555 = (ushort)((color0.b * 31 / 255 << 10) | (color0.g * 31 / 255 << 5) | (color0.r * 31 / 255 << 0));
-            var rgb888 = (color0.r << 16) | (color0.g << 8) | color0.b;
+            var bgr555 = (ushort)((_color0.B * 31 / 255 << 10) | (_color0.G * 31 / 255 << 5) | (_color0.R * 31 / 255 << 0));
+            var rgb888 = (_color0.R << 16) | (_color0.G << 8) | _color0.B;
 
             if (x + w <= 0x3FF && y + h <= 0x1FF)
             {
@@ -456,16 +413,16 @@ namespace ProjectPSX.Core {
             bool isSemiTransparent = (command & (1 << 25)) != 0;
             bool isRawTextured = (command & (1 << 24)) != 0;
 
-            GPU.Primitive primitive = new GPU.Primitive();
-            primitive.isShaded = isShaded;
-            primitive.isTextured = isTextured;
-            primitive.isSemiTransparent = isSemiTransparent;
-            primitive.isRawTextured = isRawTextured;
+            Primitive primitive = new Primitive();
+            primitive.IsShaded = isShaded;
+            primitive.IsTextured = isTextured;
+            primitive.IsSemiTransparent = isSemiTransparent;
+            primitive.IsRawTextured = isRawTextured;
 
             int vertexN = isQuad ? 4 : 3;
             Span<uint> c = stackalloc uint[vertexN];
-            Span<GPU.Point2D> v = stackalloc GPU.Point2D[vertexN];
-            Span<GPU.TextureData> t = stackalloc GPU.TextureData[vertexN];
+            Span<Point2D> v = stackalloc Point2D[vertexN];
+            Span<TextureData> t = stackalloc TextureData[vertexN];
 
             if (!isShaded) {
                 uint color = buffer[pointer++];
@@ -473,23 +430,23 @@ namespace ProjectPSX.Core {
                 c[1] = color; //triangle 2 opaque color
             }
 
-            primitive.semiTransparencyMode = transparencyMode;
+            primitive.SemiTransparencyMode = transparencyMode;
 
             for (int i = 0; i < vertexN; i++) {
                 if (isShaded) c[i] = buffer[pointer++];
 
                 uint xy = buffer[pointer++];
-                v[i].x = (short)(signed11bit(xy & 0xFFFF) + drawingXOffset);
-                v[i].y = (short)(signed11bit(xy >> 16) + drawingYOffset);
+                v[i].X = (short)(signed11bit(xy & 0xFFFF) + drawingXOffset);
+                v[i].Y = (short)(signed11bit(xy >> 16) + drawingYOffset);
 
                 if (isTextured) {
                     uint textureData = buffer[pointer++];
-                    t[i].val = (ushort)textureData;
+                    t[i].Value = (ushort)textureData;
                     if (i == 0) {
                         uint palette = textureData >> 16;
 
-                        primitive.clut.x = (short)((palette & 0x3f) << 4);
-                        primitive.clut.y = (short)((palette >> 6) & 0x1FF);
+                        primitive.Clut.X = (short)((palette & 0x3f) << 4);
+                        primitive.Clut.Y = (short)((palette >> 6) & 0x1FF);
                     } else if (i == 1) {
                         uint texpage = textureData >> 16;
 
@@ -500,10 +457,10 @@ namespace ProjectPSX.Core {
                         textureDepth = (byte)((texpage >> 7) & 0x3);
                         isTextureDisabled = isTextureDisabledAllowed && ((texpage >> 11) & 0x1) != 0;
 
-                        primitive.depth = textureDepth;
-                        primitive.textureBase.x = (short)(textureXBase << 6);
-                        primitive.textureBase.y = (short)(textureYBase << 8);
-                        primitive.semiTransparencyMode = transparencyMode;
+                        primitive.Depth = textureDepth;
+                        primitive.TextureBase.X = (short)(textureXBase << 6);
+                        primitive.TextureBase.Y = (short)(textureYBase << 8);
+                        primitive.SemiTransparencyMode = transparencyMode;
                     }
                 }
             }
@@ -512,7 +469,7 @@ namespace ProjectPSX.Core {
             if (isQuad) rasterizeTri(v[1], v[2], v[3], t[1], t[2], t[3], c[1], c[2], c[3], primitive);
         }
 
-        private void rasterizeTri(GPU.Point2D v0, GPU.Point2D v1, GPU.Point2D v2, GPU.TextureData t0, GPU.TextureData t1, GPU.TextureData t2, uint c0, uint c1, uint c2, GPU.Primitive primitive) {
+        private void rasterizeTri(Point2D v0, Point2D v1, Point2D v2, TextureData t0, TextureData t1, TextureData t2, uint c0, uint c1, uint c2, Primitive primitive) {
 
             int area = orient2d(v0, v1, v2);
 
@@ -526,22 +483,22 @@ namespace ProjectPSX.Core {
             }
 
             /*boundingBox*/
-            int minX = Math.Min(v0.x, Math.Min(v1.x, v2.x));
-            int minY = Math.Min(v0.y, Math.Min(v1.y, v2.y));
-            int maxX = Math.Max(v0.x, Math.Max(v1.x, v2.x));
-            int maxY = Math.Max(v0.y, Math.Max(v1.y, v2.y));
+            int minX = Math.Min(v0.X, Math.Min(v1.X, v2.X));
+            int minY = Math.Min(v0.Y, Math.Min(v1.Y, v2.Y));
+            int maxX = Math.Max(v0.X, Math.Max(v1.X, v2.X));
+            int maxY = Math.Max(v0.Y, Math.Max(v1.Y, v2.Y));
 
             if ((maxX - minX) > 1024 || (maxY - minY) > 512) return;
 
             /*clip*/
-            min.x = (short)Math.Max(minX, drawingAreaLeft);
-            min.y = (short)Math.Max(minY, drawingAreaTop);
-            max.x = (short)Math.Min(maxX, drawingAreaRight);
-            max.y = (short)Math.Min(maxY, drawingAreaBottom);
+            min.X = (short)Math.Max(minX, drawingAreaLeft);
+            min.Y = (short)Math.Max(minY, drawingAreaTop);
+            max.X = (short)Math.Min(maxX, drawingAreaRight);
+            max.Y = (short)Math.Min(maxY, drawingAreaBottom);
 
-            int A01 = v0.y - v1.y, B01 = v1.x - v0.x;
-            int A12 = v1.y - v2.y, B12 = v2.x - v1.x;
-            int A20 = v2.y - v0.y, B20 = v0.x - v2.x;
+            int A01 = v0.Y - v1.Y, B01 = v1.X - v0.X;
+            int A12 = v1.Y - v2.Y, B12 = v2.X - v1.X;
+            int A20 = v2.Y - v0.Y, B20 = v0.X - v2.X;
 
             int bias0 = isTopLeft(v1, v2) ? 0 : -1;
             int bias1 = isTopLeft(v2, v0) ? 0 : -1;
@@ -554,13 +511,13 @@ namespace ProjectPSX.Core {
             int baseColor = GetRgbColor(c0);
 
             // Rasterize
-            for (int y = min.y; y < max.y; y++) {
+            for (int y = min.Y; y < max.Y; y++) {
                 // Barycentric coordinates at start of row
                 int w0 = w0_row;
                 int w1 = w1_row;
                 int w2 = w2_row;
 
-                for (int x = min.x; x < max.x; x++) {
+                for (int x = min.X; x < max.X; x++) {
                     // If p is on or inside all edges, render pixel.
                     if ((w0 | w1 | w2) >= 0) {
                         //Adjustements per triangle instead of per pixel can be done at area level
@@ -569,8 +526,8 @@ namespace ProjectPSX.Core {
 
                         //Check background mask
                         if (checkMaskBeforeDraw) {
-                            color0.val = (uint)VRAM32.GetPixel(x, y); //back
-                            if (color0.m != 0) {
+                            _color0.Value = (uint)VRAM32.GetPixel(x, y); //back
+                            if (_color0.M != 0) {
                                 w0 += A12;
                                 w1 += A20;
                                 w2 += A01;
@@ -581,21 +538,21 @@ namespace ProjectPSX.Core {
                         // reset default color of the triangle calculated outside the for as it gets overwriten as follows...
                         int color = baseColor;
 
-                        if (primitive.isShaded) {
-                            color0.val = c0;
-                            color1.val = c1;
-                            color2.val = c2;
+                        if (primitive.IsShaded) {
+                            _color0.Value = c0;
+                            _color1.Value = c1;
+                            _color2.Value = c2;
 
-                            int r = interpolate(w0 - bias0, w1 - bias1, w2 - bias2, color0.r, color1.r, color2.r, area);
-                            int g = interpolate(w0 - bias0, w1 - bias1, w2 - bias2, color0.g, color1.g, color2.g, area);
-                            int b = interpolate(w0 - bias0, w1 - bias1, w2 - bias2, color0.b, color1.b, color2.b, area);
+                            int r = interpolate(w0 - bias0, w1 - bias1, w2 - bias2, _color0.R, _color1.R, _color2.R, area);
+                            int g = interpolate(w0 - bias0, w1 - bias1, w2 - bias2, _color0.G, _color1.G, _color2.G, area);
+                            int b = interpolate(w0 - bias0, w1 - bias1, w2 - bias2, _color0.B, _color1.B, _color2.B, area);
                             color = r << 16 | g << 8 | b;
                         }
 
-                        if (primitive.isTextured) {
-                            int texelX = interpolate(w0 - bias0, w1 - bias1, w2 - bias2, t0.x, t1.x, t2.x, area);
-                            int texelY = interpolate(w0 - bias0, w1 - bias1, w2 - bias2, t0.y, t1.y, t2.y, area);
-                            int texel = getTexel(maskTexelAxis(texelX, preMaskX, postMaskX), maskTexelAxis(texelY, preMaskY, postMaskY), primitive.clut, primitive.textureBase, primitive.depth);
+                        if (primitive.IsTextured) {
+                            int texelX = interpolate(w0 - bias0, w1 - bias1, w2 - bias2, t0.X, t1.X, t2.X, area);
+                            int texelY = interpolate(w0 - bias0, w1 - bias1, w2 - bias2, t0.Y, t1.Y, t2.Y, area);
+                            int texel = getTexel(maskTexelAxis(texelX, preMaskX, postMaskX), maskTexelAxis(texelY, preMaskY, postMaskY), primitive.Clut, primitive.TextureBase, primitive.Depth);
                             if (texel == 0) {
                                 w0 += A12;
                                 w1 += A20;
@@ -603,21 +560,21 @@ namespace ProjectPSX.Core {
                                 continue;
                             }
 
-                            if (!primitive.isRawTextured) {
-                                color0.val = (uint)color;
-                                color1.val = (uint)texel;
-                                color1.r = clampToFF(color0.r * color1.r >> 7);
-                                color1.g = clampToFF(color0.g * color1.g >> 7);
-                                color1.b = clampToFF(color0.b * color1.b >> 7);
+                            if (!primitive.IsRawTextured) {
+                                _color0.Value = (uint)color;
+                                _color1.Value = (uint)texel;
+                                _color1.R = clampToFF(_color0.R * _color1.R >> 7);
+                                _color1.G = clampToFF(_color0.G * _color1.G >> 7);
+                                _color1.B = clampToFF(_color0.B * _color1.B >> 7);
 
-                                texel = (int)color1.val;
+                                texel = (int)_color1.Value;
                             }
 
                             color = texel;
                         }
 
-                        if (primitive.isSemiTransparent && (!primitive.isTextured || (color & 0xFF00_0000) != 0)) {
-                            color = handleSemiTransp(x, y, color, primitive.semiTransparencyMode);
+                        if (primitive.IsSemiTransparent && (!primitive.IsTextured || (color & 0xFF00_0000) != 0)) {
+                            color = handleSemiTransp(x, y, color, primitive.SemiTransparencyMode);
                         }
 
                         color |= maskWhileDrawing << 24;
@@ -779,10 +736,10 @@ namespace ProjectPSX.Core {
             bool isSemiTransparent = (command & (1 << 25)) != 0;
             bool isRawTextured = (command & (1 << 24)) != 0;
 
-            GPU.Primitive primitive = new GPU.Primitive();
-            primitive.isTextured = isTextured;
-            primitive.isSemiTransparent = isSemiTransparent;
-            primitive.isRawTextured = isRawTextured;
+            Primitive primitive = new Primitive();
+            primitive.IsTextured = isTextured;
+            primitive.IsSemiTransparent = isSemiTransparent;
+            primitive.IsRawTextured = isRawTextured;
 
             uint vertex = buffer[pointer++];
             short xo = (short)(vertex & 0xFFFF);
@@ -790,18 +747,18 @@ namespace ProjectPSX.Core {
 
             if (isTextured) {
                 uint texture = buffer[pointer++];
-                textureData.x = (byte)(texture & 0xFF);
-                textureData.y = (byte)((texture >> 8) & 0xFF);
+                _textureData.X = (byte)(texture & 0xFF);
+                _textureData.Y = (byte)((texture >> 8) & 0xFF);
 
                 ushort palette = (ushort)((texture >> 16) & 0xFFFF);
-                primitive.clut.x = (short)((palette & 0x3f) << 4);
-                primitive.clut.y = (short)((palette >> 6) & 0x1FF);
+                primitive.Clut.X = (short)((palette & 0x3f) << 4);
+                primitive.Clut.Y = (short)((palette >> 6) & 0x1FF);
             }
 
-            primitive.depth = textureDepth;
-            primitive.textureBase.x = (short)(textureXBase << 6);
-            primitive.textureBase.y = (short)(textureYBase << 8);
-            primitive.semiTransparencyMode = transparencyMode;
+            primitive.Depth = textureDepth;
+            primitive.TextureBase.X = (short)(textureXBase << 6);
+            primitive.TextureBase.Y = (short)(textureYBase << 8);
+            primitive.SemiTransparencyMode = transparencyMode;
 
             short width = 0;
             short heigth = 0;
@@ -826,25 +783,25 @@ namespace ProjectPSX.Core {
             short y = signed11bit((uint)(yo + drawingYOffset));
             short x = signed11bit((uint)(xo + drawingXOffset));
 
-            GPU.Point2D origin;
-            origin.x = x;
-            origin.y = y;
+            Point2D origin;
+            origin.X = x;
+            origin.Y = y;
 
-            GPU.Point2D size;
-            size.x = (short)(x + width);
-            size.y = (short)(y + heigth);
+            Point2D size;
+            size.X = (short)(x + width);
+            size.Y = (short)(y + heigth);
 
-            rasterizeRect(origin, size, textureData, color, primitive);
+            rasterizeRect(origin, size, _textureData, color, primitive);
         }
 
-        private void rasterizeRect(GPU.Point2D origin, GPU.Point2D size, GPU.TextureData texture, uint bgrColor, GPU.Primitive primitive) {
-            int xOrigin = Math.Max(origin.x, drawingAreaLeft);
-            int yOrigin = Math.Max(origin.y, drawingAreaTop);
-            int width = Math.Min(size.x, drawingAreaRight);
-            int height = Math.Min(size.y, drawingAreaBottom);
+        private void rasterizeRect(Point2D origin, Point2D size, TextureData texture, uint bgrColor, Primitive primitive) {
+            int xOrigin = Math.Max(origin.X, drawingAreaLeft);
+            int yOrigin = Math.Max(origin.Y, drawingAreaTop);
+            int width = Math.Min(size.X, drawingAreaRight);
+            int height = Math.Min(size.Y, drawingAreaBottom);
 
-            int uOrigin = texture.x + (xOrigin - origin.x);
-            int vOrigin = texture.y + (yOrigin - origin.y);
+            int uOrigin = texture.X + (xOrigin - origin.X);
+            int vOrigin = texture.Y + (yOrigin - origin.Y);
 
             int baseColor = GetRgbColor(bgrColor);
 
@@ -853,34 +810,34 @@ namespace ProjectPSX.Core {
                     //Check background mask
                     if (checkMaskBeforeDraw) {
                         int y1 = y & 0x1FF;
-                        color0.val = (uint)VRAM32.GetPixel(x & 0x3FF, y1); //back
-                        if (color0.m != 0) continue;
+                        _color0.Value = (uint)VRAM32.GetPixel(x & 0x3FF, y1); //back
+                        if (_color0.M != 0) continue;
                     }
 
                     int color = baseColor;
 
-                    if (primitive.isTextured) {
+                    if (primitive.IsTextured) {
                         //int texel = getTexel(u, v, clut, textureBase, depth);
-                        int texel = getTexel(maskTexelAxis(u, preMaskX, postMaskX),maskTexelAxis(v, preMaskY, postMaskY),primitive.clut, primitive.textureBase, primitive.depth);
+                        int texel = getTexel(maskTexelAxis(u, preMaskX, postMaskX),maskTexelAxis(v, preMaskY, postMaskY),primitive.Clut, primitive.TextureBase, primitive.Depth);
                         if (texel == 0) {
                             continue;
                         }
 
-                        if (!primitive.isRawTextured) {
-                            color0.val = (uint)color;
-                            color1.val = (uint)texel;
-                            color1.r = clampToFF(color0.r * color1.r >> 7);
-                            color1.g = clampToFF(color0.g * color1.g >> 7);
-                            color1.b = clampToFF(color0.b * color1.b >> 7);
+                        if (!primitive.IsRawTextured) {
+                            _color0.Value = (uint)color;
+                            _color1.Value = (uint)texel;
+                            _color1.R = clampToFF(_color0.R * _color1.R >> 7);
+                            _color1.G = clampToFF(_color0.G * _color1.G >> 7);
+                            _color1.B = clampToFF(_color0.B * _color1.B >> 7);
 
-                            texel = (int)color1.val;
+                            texel = (int)_color1.Value;
                         }
 
                         color = texel;
                     }
 
-                    if (primitive.isSemiTransparent && (!primitive.isTextured || (color & 0xFF00_0000) != 0)) {
-                        color = handleSemiTransp(x, y, color, primitive.semiTransparencyMode);
+                    if (primitive.IsSemiTransparent && (!primitive.IsTextured || (color & 0xFF00_0000) != 0)) {
+                        color = handleSemiTransp(x, y, color, primitive.SemiTransparencyMode);
                     }
 
                     color |= maskWhileDrawing << 24;
@@ -916,8 +873,8 @@ namespace ProjectPSX.Core {
 
                     if (checkMaskBeforeDraw) {
                         int y2 = (dy + yPos) & 0x1FF;
-                        color0.val = (uint)VRAM32.GetPixel((dx + xPos) & 0x3FF, y2);
-                        if (color0.m != 0) continue;
+                        _color0.Value = (uint)VRAM32.GetPixel((dx + xPos) & 0x3FF, y2);
+                        if (_color0.M != 0) continue;
                     }
 
                     rgb888 |= maskWhileDrawing << 24;
@@ -941,13 +898,13 @@ namespace ProjectPSX.Core {
             ushort w = (ushort)((((wh & 0xFFFF) - 1) & 0x3FF) + 1);
             ushort h = (ushort)((((wh >> 16) - 1) & 0x1FF) + 1);
 
-            vramTransfer.x = x;
-            vramTransfer.y = y;
-            vramTransfer.w = w;
-            vramTransfer.h = h;
-            vramTransfer.origin_x = x;
-            vramTransfer.origin_y = y;
-            vramTransfer.halfWords = w * h;
+            _vRamTransfer.X = x;
+            _vRamTransfer.Y = y;
+            _vRamTransfer.W = w;
+            _vRamTransfer.H = h;
+            _vRamTransfer.OriginX = x;
+            _vRamTransfer.OriginY = y;
+            _vRamTransfer.HalfWords = w * h;
 
             mode = Mode.VRAM;
         }
@@ -963,13 +920,13 @@ namespace ProjectPSX.Core {
             ushort w = (ushort)((((wh & 0xFFFF) - 1) & 0x3FF) + 1);
             ushort h = (ushort)((((wh >> 16) - 1) & 0x1FF) + 1);
 
-            vramTransfer.x = x;
-            vramTransfer.y = y;
-            vramTransfer.w = w;
-            vramTransfer.h = h;
-            vramTransfer.origin_x = x;
-            vramTransfer.origin_y = y;
-            vramTransfer.halfWords = w * h;
+            _vRamTransfer.X = x;
+            _vRamTransfer.Y = y;
+            _vRamTransfer.W = w;
+            _vRamTransfer.H = h;
+            _vRamTransfer.OriginX = x;
+            _vRamTransfer.OriginY = y;
+            _vRamTransfer.HalfWords = w * h;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -978,7 +935,7 @@ namespace ProjectPSX.Core {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int getTexel(int x, int y, GPU.Point2D clut, GPU.Point2D textureBase, int depth) {
+        private int getTexel(int x, int y, Point2D clut, Point2D textureBase, int depth) {
             if (depth == 0) {
                 return get4bppTexel(x, y, clut, textureBase);
             } else if (depth == 1) {
@@ -989,31 +946,31 @@ namespace ProjectPSX.Core {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int get4bppTexel(int x, int y, GPU.Point2D clut, GPU.Point2D textureBase) {
-            int y1 = y + textureBase.y;
-            ushort index = VRAM16.GetPixel(x / 4 + textureBase.x, y1);
+        private int get4bppTexel(int x, int y, Point2D clut, Point2D textureBase) {
+            int y1 = y + textureBase.Y;
+            ushort index = VRAM16.GetPixel(x / 4 + textureBase.X, y1);
             int p = (index >> (x & 3) * 4) & 0xF;
-            return VRAM32.GetPixel(clut.x + p, clut.y);
+            return VRAM32.GetPixel(clut.X + p, clut.Y);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int get8bppTexel(int x, int y, GPU.Point2D clut, GPU.Point2D textureBase) {
-            int y1 = y + textureBase.y;
-            ushort index = VRAM16.GetPixel(x / 2 + textureBase.x, y1);
+        private int get8bppTexel(int x, int y, Point2D clut, Point2D textureBase) {
+            int y1 = y + textureBase.Y;
+            ushort index = VRAM16.GetPixel(x / 2 + textureBase.X, y1);
             int p = (index >> (x & 1) * 8) & 0xFF;
-            return VRAM32.GetPixel(clut.x + p, clut.y);
+            return VRAM32.GetPixel(clut.X + p, clut.Y);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int get16bppTexel(int x, int y, GPU.Point2D textureBase)
+        private int get16bppTexel(int x, int y, Point2D textureBase)
         {
-            int y1 = y + textureBase.y;
-            return VRAM32.GetPixel(x + textureBase.x, y1);
+            int y1 = y + textureBase.Y;
+            return VRAM32.GetPixel(x + textureBase.X, y1);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int orient2d(GPU.Point2D a, GPU.Point2D b, GPU.Point2D c) {
-            return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+        private static int orient2d(Point2D a, Point2D b, Point2D c) {
+            return (b.X - a.X) * (c.Y - a.Y) - (b.Y - a.Y) * (c.X - a.X);
         }
 
         private void GP0_E1_SetDrawMode(uint val) {
@@ -1204,31 +1161,31 @@ namespace ProjectPSX.Core {
         }
 
         private int handleSemiTransp(int x, int y, int color, int semiTranspMode) {
-            color0.val = (uint)VRAM32.GetPixel(x, y); //back
-            color1.val = (uint)color; //front
+            _color0.Value = (uint)VRAM32.GetPixel(x, y); //back
+            _color1.Value = (uint)color; //front
             switch (semiTranspMode) {
                 case 0: //0.5 x B + 0.5 x F    ;aka B/2+F/2
-                    color1.r = (byte)((color0.r + color1.r) >> 1);
-                    color1.g = (byte)((color0.g + color1.g) >> 1);
-                    color1.b = (byte)((color0.b + color1.b) >> 1);
+                    _color1.R = (byte)((_color0.R + _color1.R) >> 1);
+                    _color1.G = (byte)((_color0.G + _color1.G) >> 1);
+                    _color1.B = (byte)((_color0.B + _color1.B) >> 1);
                     break;
                 case 1://1.0 x B + 1.0 x F    ;aka B+F
-                    color1.r = clampToFF(color0.r + color1.r);
-                    color1.g = clampToFF(color0.g + color1.g);
-                    color1.b = clampToFF(color0.b + color1.b);
+                    _color1.R = clampToFF(_color0.R + _color1.R);
+                    _color1.G = clampToFF(_color0.G + _color1.G);
+                    _color1.B = clampToFF(_color0.B + _color1.B);
                     break;
                 case 2: //1.0 x B - 1.0 x F    ;aka B-F
-                    color1.r = clampToZero(color0.r - color1.r);
-                    color1.g = clampToZero(color0.g - color1.g);
-                    color1.b = clampToZero(color0.b - color1.b);
+                    _color1.R = clampToZero(_color0.R - _color1.R);
+                    _color1.G = clampToZero(_color0.G - _color1.G);
+                    _color1.B = clampToZero(_color0.B - _color1.B);
                     break;
                 case 3: //1.0 x B +0.25 x F    ;aka B+F/4
-                    color1.r = clampToFF(color0.r + (color1.r >> 2));
-                    color1.g = clampToFF(color0.g + (color1.g >> 2));
-                    color1.b = clampToFF(color0.b + (color1.b >> 2));
+                    _color1.R = clampToFF(_color0.R + (_color1.R >> 2));
+                    _color1.G = clampToFF(_color0.G + (_color1.G >> 2));
+                    _color1.B = clampToFF(_color0.B + (_color1.B >> 2));
                     break;
             }//actually doing RGB calcs on BGR struct...
-            return (int)color1.val;
+            return (int)_color1.Value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1245,21 +1202,21 @@ namespace ProjectPSX.Core {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetRgbColor(uint value) {
-            color0.val = value;
-            return (color0.m << 24 | color0.r << 16 | color0.g << 8 | color0.b);
+            _color0.Value = value;
+            return (_color0.M << 24 | _color0.R << 16 | _color0.G << 8 | _color0.B);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool isTopLeft(GPU.Point2D a, GPU.Point2D b) => a.y == b.y && b.x > a.x || b.y < a.y;
+        private static bool isTopLeft(Point2D a, Point2D b) => a.Y == b.Y && b.X > a.X || b.Y < a.Y;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int interpolate(uint c1, uint c2, float ratio) {
-            color1.val = c1;
-            color2.val = c2;
+            _color1.Value = c1;
+            _color2.Value = c2;
 
-            byte r = (byte)(color2.r * ratio + color1.r * (1 - ratio));
-            byte g = (byte)(color2.g * ratio + color1.g * (1 - ratio));
-            byte b = (byte)(color2.b * ratio + color1.b * (1 - ratio));
+            byte r = (byte)(_color2.R * ratio + _color1.R * (1 - ratio));
+            byte g = (byte)(_color2.G * ratio + _color1.G * (1 - ratio));
+            byte b = (byte)(_color2.B * ratio + _color1.B * (1 - ratio));
 
             return (r << 16 | g << 8 | b);
         }
