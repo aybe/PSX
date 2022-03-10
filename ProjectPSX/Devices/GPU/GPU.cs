@@ -1168,9 +1168,9 @@ namespace ProjectPSX.Devices {
             //if (lastHr == horizontalRes && lastVr == verticalRes && last24 == is24BitDepth) 
             //    return;
 
+            Console.WriteLine($"[GPU] {nameof(GP1_08_DisplayMode)}: {nameof(horizontalRes)} = {horizontalRes}, {nameof(verticalRes)} = {verticalRes}, {nameof(is24BitDepth)} = {is24BitDepth}");
+
             window.SetDisplayMode(horizontalRes, verticalRes, is24BitDepth);
-            
-            Console.WriteLine($"[GPU] {nameof(IHostWindow.SetDisplayMode)}: {horizontalRes}, {verticalRes}, {is24BitDepth}");
             
             lastHr = horizontalRes;
             lastVr = verticalRes;
