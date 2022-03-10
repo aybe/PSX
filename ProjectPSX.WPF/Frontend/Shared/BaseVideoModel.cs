@@ -1,15 +1,15 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using ProjectPSX.WPF.Emulation;
 using ProjectPSX.WPF.Emulation.Messaging;
 
 namespace ProjectPSX.WPF.Frontend.Shared;
 
 internal class BaseVideoModel : BaseModel<BaseVideoModelCommands>
-    // BUG these values should be cached to be fed when window opens after emu started
-    // BUG implement IsFrameBuffer
+// BUG these values should be cached to be fed when window opens after emu started
+// BUG implement IsFrameBuffer
 {
     private WriteableBitmap? _bitmap;
 
@@ -60,39 +60,69 @@ internal class BaseVideoModel : BaseModel<BaseVideoModelCommands>
         {
             if (IsFrameBuffer)
             {
-                context.Clear();
+                for (var y = 0; y < context.Height; y++)
+                {
+                    for (var x = 0; x < context.Width; x++)
+                    {
+                        var i = (0 + y) * 1024 + (0 + x) * 1;
+                        var r = ((message.Buffer16[i] >> 00) & 0b11111) * 255 / 31;
+                        var g = ((message.Buffer16[i] >> 05) & 0b11111) * 255 / 31;
+                        var b = ((message.Buffer16[i] >> 10) & 0b11111) * 255 / 31;
+                        var j = context.Pixels + (y * context.Width + x);
+                        *j = (255 << 24) | (r << 16) | (g << 8) | b;
+                    }
+                }
             }
             else
             {
                 var span = MemoryMarshal.Cast<ushort, byte>(message.Buffer16);
 
                 for (var y = 0; y < context.Height; y++)
-                for (var x = 0; x < context.Width; x++)
                 {
-                    var i = y * 2048 + x * 3;
-                    var r = span[i + 0];
-                    var g = span[i + 1];
-                    var b = span[i + 2];
-                    var j = context.Pixels + (y * context.Width + x);
-                    *j = (255 << 24) | (r << 16) | (g << 8) | b;
+                    for (var x = 0; x < context.Width; x++)
+                    {
+                        var i = y * 2048 + x * 3;
+                        var r = span[i + 0];
+                        var g = span[i + 1];
+                        var b = span[i + 2];
+                        var j = context.Pixels + (y * context.Width + x);
+                        *j = (255 << 24) | (r << 16) | (g << 8) | b;
+                    }
                 }
             }
         }
         else
         {
             if (IsFrameBuffer)
-                context.Clear();
-            else
+            {
                 for (var y = 0; y < context.Height; y++)
-                for (var x = 0; x < context.Width; x++)
                 {
-                    var i = (message.Size.Y + y) * 1024 + (message.Size.X + x) * 1;
-                    var r = ((message.Buffer16[i] >> 00) & 0b11111) * 255 / 31;
-                    var g = ((message.Buffer16[i] >> 05) & 0b11111) * 255 / 31;
-                    var b = ((message.Buffer16[i] >> 10) & 0b11111) * 255 / 31;
-                    var j = context.Pixels + (y * context.Width + x);
-                    *j = (255 << 24) | (r << 16) | (g << 8) | b;
+                    for (var x = 0; x < context.Width; x++)
+                    {
+                        var i = (0 + y) * 1024 + (0 + x) * 1;
+                        var r = ((message.Buffer16[i] >> 00) & 0b11111) * 255 / 31;
+                        var g = ((message.Buffer16[i] >> 05) & 0b11111) * 255 / 31;
+                        var b = ((message.Buffer16[i] >> 10) & 0b11111) * 255 / 31;
+                        var j = context.Pixels + (y * context.Width + x);
+                        *j = (255 << 24) | (r << 16) | (g << 8) | b;
+                    }
                 }
+            }
+            else
+            {
+                for (var y = 0; y < context.Height; y++)
+                {
+                    for (var x = 0; x < context.Width; x++)
+                    {
+                        var i = (message.Size.Y + y) * 1024 + (message.Size.X + x) * 1;
+                        var r = ((message.Buffer16[i] >> 00) & 0b11111) * 255 / 31;
+                        var g = ((message.Buffer16[i] >> 05) & 0b11111) * 255 / 31;
+                        var b = ((message.Buffer16[i] >> 10) & 0b11111) * 255 / 31;
+                        var j = context.Pixels + (y * context.Width + x);
+                        *j = (255 << 24) | (r << 16) | (g << 8) | b;
+                    }
+                }
+            }
         }
     }
 
@@ -103,11 +133,10 @@ internal class BaseVideoModel : BaseModel<BaseVideoModelCommands>
 
     private void UpdateVideoSizeImpl(UpdateVideoSizeMessage message)
     {
-        Bitmap24 = message.Is24Bit;
+        Bitmap = IsFrameBuffer 
+            ? BitmapFactory.New(1024, 512) 
+            : BitmapFactory.New(message.Size.X, message.Size.Y);
 
-        if (IsFrameBuffer)
-            Bitmap = BitmapFactory.New(1024, 512);
-        else
-            Bitmap = BitmapFactory.New(message.Size.X, message.Size.Y);
+        Bitmap24 = message.Is24Bit;
     }
 }
