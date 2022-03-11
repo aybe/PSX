@@ -11,318 +11,369 @@ using System.Timers;
 using System.Windows.Forms;
 using NAudio.Wave;
 using ProjectPSX.Input;
-using ProjectPSX.Interop.Gdi32;
-using ProjectPSX.Util;
-using Gdi32 = ProjectPSX.Interop.Gdi32.NativeMethods;
+using ProjectPSX.WinForms.Interop;
+using Timer = System.Timers.Timer;
 
-namespace ProjectPSX {
-    public class Window : Form, IHostWindow {
+namespace ProjectPSX.WinForms.UI;
 
-        private const int PSX_MHZ = 33868800;
-        private const int SYNC_CYCLES = 100;
-        private const int MIPS_UNDERCLOCK = 3;
+public class Window : Form, IHostWindow
+{
+    private const int PsxMhz         = 33868800;
+    private const int SyncCycles     = 100;
+    private const int MipsUnderclock = 3;
 
-        private const int cyclesPerFrame = PSX_MHZ / 60;
-        private const int syncLoops = (cyclesPerFrame / (SYNC_CYCLES * MIPS_UNDERCLOCK)) + 1;
-        private const int cycles = syncLoops * SYNC_CYCLES;
+    private const    int  CyclesPerFrame = PsxMhz / 60;
+    private const    int  SyncLoops      = CyclesPerFrame / (SyncCycles * MipsUnderclock) + 1;
+    private const    int  Cycles         = SyncLoops * SyncCycles;
+    private readonly Size _640x480       = new(640, 480);
 
-        private Size vramSize = new Size(1024, 512);
-        private Size _640x480 = new Size(640, 480);
-        private readonly DoubleBufferedPanel screen = new DoubleBufferedPanel();
+    private readonly Dictionary<Keys, KeyboardInput> _gamepadKeyMap;
+    private readonly BufferedWaveProvider            BufferedWaveProvider = new(new WaveFormat());
 
-        private GdiBitmap display = new GdiBitmap(1024, 512);
+    private readonly GdiBitmap Display = new(1024, 512);
 
-        private Emulator psx;
-        private int fps;
-        private bool isVramViewer;
+    private readonly Emulator            Psx;
+    private readonly DoubleBufferedPanel Screen = new();
 
-        private int horizontalRes;
-        private int verticalRes;
+    private readonly Size VRAMSize = new(1024, 512);
 
-        private int displayVRAMXStart;
-        private int displayVRAMYStart;
+    private readonly WaveOutEvent WaveOutEvent = new();
 
-        private bool is24BitDepth;
+    private long CpuCyclesCounter;
 
-        private int displayX1;
-        private int displayX2;
-        private int displayY1;
-        private int displayY2;
+    private int DisplayVramxStart;
+    private int DisplayVramyStart;
 
-        private long cpuCyclesCounter;
+    private int DisplayX1;
+    private int DisplayX2;
+    private int DisplayY1;
+    private int DisplayY2;
+    private int Fps;
 
-        Dictionary<Keys, KeyboardInput> _gamepadKeyMap;
+    private int HorizontalRes;
 
-        private WaveOutEvent waveOutEvent = new WaveOutEvent();
-        private BufferedWaveProvider bufferedWaveProvider = new BufferedWaveProvider(new WaveFormat());
+    private bool Is24BitDepth;
+    private bool IsVramViewer;
+    private int  VerticalRes;
 
-        public Window() {
-            Text = "ProjectPSX";
-            AutoSize = true;
-            AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            KeyUp += new KeyEventHandler(vramViewerToggle);
+    public Window()
+    {
+        Text            =  "ProjectPSX";
+        AutoSize        =  true;
+        AutoSizeMode    =  AutoSizeMode.GrowAndShrink;
+        FormBorderStyle =  FormBorderStyle.FixedDialog;
+        KeyUp           += VRAMViewerToggle;
 
-            screen.Size = _640x480;
-            screen.Margin = new Padding(0);
-            screen.MouseDoubleClick += new MouseEventHandler(toggleDebug);
+        Screen.Size             =  _640x480;
+        Screen.Margin           =  new Padding(0);
+        Screen.MouseDoubleClick += ToggleDebug;
 
-            Controls.Add(screen);
+        Controls.Add(Screen);
 
-            KeyDown += new KeyEventHandler(handleJoyPadDown);
-            KeyUp += new KeyEventHandler(handleJoyPadUp);
+        KeyDown += HandleJoyPadDown;
+        KeyUp   += HandleJoyPadUp;
 
-            _gamepadKeyMap = new Dictionary<Keys, KeyboardInput>() {
-                { Keys.Space, KeyboardInput.Space},
-                { Keys.Z , KeyboardInput.Z },
-                { Keys.C , KeyboardInput.C },
-                { Keys.Enter , KeyboardInput.Enter },
-                { Keys.Up , KeyboardInput.Up },
-                { Keys.Right , KeyboardInput.Right },
-                { Keys.Down , KeyboardInput.Down },
-                { Keys.Left , KeyboardInput.Left },
-                { Keys.D1 , KeyboardInput.D1 },
-                { Keys.D3 , KeyboardInput.D3 },
-                { Keys.Q , KeyboardInput.Q },
-                { Keys.E , KeyboardInput.E },
-                { Keys.W , KeyboardInput.W },
-                { Keys.D , KeyboardInput.D },
-                { Keys.S , KeyboardInput.S },
-                { Keys.A , KeyboardInput.A },
-            };
+        _gamepadKeyMap = new Dictionary<Keys, KeyboardInput>
+        {
+            { Keys.Space, KeyboardInput.Space },
+            { Keys.Z, KeyboardInput.Z },
+            { Keys.C, KeyboardInput.C },
+            { Keys.Enter, KeyboardInput.Enter },
+            { Keys.Up, KeyboardInput.Up },
+            { Keys.Right, KeyboardInput.Right },
+            { Keys.Down, KeyboardInput.Down },
+            { Keys.Left, KeyboardInput.Left },
+            { Keys.D1, KeyboardInput.D1 },
+            { Keys.D3, KeyboardInput.D3 },
+            { Keys.Q, KeyboardInput.Q },
+            { Keys.E, KeyboardInput.E },
+            { Keys.W, KeyboardInput.W },
+            { Keys.D, KeyboardInput.D },
+            { Keys.S, KeyboardInput.S },
+            { Keys.A, KeyboardInput.A }
+        };
 
-            bufferedWaveProvider.DiscardOnBufferOverflow = true;
-            bufferedWaveProvider.BufferDuration = new TimeSpan(0, 0, 0, 0, 300);
-            waveOutEvent.Init(bufferedWaveProvider);
+        BufferedWaveProvider.DiscardOnBufferOverflow = true;
+        BufferedWaveProvider.BufferDuration          = new TimeSpan(0, 0, 0, 0, 300);
+        WaveOutEvent.Init(BufferedWaveProvider);
 
-            string diskFilename = GetDiskFilename();
-            psx = new Emulator(this, diskFilename);
+        var diskFilename = GetDiskFilename();
+        Psx = new Emulator(this, diskFilename);
 
-            var timer = new System.Timers.Timer(1000);
-            timer.Elapsed += OnTimedEvent;
-            timer.Enabled = true;
+        var timer = new Timer(1000);
+        timer.Elapsed += OnTimedEvent;
+        timer.Enabled =  true;
 
-            RunUncapped();
+        RunUncapped();
+    }
+
+    public void Play(byte[] samples)
+    {
+        BufferedWaveProvider.AddSamples(samples, 0, samples.Length);
+
+        if (WaveOutEvent.PlaybackState != PlaybackState.Playing)
+        {
+            WaveOutEvent.Play();
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Render(int[] buffer24, ushort[] buffer16)
+    {
+        //Console.WriteLine($"x1 {displayX1} x2 {displayX2} y1 {displayY1} y2 {displayY2}");
+
+        var horizontalEnd = HorizontalRes;
+        var verticalEnd = VerticalRes;
+
+        if (IsVramViewer)
+        {
+            horizontalEnd = 1024;
+            verticalEnd   = 512;
+
+            Marshal.Copy(buffer24, 0, Display.BitmapData, 0x80000);
+        }
+        else if (Is24BitDepth)
+        {
+            Blit24Bpp(buffer24);
+        }
+        else
+        {
+            Blit16Bpp(buffer24);
         }
 
-        private string GetDiskFilename() {
-            var cla = Environment.GetCommandLineArgs();
-            if (cla.Any(s => s.EndsWith(".bin") || s.EndsWith(".cue") || s.EndsWith(".exe"))) {
-                string filename = cla.First(s => s.EndsWith(".bin") || s.EndsWith(".cue") || s.EndsWith(".exe"));
-                return filename;
-            } else {
-                //Show the user a dialog so they can pick the bin they want to load.
-                var fileDialog = new OpenFileDialog();
-                fileDialog.Filter = "BIN/CUE files or PSXEXEs(*.bin, *.cue, *.exe)|*.bin;*.cue;*.exe";
-                fileDialog.ShowDialog();
+        Fps++;
+        BeginInvoke(() =>
+        {
+            using var deviceContext = new GdiDeviceContext(Screen.Handle);
 
-                string file = fileDialog.FileName;
-                return file;
-            }
+            NativeMethods.StretchBlt(deviceContext, 0, 0, Screen.Width, Screen.Height,
+                Display.DeviceContext, 0, 0, horizontalEnd, verticalEnd,
+                RasterOp.SRCCOPY);
+        });
+    }
+
+    public void SetDisplayMode(int horizontalRes, int verticalRes, bool is24BitDepth)
+    {
+        Is24BitDepth = is24BitDepth;
+
+        if (horizontalRes != HorizontalRes || verticalRes != VerticalRes)
+        {
+            HorizontalRes = horizontalRes;
+            VerticalRes   = verticalRes;
+
+            ClearDisplay();
+            //Console.WriteLine($"setDisplayMode {horizontalRes} {verticalRes} {is24BitDepth}");
         }
+    }
 
-        private void handleJoyPadUp(object sender, KeyEventArgs e) {
-            KeyboardInput? button = GetGamepadButton(e.KeyCode);
-            if(button != null)
-                psx.JoyPadUp(button.Value);
+    public void SetHorizontalRange(ushort displayX1, ushort displayX2)
+    {
+        DisplayX1 = displayX1;
+        DisplayX2 = displayX2;
+
+        //Console.WriteLine($"Horizontal Range {displayX1} {displayX2}");
+    }
+
+    public void SetVerticalRange(ushort displayY1, ushort displayY2)
+    {
+        DisplayY1 = displayY1;
+        DisplayY2 = displayY2;
+
+        //Console.WriteLine($"Vertical Range {displayY1} {displayY2}");
+    }
+
+    public void SetVRAMStart(ushort displayVramxStart, ushort displayVramyStart)
+    {
+        DisplayVramxStart = displayVramxStart;
+        DisplayVramyStart = displayVramyStart;
+
+        //Console.WriteLine($"Vram Start {displayVRAMXStart} {displayVRAMYStart}");
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private unsafe void Blit16Bpp(int[] vramBits)
+    {
+        //Console.WriteLine($"x1 {displayX1} x2 {displayX2} y1 {displayY1} y2 {displayY2}");
+        //Console.WriteLine($"Display Height {display.Height}  Width {display.Width}");
+        var yRangeOffset = (240 - (DisplayY2 - DisplayY1)) >> (VerticalRes == 480 ? 0 : 1);
+        if (yRangeOffset < 0) yRangeOffset = 0;
+
+        var vram = new Span<int>(vramBits);
+        var display = new Span<int>(Display.BitmapData.ToPointer(), 0x80000);
+
+        for (var y = yRangeOffset; y < VerticalRes - yRangeOffset; y++)
+        {
+            var from = vram.Slice(DisplayVramxStart + (y - yRangeOffset + DisplayVramyStart) * 1024, HorizontalRes);
+            var to = display.Slice(y * 1024);
+            from.CopyTo(to);
         }
+    }
 
-        private KeyboardInput? GetGamepadButton(Keys keyCode) {
-            if (_gamepadKeyMap.TryGetValue(keyCode, out KeyboardInput gamepadButtonValue))
-                return gamepadButtonValue;
-            return null;
-        }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private unsafe void Blit24Bpp(int[] vramBits)
+    {
+        var yRangeOffset = (240 - (DisplayY2 - DisplayY1)) >> (VerticalRes == 480 ? 0 : 1);
+        if (yRangeOffset < 0) yRangeOffset = 0;
 
-        private void handleJoyPadDown(object sender, KeyEventArgs e) {
-            KeyboardInput? button = GetGamepadButton(e.KeyCode);
-            if (button != null)
-                psx.JoyPadDown(button.Value);
-        }
+        var display = new Span<int>(Display.BitmapData.ToPointer(), 0x80000);
+        Span<int> scanLine = stackalloc int[HorizontalRes];
 
-        private void toggleDebug(object sender, MouseEventArgs e) => psx.toggleDebug();
+        for (var y = yRangeOffset; y < VerticalRes - yRangeOffset; y++)
+        {
+            var offset = 0;
+            var startXyPosition = DisplayVramxStart + (y - yRangeOffset + DisplayVramyStart) * 1024;
+            for (var x = 0; x < HorizontalRes; x += 2)
+            {
+                var p0Rgb = vramBits[startXyPosition + offset++];
+                var p1Rgb = vramBits[startXyPosition + offset++];
+                var p2Rgb = vramBits[startXyPosition + offset++];
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Render(int[] buffer24, ushort[] buffer16) {
-            //Console.WriteLine($"x1 {displayX1} x2 {displayX2} y1 {displayY1} y2 {displayY2}");
+                var p0Bgr555 = GetPixelBgr555(p0Rgb);
+                var p1Bgr555 = GetPixelBgr555(p1Rgb);
+                var p2Bgr555 = GetPixelBgr555(p2Rgb);
 
-            int horizontalEnd = horizontalRes;
-            int verticalEnd = verticalRes;
+                //[(G0R0][R1)(B0][B1G1)]
+                //   RG    B - R   GB
 
-            if (isVramViewer) {
-                horizontalEnd = 1024;
-                verticalEnd = 512;
-                
-                Marshal.Copy(buffer24, 0, display.BitmapData, 0x80000);
-            } else if (is24BitDepth) {
-                blit24bpp(buffer24);
-            } else {
-                blit16bpp(buffer24);
-            }
+                var p0R = p0Bgr555 & 0xFF;
+                var p0G = (p0Bgr555 >> 8) & 0xFF;
+                var p0B = p1Bgr555 & 0xFF;
+                var p1R = (p1Bgr555 >> 8) & 0xFF;
+                var p1G = p2Bgr555 & 0xFF;
+                var p1B = (p2Bgr555 >> 8) & 0xFF;
 
-            fps++;
+                var p0Rgb24Bpp = (p0R << 16) | (p0G << 8) | p0B;
+                var p1Rgb24Bpp = (p1R << 16) | (p1G << 8) | p1B;
 
-            using var deviceContext = new GdiDeviceContext(screen.Handle);
-
-            Gdi32.StretchBlt(deviceContext, 0, 0, screen.Width, screen.Height,
-                     display.DeviceContext, 0, 0, horizontalEnd, verticalEnd,
-                     RasterOp.SRCCOPY);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private unsafe void blit24bpp(int[] vramBits) {
-            int yRangeOffset = (240 - (displayY2 - displayY1)) >> (verticalRes == 480 ? 0 : 1);
-            if (yRangeOffset < 0) yRangeOffset = 0;
-
-            var display = new Span<int>(this.display.BitmapData.ToPointer(), 0x80000);
-            Span<int> scanLine = stackalloc int[horizontalRes];
-
-            for (int y = yRangeOffset; y < verticalRes - yRangeOffset; y++) {
-                int offset = 0;
-                var startXYPosition = displayVRAMXStart + ((y - yRangeOffset + displayVRAMYStart) * 1024);
-                for (int x = 0; x < horizontalRes; x += 2) {
-                    int p0rgb = vramBits[startXYPosition + offset++];
-                    int p1rgb = vramBits[startXYPosition + offset++];
-                    int p2rgb = vramBits[startXYPosition + offset++];
-
-                    ushort p0bgr555 = GetPixelBGR555(p0rgb);
-                    ushort p1bgr555 = GetPixelBGR555(p1rgb);
-                    ushort p2bgr555 = GetPixelBGR555(p2rgb);
-
-                    //[(G0R0][R1)(B0][B1G1)]
-                    //   RG    B - R   GB
-
-                    int p0R = p0bgr555 & 0xFF;
-                    int p0G = (p0bgr555 >> 8) & 0xFF;
-                    int p0B = p1bgr555 & 0xFF;
-                    int p1R = (p1bgr555 >> 8) & 0xFF;
-                    int p1G = p2bgr555 & 0xFF;
-                    int p1B = (p2bgr555 >> 8) & 0xFF;
-
-                    int p0rgb24bpp = p0R << 16 | p0G << 8 | p0B;
-                    int p1rgb24bpp = p1R << 16 | p1G << 8 | p1B;
-
-                    scanLine[x] = p0rgb24bpp;
-                    scanLine[x + 1] = p1rgb24bpp;
-                }
-                scanLine.CopyTo(display.Slice(y * 1024));
-            }
-
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private unsafe void blit16bpp(int[] vramBits) {
-            //Console.WriteLine($"x1 {displayX1} x2 {displayX2} y1 {displayY1} y2 {displayY2}");
-            //Console.WriteLine($"Display Height {display.Height}  Width {display.Width}");
-            int yRangeOffset = (240 - (displayY2 - displayY1)) >> (verticalRes == 480 ? 0 : 1);
-            if (yRangeOffset < 0) yRangeOffset = 0;
-
-            var vram = new Span<int>(vramBits);
-            var display = new Span<int>(this.display.BitmapData.ToPointer(), 0x80000);
-
-            for (int y = yRangeOffset; y < verticalRes - yRangeOffset; y++) {
-                var from = vram.Slice(displayVRAMXStart + ((y - yRangeOffset + displayVRAMYStart) * 1024), horizontalRes);
-                var to = display.Slice(y * 1024);
-                from.CopyTo(to);
-            }
-
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ushort GetPixelBGR555(int color) {
-            byte m = (byte)((color & 0xFF000000) >> 24);
-            byte r = (byte)((color & 0x00FF0000) >> 16 + 3);
-            byte g = (byte)((color & 0x0000FF00) >> 8 + 3);
-            byte b = (byte)((color & 0x000000FF) >> 3);
-
-            return (ushort)(m << 15 | b << 10 | g << 5 | r);
-        }
-
-        public int GetVPS() {
-            int currentFps = fps;
-            fps = 0;
-            return currentFps;
-        }
-
-        public void SetDisplayMode(int horizontalRes, int verticalRes, bool is24BitDepth) {
-            this.is24BitDepth = is24BitDepth;
-
-            if (horizontalRes != this.horizontalRes || verticalRes != this.verticalRes) {
-                this.horizontalRes = horizontalRes;
-                this.verticalRes = verticalRes;
-
-                clearDisplay();
-                //Console.WriteLine($"setDisplayMode {horizontalRes} {verticalRes} {is24BitDepth}");
+                scanLine[x]     = p0Rgb24Bpp;
+                scanLine[x + 1] = p1Rgb24Bpp;
             }
 
+            scanLine.CopyTo(display.Slice(y * 1024));
+        }
+    }
+
+    private unsafe void ClearDisplay()
+    {
+        var span = new Span<uint>(Display.BitmapData.ToPointer(), 0x80000);
+        span.Clear();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ushort GetPixelBgr555(int color)
+    {
+        var m = (byte)((color & 0xFF000000) >> 24);
+        var r = (byte)((color & 0x00FF0000) >> (16 + 3));
+        var g = (byte)((color & 0x0000FF00) >> (8 + 3));
+        var b = (byte)((color & 0x000000FF) >> 3);
+
+        return (ushort)((m << 15) | (b << 10) | (g << 5) | r);
+    }
+
+    private string GetDiskFilename()
+    {
+        var cla = Environment.GetCommandLineArgs();
+        if (cla.Any(s => s.EndsWith(".bin") || s.EndsWith(".cue") || s.EndsWith(".exe")))
+        {
+            var filename = cla.First(s => s.EndsWith(".bin") || s.EndsWith(".cue") || s.EndsWith(".exe"));
+            return filename;
         }
 
-        public void SetVRAMStart(ushort displayVRAMXStart, ushort displayVRAMYStart) {
-            this.displayVRAMXStart = displayVRAMXStart;
-            this.displayVRAMYStart = displayVRAMYStart;
+        //Show the user a dialog so they can pick the bin they want to load.
+        var fileDialog = new OpenFileDialog();
+        fileDialog.Filter = "BIN/CUE files or PSXEXEs(*.bin, *.cue, *.exe)|*.bin;*.cue;*.exe";
+        fileDialog.ShowDialog();
 
-            //Console.WriteLine($"Vram Start {displayVRAMXStart} {displayVRAMYStart}");
+        var file = fileDialog.FileName;
+        return file;
+    }
+
+    private KeyboardInput? GetGamepadButton(Keys keyCode)
+    {
+        if (_gamepadKeyMap.TryGetValue(keyCode, out var gamepadButtonValue))
+            return gamepadButtonValue;
+
+        return null;
+    }
+
+    private void HandleJoyPadDown(object sender, KeyEventArgs e)
+    {
+        var button = GetGamepadButton(e.KeyCode);
+        if (button != null)
+            Psx.JoyPadDown(button.Value);
+    }
+
+    private void HandleJoyPadUp(object sender, KeyEventArgs e)
+    {
+        var button = GetGamepadButton(e.KeyCode);
+        if (button != null)
+            Psx.JoyPadUp(button.Value);
+    }
+
+    private void ToggleDebug(object sender, MouseEventArgs e)
+    {
+        Psx.toggleDebug();
+    }
+
+    public int GetVps()
+    {
+        var currentFps = Fps;
+        Fps = 0;
+        return currentFps;
+    }
+
+    private void VRAMViewerToggle(object sender, KeyEventArgs e)
+    {
+        if (e.KeyCode == Keys.Tab)
+        {
+            if (!IsVramViewer)
+            {
+                Screen.Size = VRAMSize;
+            }
+            else
+            {
+                Screen.Size = _640x480;
+            }
+
+            IsVramViewer = !IsVramViewer;
+            ClearDisplay();
         }
+    }
 
-        public void SetVerticalRange(ushort displayY1, ushort displayY2) {
-            this.displayY1 = displayY1;
-            this.displayY2 = displayY2;
-
-            //Console.WriteLine($"Vertical Range {displayY1} {displayY2}");
+    private void OnTimedEvent(object sender, ElapsedEventArgs e)
+    {
+        if (InvokeRequired)
+        {
+            BeginInvoke(() =>
+            {
+                Text             = $"ProjectPSX | Cpu {(int)((float)CpuCyclesCounter / (PsxMhz / MipsUnderclock) * SyncCycles)}% | Vps {GetVps()}";
+                CpuCyclesCounter = 0;
+            });
         }
+    }
 
-        public void SetHorizontalRange(ushort displayX1, ushort displayX2) {
-            this.displayX1 = displayX1;
-            this.displayX2 = displayX2;
+    public void RunUncapped()
+    {
+        var t = Task.Factory.StartNew(Execute, TaskCreationOptions.LongRunning);
+    }
 
-            //Console.WriteLine($"Horizontal Range {displayX1} {displayX2}");
-        }
+    private void Execute()
+    {
+        Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+        Thread.CurrentThread.Priority             = ThreadPriority.Highest;
 
-        private void vramViewerToggle(object sender, KeyEventArgs e) {
-            if(e.KeyCode == Keys.Tab) {
-                if (!isVramViewer) {
-                    screen.Size = vramSize;
-                } else {
-                    screen.Size = _640x480;
-                }
-                isVramViewer = !isVramViewer;
-                clearDisplay();
+        try
+        {
+            while (true)
+            {
+                Psx.RunFrame();
+                CpuCyclesCounter += Cycles;
             }
         }
-
-        private unsafe void clearDisplay() {
-            Span<uint> span = new Span<uint>(display.BitmapData.ToPointer(), 0x80000);
-            span.Clear();
-        }
-
-        public void Play(byte[] samples) {
-            bufferedWaveProvider.AddSamples(samples, 0, samples.Length);
-
-            if (waveOutEvent.PlaybackState != PlaybackState.Playing) {
-                waveOutEvent.Play();
-            }
-        }
-
-        private void OnTimedEvent(object sender, ElapsedEventArgs e) {
-            Text = $"ProjectPSX | Cpu {(int)((float)cpuCyclesCounter / (PSX_MHZ / MIPS_UNDERCLOCK) * SYNC_CYCLES)}% | Vps {GetVPS()}";
-            cpuCyclesCounter = 0;
-        }
-
-        public void RunUncapped() {
-            Task t = Task.Factory.StartNew(EXECUTE, TaskCreationOptions.LongRunning);
-        }
-
-        private void EXECUTE() {
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
-            Thread.CurrentThread.Priority = ThreadPriority.Highest;
-
-            try {
-                while (true) {
-                    psx.RunFrame();
-                    cpuCyclesCounter += cycles;
-                }
-            } catch (Exception e) {
-                Console.WriteLine(e.ToString());
-            }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+            throw;
         }
     }
 }
