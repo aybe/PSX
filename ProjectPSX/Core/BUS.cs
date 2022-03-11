@@ -26,7 +26,7 @@ namespace ProjectPSX {
         //Other Subsystems
         public InterruptController interruptController;
         private DMA dma;
-        private GPU gpu;
+        private Gpu gpu;
         private CDROM cdrom;
         private TIMERS timers;
         private JOYPAD joypad;
@@ -37,7 +37,7 @@ namespace ProjectPSX {
         private static string bios = "./SCPH1001.BIN";
         private static string ex1 = "./caetlaEXP.BIN";
 
-        public BUS(GPU gpu, CDROM cdrom, SPU spu, JOYPAD joypad, TIMERS timers, MDEC mdec, InterruptController interruptController) {
+        public BUS(Gpu gpu, CDROM cdrom, SPU spu, JOYPAD joypad, TIMERS timers, MDEC mdec, InterruptController interruptController) {
             dma = new DMA(this);
             this.gpu = gpu;
             this.cdrom = cdrom;
@@ -75,9 +75,9 @@ namespace ProjectPSX {
             } else if (addr <= 0x1F80_1803) {
                 return cdrom.load(addr);
             } else if (addr == 0x1F80_1810) {
-                return gpu.loadGPUREAD();
+                return gpu.LoadGPUREAD();
             } else if (addr == 0x1F80_1814) {
-                return gpu.loadGPUSTAT();
+                return gpu.LoadGPUSTAT();
             } else if (addr == 0x1F80_1820) {
                 return mdec.readMDEC0_Data();
             } else if (addr == 0x1F80_1824) {
@@ -124,7 +124,7 @@ namespace ProjectPSX {
             } else if (addr < 0x1F80_1810) {
                 cdrom.write(addr, value);
             } else if (addr < 0x1F80_1820) {
-                gpu.write(addr, value);
+                gpu.Write(addr, value);
             } else if (addr < 0x1F80_1830) {
                 mdec.write(addr, value);
             } else if (addr < 0x1F80_2000) {
@@ -165,7 +165,7 @@ namespace ProjectPSX {
             } else if (addr < 0x1F80_1810) {
                 cdrom.write(addr, value);
             } else if (addr < 0x1F80_1820) {
-                gpu.write(addr, value);
+                gpu.Write(addr, value);
             } else if (addr < 0x1F80_1830) {
                 mdec.write(addr, value);
             } else if (addr < 0x1F80_2000) {
@@ -206,7 +206,7 @@ namespace ProjectPSX {
             } else if (addr < 0x1F80_1810) {
                 cdrom.write(addr, value);
             } else if (addr < 0x1F80_1820) {
-                gpu.write(addr, value);
+                gpu.Write(addr, value);
             } else if (addr < 0x1F80_1830) {
                 mdec.write(addr, value);
             } else if (addr < 0x1F80_2000) {
@@ -305,11 +305,11 @@ namespace ProjectPSX {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void tick(int cycles) {
-            if (gpu.tick(cycles)) interruptController.set(Interrupt.VBLANK);
+            if (gpu.Tick(cycles)) interruptController.set(Interrupt.VBLANK);
             if (cdrom.tick(cycles)) interruptController.set(Interrupt.CDROM);
             if (dma.tick()) interruptController.set(Interrupt.DMA);
 
-            timers.syncGPU(gpu.getBlanksAndDot());
+            timers.syncGPU(gpu.GetBlanksAndDot());
 
             if (timers.tick(0, cycles)) interruptController.set(Interrupt.TIMER0);
             if (timers.tick(1, cycles)) interruptController.set(Interrupt.TIMER1);
@@ -356,7 +356,7 @@ namespace ProjectPSX {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void DmaFromGpu(uint address, int size) { //todo handle the whole array/span
             for (int i = 0; i < size; i++) {
-                var word = gpu.loadGPUREAD();
+                var word = gpu.LoadGPUREAD();
                 DmaToRam(address, word);
                 address += 4;
             }
@@ -364,7 +364,7 @@ namespace ProjectPSX {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void DmaToGpu(Span<uint> buffer) {
-            gpu.processDma(buffer);
+            gpu.ProcessDma(buffer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

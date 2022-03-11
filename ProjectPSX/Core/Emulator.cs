@@ -17,7 +17,7 @@ namespace ProjectPSX {
         private CPU cpu;
         private BUS bus;
         private CDROM cdrom;
-        private GPU gpu;
+        private Gpu gpu;
         private SPU spu;
         private JOYPAD joypad;
         private TIMERS timers;
@@ -35,7 +35,7 @@ namespace ProjectPSX {
 
             cd = new CD(diskFilename);
             spu = new SPU(window, interruptController);
-            gpu = new GPU(window);
+            gpu = new Gpu(window);
             cdrom = new CDROM(cd, spu);
             joypad = new JOYPAD(controller, memoryCard);
             timers = new TIMERS();

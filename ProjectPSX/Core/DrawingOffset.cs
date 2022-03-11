@@ -8,7 +8,7 @@ internal readonly struct DrawingOffset
 
     public DrawingOffset(uint value)
     {
-        X = GPU.Read11BitShort(value & 0x7FF);
-        Y = GPU.Read11BitShort((value >> 11) & 0x7FF);
+        X = Gpu.Read11BitShort(value & 0x7FF);
+        Y = Gpu.Read11BitShort((value >> 11) & 0x7FF);
     }
 }
