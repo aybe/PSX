@@ -57,11 +57,15 @@ namespace ProjectPSX.Core {
         private byte DmaDirection;
         private bool IsOddLine;
 
+        #region GP0(E2h) - Texture Window setting
+
         private uint TextureWindowBits = 0xFFFF_FFFF;
-        private int PreMaskX;
-        private int PreMaskY;
-        private int PostMaskX;
-        private int PostMaskY;
+        private int  TextureWindowPreMaskX;
+        private int  TextureWindowPreMaskY;
+        private int  TextureWindowPostMaskX;
+        private int  TextureWindowPostMaskY;
+
+        #endregion
 
         private ushort DrawingAreaLeft;
         private ushort DrawingAreaRight;
@@ -543,7 +547,7 @@ namespace ProjectPSX.Core {
                         if (primitive.IsTextured) {
                             int texelX = interpolate(w0 - bias0, w1 - bias1, w2 - bias2, t0.X, t1.X, t2.X, area);
                             int texelY = interpolate(w0 - bias0, w1 - bias1, w2 - bias2, t0.Y, t1.Y, t2.Y, area);
-                            int texel = getTexel(maskTexelAxis(texelX, PreMaskX, PostMaskX), maskTexelAxis(texelY, PreMaskY, PostMaskY), primitive.Clut, primitive.TextureBase, primitive.Depth);
+                            int texel = getTexel(maskTexelAxis(texelX, TextureWindowPreMaskX, TextureWindowPostMaskX), maskTexelAxis(texelY, TextureWindowPreMaskY, TextureWindowPostMaskY), primitive.Clut, primitive.TextureBase, primitive.Depth);
                             if (texel == 0) {
                                 w0 += A12;
                                 w1 += A20;
@@ -809,7 +813,7 @@ namespace ProjectPSX.Core {
 
                     if (primitive.IsTextured) {
                         //int texel = getTexel(u, v, clut, textureBase, depth);
-                        int texel = getTexel(maskTexelAxis(u, PreMaskX, PostMaskX),maskTexelAxis(v, PreMaskY, PostMaskY),primitive.Clut, primitive.TextureBase, primitive.Depth);
+                        int texel = getTexel(maskTexelAxis(u, TextureWindowPreMaskX, TextureWindowPostMaskX),maskTexelAxis(v, TextureWindowPreMaskY, TextureWindowPostMaskY),primitive.Clut, primitive.TextureBase, primitive.Depth);
                         if (texel == 0) {
                             continue;
                         }
@@ -978,22 +982,20 @@ namespace ProjectPSX.Core {
             //Console.WriteLine("[GPU] [GP0] DrawMode ");
         }
 
-        private void GP0_E2_SetTextureWindow(uint val) {
-            uint bits = val & 0xFF_FFFF;
-
-            if (bits == TextureWindowBits) return;
+        private void GP0_E2_SetTextureWindow(uint value)
+        {
+            var bits = value & 0xFF_FFFF;
+            if (bits == TextureWindowBits)
+                return;
 
             TextureWindowBits = bits;
 
-            byte textureWindowMaskX = (byte)(val & 0x1F);
-            byte textureWindowMaskY = (byte)((val >> 5) & 0x1F);
-            byte textureWindowOffsetX = (byte)((val >> 10) & 0x1F);
-            byte textureWindowOffsetY = (byte)((val >> 15) & 0x1F);
+            var textureWindow = new TextureWindow(value);
 
-            PreMaskX = ~(textureWindowMaskX * 8);
-            PreMaskY = ~(textureWindowMaskY * 8);
-            PostMaskX = (textureWindowOffsetX & textureWindowMaskX) * 8;
-            PostMaskY = (textureWindowOffsetY & textureWindowMaskY) * 8;
+            TextureWindowPreMaskX  = ~(textureWindow.MaskX * 8);
+            TextureWindowPreMaskY  = ~(textureWindow.MaskY * 8);
+            TextureWindowPostMaskX = (textureWindow.OffsetX & textureWindow.MaskX) * 8;
+            TextureWindowPostMaskY = (textureWindow.OffsetY & textureWindow.MaskY) * 8;
         }
 
         private void GP0_E3_SetDrawingAreaTopLeft(uint val) {
