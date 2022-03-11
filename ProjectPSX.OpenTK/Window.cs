@@ -1,156 +1,179 @@
-﻿using OpenTK.Windowing.Common;
-using OpenTK.Windowing.Desktop;
+﻿using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL;
-using System.Collections.Generic;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using ProjectPSX.Input;
 
-namespace ProjectPSX.OpenTK {
-    public class Window : GameWindow, IHostWindow {
+namespace ProjectPSX.OpenTK;
 
-        const int PSX_MHZ = 33868800;
-        const int SYNC_CYCLES = 100;
-        const int MIPS_UNDERCLOCK = 2;
+public class Window : GameWindow, IHostWindow
+{
+    private const    int                             PSX_MHZ         = 33868800;
+    private const    int                             SYNC_CYCLES     = 100;
+    private const    int                             MIPS_UNDERCLOCK = 2;
+    private          Dictionary<Keys, KeyboardInput> _gamepadKeyMap;
+    private readonly AudioPlayer                     audioPlayer = new();
+    private          int                             cpuCyclesCounter;
+    private          int[]                           displayBuffer;
 
-        private Emulator psx;
-        private int[] displayBuffer;
-        private Dictionary<Keys, KeyboardInput> _gamepadKeyMap;
-        private AudioPlayer audioPlayer = new AudioPlayer();
-        private int vSyncCounter;
-        private int cpuCyclesCounter;
+    private Emulator psx;
+    private int      vSyncCounter;
 
-        public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings) {
-            MakeCurrent();
-        }
+    public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
+    {
+        MakeCurrent();
+    }
 
-        private void Window_FileDrop(FileDropEventArgs fileDrop) {
-            string[] files = fileDrop.FileNames;
-            string file = files[0];
-            if(file.EndsWith(".bin") || file.EndsWith(".cue") || file.EndsWith(".exe")) {
-                psx = new Emulator(this, file);
-            }
-        }
+    public void Render(int[] buffer24, ushort[] buffer16)
+    {
+        vSyncCounter++;
+        displayBuffer = buffer24;
+    }
 
-        public void SetExecutable(string path)
+    public void SetDisplayMode(int horizontalRes, int verticalRes, bool is24BitDepth)
+    {
+        //throw new System.NotImplementedException();
+    }
+
+    public void SetHorizontalRange(ushort displayX1, ushort displayX2)
+    {
+        //throw new System.NotImplementedException();
+    }
+
+    public void SetVRAMStart(ushort displayVRAMXStart, ushort displayVRAMYStart)
+    {
+        //throw new System.NotImplementedException();
+    }
+
+    public void SetVerticalRange(ushort displayY1, ushort displayY2)
+    {
+        //throw new System.NotImplementedException();
+    }
+
+    public void Play(byte[] samples)
+    {
+        audioPlayer.UpdateAudio(samples);
+    }
+
+    private void Window_FileDrop(FileDropEventArgs fileDrop)
+    {
+        var files = fileDrop.FileNames;
+        var file = files[0];
+        if (file.EndsWith(".bin") || file.EndsWith(".cue") || file.EndsWith(".exe"))
         {
-            psx?.Dispose();
-
-            psx = new Emulator(this, path);
+            psx = new Emulator(this, file);
         }
+    }
 
-        protected override void OnLoad() {
-            _gamepadKeyMap = new Dictionary<Keys, KeyboardInput>() {
-                { Keys.Space, KeyboardInput.Space},
-                { Keys.Z , KeyboardInput.Z },
-                { Keys.C , KeyboardInput.C },
-                { Keys.Enter , KeyboardInput.Enter },
-                { Keys.Up , KeyboardInput.Up },
-                { Keys.Right , KeyboardInput.Right },
-                { Keys.Down , KeyboardInput.Down },
-                { Keys.Left , KeyboardInput.Left },
-                { Keys.F1 , KeyboardInput.D1 },
-                { Keys.F3 , KeyboardInput.D3 },
-                { Keys.Q , KeyboardInput.Q },
-                { Keys.E , KeyboardInput.E },
-                { Keys.W , KeyboardInput.W },
-                { Keys.D , KeyboardInput.D },
-                { Keys.S , KeyboardInput.S },
-                { Keys.A , KeyboardInput.A },
-            };
+    public void SetExecutable(string path)
+    {
+        psx?.Dispose();
 
-            FileDrop += Window_FileDrop;
+        psx = new Emulator(this, path);
+    }
 
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Lequal);
-            GL.Enable(EnableCap.Texture2D);
-            GL.ClearColor(1, 1, 1, 1);
-        }
+    protected override void OnLoad()
+    {
+        _gamepadKeyMap = new Dictionary<Keys, KeyboardInput>
+        {
+            { Keys.Space, KeyboardInput.Space },
+            { Keys.Z, KeyboardInput.Z },
+            { Keys.C, KeyboardInput.C },
+            { Keys.Enter, KeyboardInput.Enter },
+            { Keys.Up, KeyboardInput.Up },
+            { Keys.Right, KeyboardInput.Right },
+            { Keys.Down, KeyboardInput.Down },
+            { Keys.Left, KeyboardInput.Left },
+            { Keys.F1, KeyboardInput.D1 },
+            { Keys.F3, KeyboardInput.D3 },
+            { Keys.Q, KeyboardInput.Q },
+            { Keys.E, KeyboardInput.E },
+            { Keys.W, KeyboardInput.W },
+            { Keys.D, KeyboardInput.D },
+            { Keys.S, KeyboardInput.S },
+            { Keys.A, KeyboardInput.A }
+        };
 
-        protected override void OnRenderFrame(FrameEventArgs args) {
-            //Console.WriteLine(this.RenderFrequency);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+        FileDrop += Window_FileDrop;
 
-            int id = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, id);
+        GL.Enable(EnableCap.Blend);
+        GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        GL.Enable(EnableCap.DepthTest);
+        GL.DepthFunc(DepthFunction.Lequal);
+        GL.Enable(EnableCap.Texture2D);
+        GL.ClearColor(1, 1, 1, 1);
+    }
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0,
-                PixelInternalFormat.Rgb,
-                1024, 512, 0,
-                PixelFormat.Bgra,
-                PixelType.UnsignedByte,
-                displayBuffer);
+    protected override void OnRenderFrame(FrameEventArgs args)
+    {
+        //Console.WriteLine(this.RenderFrequency);
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            GL.TexParameter(TextureTarget.Texture2D,
-                TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D,
-                TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+        var id = GL.GenTexture();
+        GL.BindTexture(TextureTarget.Texture2D, id);
 
-            GL.Begin(PrimitiveType.Quads);
-            GL.TexCoord2(0, 1); GL.Vertex2(-1, -1);
-            GL.TexCoord2(1, 1); GL.Vertex2(1, -1);
-            GL.TexCoord2(1, 0); GL.Vertex2(1, 1);
-            GL.TexCoord2(0, 0); GL.Vertex2(-1, 1);
-            GL.End();
+        GL.TexImage2D(TextureTarget.Texture2D, 0,
+            PixelInternalFormat.Rgb,
+            1024, 512, 0,
+            PixelFormat.Bgra,
+            PixelType.UnsignedByte,
+            displayBuffer);
 
-            GL.DeleteTexture(id);
-            SwapBuffers();
-            //Console.WriteLine("painting");
-        }
+        GL.TexParameter(TextureTarget.Texture2D,
+            TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
 
-        protected override void OnUpdateFrame(FrameEventArgs args) {
-            base.OnUpdateFrame(args);
-            psx?.RunFrame();
-        }
+        GL.TexParameter(TextureTarget.Texture2D,
+            TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 
-        protected override void OnKeyDown(KeyboardKeyEventArgs e) {
-            KeyboardInput? button = GetGamepadButton(e.Key);
-            if (button != null)
-                psx.JoyPadDown(button.Value);
-        }
+        GL.Begin(PrimitiveType.Quads);
+        GL.TexCoord2(0, 1);
+        GL.Vertex2(-1, -1);
+        GL.TexCoord2(1, 1);
+        GL.Vertex2(1, -1);
+        GL.TexCoord2(1, 0);
+        GL.Vertex2(1, 1);
+        GL.TexCoord2(0, 0);
+        GL.Vertex2(-1, 1);
+        GL.End();
 
-        protected override void OnKeyUp(KeyboardKeyEventArgs e) {
-            KeyboardInput? button = GetGamepadButton(e.Key);
-            if (button != null)
-                psx.JoyPadUp(button.Value);
-        }
+        GL.DeleteTexture(id);
+        SwapBuffers();
+        //Console.WriteLine("painting");
+    }
 
-        private KeyboardInput? GetGamepadButton(Keys keyCode) {
-            if (_gamepadKeyMap.TryGetValue(keyCode, out KeyboardInput gamepadButtonValue))
-                return gamepadButtonValue;
-            return null;
-        }
+    protected override void OnUpdateFrame(FrameEventArgs args)
+    {
+        base.OnUpdateFrame(args);
+        psx?.RunFrame();
+    }
 
-        public void Render(int[] buffer24, ushort[] buffer16) {
-            vSyncCounter++;
-            displayBuffer = buffer24;
-        }
+    protected override void OnKeyDown(KeyboardKeyEventArgs e)
+    {
+        var button = GetGamepadButton(e.Key);
+        if (button != null)
+            psx.JoyPadDown(button.Value);
+    }
 
-        public int GetVPS() {
-            int fps = vSyncCounter;
-            vSyncCounter = 0;
-            return fps;
-        }
+    protected override void OnKeyUp(KeyboardKeyEventArgs e)
+    {
+        var button = GetGamepadButton(e.Key);
+        if (button != null)
+            psx.JoyPadUp(button.Value);
+    }
 
-        public void SetDisplayMode(int horizontalRes, int verticalRes, bool is24BitDepth) {
-            //throw new System.NotImplementedException();
-        }
+    private KeyboardInput? GetGamepadButton(Keys keyCode)
+    {
+        if (_gamepadKeyMap.TryGetValue(keyCode, out var gamepadButtonValue))
+            return gamepadButtonValue;
 
-        public void SetHorizontalRange(ushort displayX1, ushort displayX2) {
-            //throw new System.NotImplementedException();
-        }
+        return null;
+    }
 
-        public void SetVRAMStart(ushort displayVRAMXStart, ushort displayVRAMYStart) {
-            //throw new System.NotImplementedException();
-        }
-
-        public void SetVerticalRange(ushort displayY1, ushort displayY2) {
-            //throw new System.NotImplementedException();
-        }
-
-        public void Play(byte[] samples) {
-            audioPlayer.UpdateAudio(samples);
-        }
+    public int GetVPS()
+    {
+        var fps = vSyncCounter;
+        vSyncCounter = 0;
+        return fps;
     }
 }
