@@ -71,8 +71,6 @@ namespace ProjectPSX.Core {
         private ushort DrawingAreaRight;
         private ushort DrawingAreaTop;
         private ushort DrawingAreaBottom;
-        private short DrawingXOffset;
-        private short DrawingYOffset;
 
         private ushort DisplayVRAMStartX;
         private ushort DisplayVRAMStartY;
@@ -89,7 +87,9 @@ namespace ProjectPSX.Core {
             this.window = window;
             mode = Mode.COMMAND;
             GP1_00_ResetGPU();
-            DrawMode = new DrawMode();
+            // TODO delete these once finished
+            DrawMode      = new DrawMode();
+            DrawingOffset = new DrawingOffset();
         }
 
         public bool tick(int cycles) {
@@ -431,8 +431,8 @@ namespace ProjectPSX.Core {
                 if (isShaded) c[i] = buffer[pointer++];
 
                 uint xy = buffer[pointer++];
-                v[i].X = (short)(signed11bit(xy & 0xFFFF) + DrawingXOffset);
-                v[i].Y = (short)(signed11bit(xy >> 16) + DrawingYOffset);
+                v[i].X = (short)(Read11BitShort(xy & 0xFFFF) + DrawingOffset.X);
+                v[i].Y = (short)(Read11BitShort(xy >> 16) + DrawingOffset.Y);
 
                 if (isTextured) {
                     uint textureData = buffer[pointer++];
@@ -651,19 +651,19 @@ namespace ProjectPSX.Core {
         }
 
         private void rasterizeLine(uint v1, uint v2, uint color1, uint color2, bool isTransparent) {
-            short x = signed11bit(v1 & 0xFFFF);
-            short y = signed11bit(v1 >> 16);
+            short x = Read11BitShort(v1 & 0xFFFF);
+            short y = Read11BitShort(v1 >> 16);
 
-            short x2 = signed11bit(v2 & 0xFFFF);
-            short y2 = signed11bit(v2 >> 16);
+            short x2 = Read11BitShort(v2 & 0xFFFF);
+            short y2 = Read11BitShort(v2 >> 16);
 
             if (Math.Abs(x - x2) > 0x3FF || Math.Abs(y - y2) > 0x1FF) return;
 
-            x += DrawingXOffset;
-            y += DrawingYOffset;
+            x += DrawingOffset.X;
+            y += DrawingOffset.Y;
 
-            x2 += DrawingXOffset;
-            y2 += DrawingYOffset;
+            x2 += DrawingOffset.X;
+            y2 += DrawingOffset.Y;
 
             int w = x2 - x;
             int h = y2 - y;
@@ -775,8 +775,8 @@ namespace ProjectPSX.Core {
                     break;
             }
 
-            short y = signed11bit((uint)(yo + DrawingYOffset));
-            short x = signed11bit((uint)(xo + DrawingXOffset));
+            short y = Read11BitShort((uint)(yo + DrawingOffset.Y));
+            short x = Read11BitShort((uint)(xo + DrawingOffset.X));
 
             Point2D origin;
             origin.X = x;
@@ -1008,9 +1008,9 @@ namespace ProjectPSX.Core {
             DrawingAreaRight = (ushort)(val & 0x3FF);
         }
 
-        private void GP0_E5_SetDrawingOffset(uint val) {
-            DrawingXOffset = signed11bit(val & 0x7FF);
-            DrawingYOffset = signed11bit((val >> 11) & 0x7FF);
+        private void GP0_E5_SetDrawingOffset(uint val)
+        {
+            DrawingOffset = new DrawingOffset(val);
         }
 
         private void GP0_E6_SetMaskBit(uint val) {
@@ -1119,8 +1119,9 @@ namespace ProjectPSX.Core {
         private          int      lastHr;
         private          int      lastVr;
         private          bool     last24;
-        
-        private DrawMode DrawMode;
+
+        private DrawMode      DrawMode;
+        private DrawingOffset DrawingOffset;
 
         private  DisplayMode DisplayMode { get; set; }
         
@@ -1132,7 +1133,7 @@ namespace ProjectPSX.Core {
                 case 0x2: GPUREAD = TextureWindowBits; break;
                 case 0x3: GPUREAD = (uint)(DrawingAreaTop << 10 | DrawingAreaLeft); break;
                 case 0x4: GPUREAD = (uint)(DrawingAreaBottom << 10 | DrawingAreaRight); break;
-                case 0x5: GPUREAD = (uint)(DrawingYOffset << 11 | (ushort)DrawingXOffset); break;
+                case 0x5: GPUREAD = (uint)(DrawingOffset.Y << 11 | (ushort)DrawingOffset.X); break;
                 case 0x7: GPUREAD = 2; break;
                 case 0x8: GPUREAD = 0; break;
                 default: Console.WriteLine("[GPU] GP1 Unhandled GetInfo: " + info.ToString("x8")); break;
@@ -1223,8 +1224,9 @@ namespace ProjectPSX.Core {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static short signed11bit(uint n) {
-            return (short)(((int)n << 21) >> 21);
+        public static short Read11BitShort(uint value)
+        {
+            return (short)(((int)value << 21) >> 21);
         }
 
         //This needs to go away once a BGR bitmap is achieved
