@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using ProjectPSX.WPF.Frontend.Shared;
+using ProjectPSX.WPF.Interop;
 
 namespace ProjectPSX.WPF.Frontend;
 
@@ -79,6 +80,7 @@ internal sealed class MainModelCommands : BaseModelCommands<MainModel>
 
     private void OpenConsoleExecute()
     {
+        NativeMethods.AllocConsole();
     }
 
     #endregion

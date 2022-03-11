@@ -49,7 +49,13 @@ internal class BaseVideoModel : BaseModel<BaseVideoModelCommands>
 
     private void UpdateVideoData(UpdateVideoDataMessage message)
     {
-        App.Current.Dispatcher.BeginInvoke(UpdateVideoDataImpl, DispatcherPriority.Render, message);
+        var current = App.Current;
+        if (current is null)
+        {
+            return; // BUG application will be null on close
+        }
+
+        current.Dispatcher.BeginInvoke(UpdateVideoDataImpl, DispatcherPriority.Background, message);
     }
 
     private unsafe void UpdateVideoDataImpl(UpdateVideoDataMessage message)
@@ -114,7 +120,9 @@ internal class BaseVideoModel : BaseModel<BaseVideoModelCommands>
                 {
                     for (var x = 0; x < context.Width; x++)
                     {
-                        var i = (message.Size.Y + y) * 1024 + (message.Size.X + x) * 1;
+                        var x1 = message.Size.X + x;
+                        var y1 = message.Size.Y + y;
+                        var i = y1 * 1024 + x1 * 1;
                         var r = ((message.Buffer16[i] >> 00) & 0b11111) * 255 / 31;
                         var g = ((message.Buffer16[i] >> 05) & 0b11111) * 255 / 31;
                         var b = ((message.Buffer16[i] >> 10) & 0b11111) * 255 / 31;
