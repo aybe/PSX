@@ -43,53 +43,53 @@ namespace ProjectPSX.Core {
         private bool isTextureDisabledAllowed;
 
         //GP0
-        private byte textureXBase;
-        private byte textureYBase;
-        private byte transparencyMode;
-        private byte textureDepth;
-        private bool isDithered;
-        private bool isDrawingToDisplayAllowed;
-        private int  maskWhileDrawing;
-        private bool checkMaskBeforeDraw;
-        private bool isInterlaceField;
-        private bool isTextureDisabled;
-        private bool isDisplayDisabled;
-        private bool isInterruptRequested;
-        private bool isDmaRequest;
+        private byte TextureXBase;
+        private byte TextureYBase;
+        private byte TransparencyMode;
+        private byte TextureDepth;
+        private bool IsDithered;
+        private bool IsDrawingToDisplayAllowed;
+        private int  MaskWhileDrawing;
+        private bool CheckMaskBeforeDraw;
+        private bool IsInterlaceField;
+        private bool IsTextureDisabled;
+        private bool IsDisplayDisabled;
+        private bool IsInterruptRequested;
+        private bool IsDmaRequest;
 
-        private bool isReadyToReceiveCommand;
-        private bool isReadyToSendVRAMToCPU;
-        private bool isReadyToReceiveDMABlock;
+        private bool IsReadyToReceiveCommand;
+        private bool IsReadyToSendVRAMToCPU;
+        private bool IsReadyToReceiveDmaBlock;
 
-        private byte dmaDirection;
-        private bool isOddLine;
+        private byte DmaDirection;
+        private bool IsOddLine;
 
-        private bool isTexturedRectangleXFlipped;
-        private bool isTexturedRectangleYFlipped;
+        private bool IsTexturedRectangleXFlipped;
+        private bool IsTexturedRectangleYFlipped;
 
-        private uint textureWindowBits = 0xFFFF_FFFF;
-        private int preMaskX;
-        private int preMaskY;
-        private int postMaskX;
-        private int postMaskY;
+        private uint TextureWindowBits = 0xFFFF_FFFF;
+        private int PreMaskX;
+        private int PreMaskY;
+        private int PostMaskX;
+        private int PostMaskY;
 
-        private ushort drawingAreaLeft;
-        private ushort drawingAreaRight;
-        private ushort drawingAreaTop;
-        private ushort drawingAreaBottom;
-        private short drawingXOffset;
-        private short drawingYOffset;
+        private ushort DrawingAreaLeft;
+        private ushort DrawingAreaRight;
+        private ushort DrawingAreaTop;
+        private ushort DrawingAreaBottom;
+        private short DrawingXOffset;
+        private short DrawingYOffset;
 
-        private ushort displayVRAMXStart;
-        private ushort displayVRAMYStart;
-        private ushort displayX1;
-        private ushort displayX2;
-        private ushort displayY1;
-        private ushort displayY2;
+        private ushort DisplayVRAMStartX;
+        private ushort DisplayVRAMStartY;
+        private ushort DisplayX1;
+        private ushort DisplayX2;
+        private ushort DisplayY1;
+        private ushort DisplayY2;
 
-        private int videoCycles;
-        private int horizontalTiming = 3413;
-        private int verticalTiming = 263;
+        private int VideoCycles;
+        private int TimingHorizontal = 3413;
+        private int TimingVertical = 263;
 
         public GPU(IHostWindow window) {
             this.window = window;
@@ -99,22 +99,22 @@ namespace ProjectPSX.Core {
 
         public bool tick(int cycles) {
             //Video clock is the cpu clock multiplied by 11/7.
-            videoCycles += cycles * 11 / 7;
+            VideoCycles += cycles * 11 / 7;
 
 
-            if (videoCycles >= horizontalTiming) {
-                videoCycles -= horizontalTiming;
+            if (VideoCycles >= TimingHorizontal) {
+                VideoCycles -= TimingHorizontal;
                 scanLine++;
 
                 if (!DisplayMode.IsVerticalResolution480) {
-                    isOddLine = (scanLine & 0x1) != 0;
+                    IsOddLine = (scanLine & 0x1) != 0;
                 }
 
-                if (scanLine >= verticalTiming) {
+                if (scanLine >= TimingVertical) {
                     scanLine = 0;
 
                     if (DisplayMode.IsVerticalInterlace && DisplayMode.IsVerticalResolution480) {
-                        isOddLine = !isOddLine;
+                        IsOddLine = !IsOddLine;
                     }
 
                     window.Render(VRAM32.Pixels, VRAM16.Pixels);
@@ -126,8 +126,8 @@ namespace ProjectPSX.Core {
 
         public (int dot, bool hblank, bool bBlank) getBlanksAndDot() { //test
             int dot = dotClockDiv[DisplayMode.HorizontalResolution2 << 2 | DisplayMode.HorizontalResolution1];
-            bool hBlank = videoCycles < displayX1 || videoCycles > displayX2;
-            bool vBlank = scanLine < displayY1 || scanLine > displayY2;
+            bool hBlank = VideoCycles < DisplayX1 || VideoCycles > DisplayX2;
+            bool vBlank = scanLine < DisplayY1 || scanLine > DisplayY2;
 
             return (dot, hBlank, vBlank);
         }
@@ -135,33 +135,33 @@ namespace ProjectPSX.Core {
         public uint loadGPUSTAT() {
             uint GPUSTAT = 0;
 
-            GPUSTAT |= textureXBase;
-            GPUSTAT |= (uint)textureYBase << 4;
-            GPUSTAT |= (uint)transparencyMode << 5;
-            GPUSTAT |= (uint)textureDepth << 7;
-            GPUSTAT |= (uint)(isDithered ? 1 : 0) << 9;
-            GPUSTAT |= (uint)(isDrawingToDisplayAllowed ? 1 : 0) << 10;
-            GPUSTAT |= (uint)maskWhileDrawing << 11;
-            GPUSTAT |= (uint)(checkMaskBeforeDraw ? 1 : 0) << 12;
-            GPUSTAT |= (uint)(isInterlaceField ? 1 : 0) << 13;
+            GPUSTAT |= TextureXBase;
+            GPUSTAT |= (uint)TextureYBase << 4;
+            GPUSTAT |= (uint)TransparencyMode << 5;
+            GPUSTAT |= (uint)TextureDepth << 7;
+            GPUSTAT |= (uint)(IsDithered ? 1 : 0) << 9;
+            GPUSTAT |= (uint)(IsDrawingToDisplayAllowed ? 1 : 0) << 10;
+            GPUSTAT |= (uint)MaskWhileDrawing << 11;
+            GPUSTAT |= (uint)(CheckMaskBeforeDraw ? 1 : 0) << 12;
+            GPUSTAT |= (uint)(IsInterlaceField ? 1 : 0) << 13;
             GPUSTAT |= (uint)(DisplayMode.IsReverseFlag ? 1 : 0) << 14;
-            GPUSTAT |= (uint)(isTextureDisabled ? 1 : 0) << 15;
+            GPUSTAT |= (uint)(IsTextureDisabled ? 1 : 0) << 15;
             GPUSTAT |= (uint)DisplayMode.HorizontalResolution2 << 16;
             GPUSTAT |= (uint)DisplayMode.HorizontalResolution1 << 17;
             GPUSTAT |= (uint)(DisplayMode.IsVerticalResolution480 ? 1 : 0);
             GPUSTAT |= (uint)(DisplayMode.IsPAL ? 1 : 0) << 20;
             GPUSTAT |= (uint)(DisplayMode.Is24BitDepth ? 1 : 0) << 21;
             GPUSTAT |= (uint)(DisplayMode.IsVerticalInterlace ? 1 : 0) << 22;
-            GPUSTAT |= (uint)(isDisplayDisabled ? 1 : 0) << 23;
-            GPUSTAT |= (uint)(isInterruptRequested ? 1 : 0) << 24;
-            GPUSTAT |= (uint)(isDmaRequest ? 1 : 0) << 25;
+            GPUSTAT |= (uint)(IsDisplayDisabled ? 1 : 0) << 23;
+            GPUSTAT |= (uint)(IsInterruptRequested ? 1 : 0) << 24;
+            GPUSTAT |= (uint)(IsDmaRequest ? 1 : 0) << 25;
 
             GPUSTAT |= (uint)/*(isReadyToReceiveCommand ? 1 : 0)*/1 << 26;
-            GPUSTAT |= (uint)/*(isReadyToSendVRAMToCPU ? 1 : 0)*/1 << 27;
+            GPUSTAT |= (uint)/*(IsReadyToSendVRAMToCPU ? 1 : 0)*/1 << 27;
             GPUSTAT |= (uint)/*(isReadyToReceiveDMABlock ? 1 : 0)*/1 << 28;
 
-            GPUSTAT |= (uint)dmaDirection << 29;
-            GPUSTAT |= (uint)(isOddLine ? 1 : 0) << 31;
+            GPUSTAT |= (uint)DmaDirection << 29;
+            GPUSTAT |= (uint)(IsOddLine ? 1 : 0) << 31;
 
             //Console.WriteLine("[GPU] LOAD GPUSTAT: {0}", GPUSTAT.ToString("x8"));
             return GPUSTAT;
@@ -217,8 +217,8 @@ namespace ProjectPSX.Core {
             ushort pixel1 = (ushort)(value >> 16);
             ushort pixel0 = (ushort)(value & 0xFFFF);
 
-            pixel0 |= (ushort)(maskWhileDrawing << 15);
-            pixel1 |= (ushort)(maskWhileDrawing << 15);
+            pixel0 |= (ushort)(MaskWhileDrawing << 15);
+            pixel1 |= (ushort)(MaskWhileDrawing << 15);
 
             drawVRAMPixel(pixel0);
 
@@ -249,7 +249,7 @@ namespace ProjectPSX.Core {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void drawVRAMPixel(ushort val) {
-            if (checkMaskBeforeDraw) {
+            if (CheckMaskBeforeDraw) {
                 int bg = VRAM32.GetPixel(_vRamTransfer.X, _vRamTransfer.Y);
 
                 if (bg >> 24 == 0) {
@@ -399,7 +399,7 @@ namespace ProjectPSX.Core {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void GP0_1F_InterruptRequest() {
             pointer++;
-            isInterruptRequested = true;
+            IsInterruptRequested = true;
         }
 
         public void GP0_RenderPolygon(Span<uint> buffer) {
@@ -430,14 +430,14 @@ namespace ProjectPSX.Core {
                 c[1] = color; //triangle 2 opaque color
             }
 
-            primitive.SemiTransparencyMode = transparencyMode;
+            primitive.SemiTransparencyMode = TransparencyMode;
 
             for (int i = 0; i < vertexN; i++) {
                 if (isShaded) c[i] = buffer[pointer++];
 
                 uint xy = buffer[pointer++];
-                v[i].X = (short)(signed11bit(xy & 0xFFFF) + drawingXOffset);
-                v[i].Y = (short)(signed11bit(xy >> 16) + drawingYOffset);
+                v[i].X = (short)(signed11bit(xy & 0xFFFF) + DrawingXOffset);
+                v[i].Y = (short)(signed11bit(xy >> 16) + DrawingYOffset);
 
                 if (isTextured) {
                     uint textureData = buffer[pointer++];
@@ -451,16 +451,16 @@ namespace ProjectPSX.Core {
                         uint texpage = textureData >> 16;
 
                         //SET GLOBAL GPU E1
-                        textureXBase = (byte)(texpage & 0xF);
-                        textureYBase = (byte)((texpage >> 4) & 0x1);
-                        transparencyMode = (byte)((texpage >> 5) & 0x3);
-                        textureDepth = (byte)((texpage >> 7) & 0x3);
-                        isTextureDisabled = isTextureDisabledAllowed && ((texpage >> 11) & 0x1) != 0;
+                        TextureXBase = (byte)(texpage & 0xF);
+                        TextureYBase = (byte)((texpage >> 4) & 0x1);
+                        TransparencyMode = (byte)((texpage >> 5) & 0x3);
+                        TextureDepth = (byte)((texpage >> 7) & 0x3);
+                        IsTextureDisabled = isTextureDisabledAllowed && ((texpage >> 11) & 0x1) != 0;
 
-                        primitive.Depth = textureDepth;
-                        primitive.TextureBase.X = (short)(textureXBase << 6);
-                        primitive.TextureBase.Y = (short)(textureYBase << 8);
-                        primitive.SemiTransparencyMode = transparencyMode;
+                        primitive.Depth = TextureDepth;
+                        primitive.TextureBase.X = (short)(TextureXBase << 6);
+                        primitive.TextureBase.Y = (short)(TextureYBase << 8);
+                        primitive.SemiTransparencyMode = TransparencyMode;
                     }
                 }
             }
@@ -491,10 +491,10 @@ namespace ProjectPSX.Core {
             if ((maxX - minX) > 1024 || (maxY - minY) > 512) return;
 
             /*clip*/
-            min.X = (short)Math.Max(minX, drawingAreaLeft);
-            min.Y = (short)Math.Max(minY, drawingAreaTop);
-            max.X = (short)Math.Min(maxX, drawingAreaRight);
-            max.Y = (short)Math.Min(maxY, drawingAreaBottom);
+            min.X = (short)Math.Max(minX, DrawingAreaLeft);
+            min.Y = (short)Math.Max(minY, DrawingAreaTop);
+            max.X = (short)Math.Min(maxX, DrawingAreaRight);
+            max.Y = (short)Math.Min(maxY, DrawingAreaBottom);
 
             int A01 = v0.Y - v1.Y, B01 = v1.X - v0.X;
             int A12 = v1.Y - v2.Y, B12 = v2.X - v1.X;
@@ -525,7 +525,7 @@ namespace ProjectPSX.Core {
                         //I assume it could be handled recalculating AXX and BXX offsets but those maths are beyond my scope
 
                         //Check background mask
-                        if (checkMaskBeforeDraw) {
+                        if (CheckMaskBeforeDraw) {
                             _color0.Value = (uint)VRAM32.GetPixel(x, y); //back
                             if (_color0.M != 0) {
                                 w0 += A12;
@@ -552,7 +552,7 @@ namespace ProjectPSX.Core {
                         if (primitive.IsTextured) {
                             int texelX = interpolate(w0 - bias0, w1 - bias1, w2 - bias2, t0.X, t1.X, t2.X, area);
                             int texelY = interpolate(w0 - bias0, w1 - bias1, w2 - bias2, t0.Y, t1.Y, t2.Y, area);
-                            int texel = getTexel(maskTexelAxis(texelX, preMaskX, postMaskX), maskTexelAxis(texelY, preMaskY, postMaskY), primitive.Clut, primitive.TextureBase, primitive.Depth);
+                            int texel = getTexel(maskTexelAxis(texelX, PreMaskX, PostMaskX), maskTexelAxis(texelY, PreMaskY, PostMaskY), primitive.Clut, primitive.TextureBase, primitive.Depth);
                             if (texel == 0) {
                                 w0 += A12;
                                 w1 += A20;
@@ -577,7 +577,7 @@ namespace ProjectPSX.Core {
                             color = handleSemiTransp(x, y, color, primitive.SemiTransparencyMode);
                         }
 
-                        color |= maskWhileDrawing << 24;
+                        color |= MaskWhileDrawing << 24;
 
                         VRAM32.SetPixel(x, y, color);
 
@@ -664,11 +664,11 @@ namespace ProjectPSX.Core {
 
             if (Math.Abs(x - x2) > 0x3FF || Math.Abs(y - y2) > 0x1FF) return;
 
-            x += drawingXOffset;
-            y += drawingYOffset;
+            x += DrawingXOffset;
+            y += DrawingYOffset;
 
-            x2 += drawingXOffset;
-            y2 += drawingYOffset;
+            x2 += DrawingXOffset;
+            y2 += DrawingYOffset;
 
             int w = x2 - x;
             int h = y2 - y;
@@ -697,13 +697,13 @@ namespace ProjectPSX.Core {
                 //x = (short)Math.Min(Math.Max(x, drawingAreaLeft), drawingAreaRight); //this generates glitches on RR4
                 //y = (short)Math.Min(Math.Max(y, drawingAreaTop), drawingAreaBottom);
 
-                if (x >= drawingAreaLeft && x < drawingAreaRight && y >= drawingAreaTop && y < drawingAreaBottom) {
+                if (x >= DrawingAreaLeft && x < DrawingAreaRight && y >= DrawingAreaTop && y < DrawingAreaBottom) {
                     //if (primitive.isSemiTransparent && (!primitive.isTextured || (color & 0xFF00_0000) != 0)) {
                     if (isTransparent) {
-                        color = handleSemiTransp(x, y, color, transparencyMode);
+                        color = handleSemiTransp(x, y, color, TransparencyMode);
                     }
 
-                    color |= maskWhileDrawing << 24;
+                    color |= MaskWhileDrawing << 24;
 
                     VRAM32.SetPixel(x, y, color);
                     ushort color3 = (ushort)Rgb888ToRgb555(color);
@@ -755,10 +755,10 @@ namespace ProjectPSX.Core {
                 primitive.Clut.Y = (short)((palette >> 6) & 0x1FF);
             }
 
-            primitive.Depth = textureDepth;
-            primitive.TextureBase.X = (short)(textureXBase << 6);
-            primitive.TextureBase.Y = (short)(textureYBase << 8);
-            primitive.SemiTransparencyMode = transparencyMode;
+            primitive.Depth = TextureDepth;
+            primitive.TextureBase.X = (short)(TextureXBase << 6);
+            primitive.TextureBase.Y = (short)(TextureYBase << 8);
+            primitive.SemiTransparencyMode = TransparencyMode;
 
             short width = 0;
             short heigth = 0;
@@ -780,8 +780,8 @@ namespace ProjectPSX.Core {
                     break;
             }
 
-            short y = signed11bit((uint)(yo + drawingYOffset));
-            short x = signed11bit((uint)(xo + drawingXOffset));
+            short y = signed11bit((uint)(yo + DrawingYOffset));
+            short x = signed11bit((uint)(xo + DrawingXOffset));
 
             Point2D origin;
             origin.X = x;
@@ -795,10 +795,10 @@ namespace ProjectPSX.Core {
         }
 
         private void rasterizeRect(Point2D origin, Point2D size, TextureData texture, uint bgrColor, Primitive primitive) {
-            int xOrigin = Math.Max(origin.X, drawingAreaLeft);
-            int yOrigin = Math.Max(origin.Y, drawingAreaTop);
-            int width = Math.Min(size.X, drawingAreaRight);
-            int height = Math.Min(size.Y, drawingAreaBottom);
+            int xOrigin = Math.Max(origin.X, DrawingAreaLeft);
+            int yOrigin = Math.Max(origin.Y, DrawingAreaTop);
+            int width = Math.Min(size.X, DrawingAreaRight);
+            int height = Math.Min(size.Y, DrawingAreaBottom);
 
             int uOrigin = texture.X + (xOrigin - origin.X);
             int vOrigin = texture.Y + (yOrigin - origin.Y);
@@ -808,7 +808,7 @@ namespace ProjectPSX.Core {
             for (int y = yOrigin, v = vOrigin; y < height; y++, v++) {
                 for (int x = xOrigin, u = uOrigin; x < width; x++, u++) {
                     //Check background mask
-                    if (checkMaskBeforeDraw) {
+                    if (CheckMaskBeforeDraw) {
                         int y1 = y & 0x1FF;
                         _color0.Value = (uint)VRAM32.GetPixel(x & 0x3FF, y1); //back
                         if (_color0.M != 0) continue;
@@ -818,7 +818,7 @@ namespace ProjectPSX.Core {
 
                     if (primitive.IsTextured) {
                         //int texel = getTexel(u, v, clut, textureBase, depth);
-                        int texel = getTexel(maskTexelAxis(u, preMaskX, postMaskX),maskTexelAxis(v, preMaskY, postMaskY),primitive.Clut, primitive.TextureBase, primitive.Depth);
+                        int texel = getTexel(maskTexelAxis(u, PreMaskX, PostMaskX),maskTexelAxis(v, PreMaskY, PostMaskY),primitive.Clut, primitive.TextureBase, primitive.Depth);
                         if (texel == 0) {
                             continue;
                         }
@@ -840,7 +840,7 @@ namespace ProjectPSX.Core {
                         color = handleSemiTransp(x, y, color, primitive.SemiTransparencyMode);
                     }
 
-                    color |= maskWhileDrawing << 24;
+                    color |= MaskWhileDrawing << 24;
 
                     VRAM32.SetPixel(x, y, color);
                     ushort color3 = (ushort)Rgb888ToRgb555(color);
@@ -871,13 +871,13 @@ namespace ProjectPSX.Core {
                     var rgb888 = VRAM32.GetPixel((sx + xPos) & 0x3FF, y1);
                     var bgr555 = VRAM16.GetPixel((sx + xPos) & 0x3FF, (sy + yPos) & 0x1FF);
 
-                    if (checkMaskBeforeDraw) {
+                    if (CheckMaskBeforeDraw) {
                         int y2 = (dy + yPos) & 0x1FF;
                         _color0.Value = (uint)VRAM32.GetPixel((dx + xPos) & 0x3FF, y2);
                         if (_color0.M != 0) continue;
                     }
 
-                    rgb888 |= maskWhileDrawing << 24;
+                    rgb888 |= MaskWhileDrawing << 24;
 
                     int y3 = (dy + yPos) & 0x1FF;
                     VRAM32.SetPixel((dx + xPos) & 0x3FF, y3, rgb888);
@@ -974,15 +974,15 @@ namespace ProjectPSX.Core {
         }
 
         private void GP0_E1_SetDrawMode(uint val) {
-            textureXBase = (byte)(val & 0xF);
-            textureYBase = (byte)((val >> 4) & 0x1);
-            transparencyMode = (byte)((val >> 5) & 0x3);
-            textureDepth = (byte)((val >> 7) & 0x3);
-            isDithered = ((val >> 9) & 0x1) != 0;
-            isDrawingToDisplayAllowed = ((val >> 10) & 0x1) != 0;
-            isTextureDisabled = isTextureDisabledAllowed && ((val >> 11) & 0x1) != 0;
-            isTexturedRectangleXFlipped = ((val >> 12) & 0x1) != 0;
-            isTexturedRectangleYFlipped = ((val >> 13) & 0x1) != 0;
+            TextureXBase = (byte)(val & 0xF);
+            TextureYBase = (byte)((val >> 4) & 0x1);
+            TransparencyMode = (byte)((val >> 5) & 0x3);
+            TextureDepth = (byte)((val >> 7) & 0x3);
+            IsDithered = ((val >> 9) & 0x1) != 0;
+            IsDrawingToDisplayAllowed = ((val >> 10) & 0x1) != 0;
+            IsTextureDisabled = isTextureDisabledAllowed && ((val >> 11) & 0x1) != 0;
+            IsTexturedRectangleXFlipped = ((val >> 12) & 0x1) != 0;
+            IsTexturedRectangleYFlipped = ((val >> 13) & 0x1) != 0;
 
             //Console.WriteLine("[GPU] [GP0] DrawMode ");
         }
@@ -990,39 +990,39 @@ namespace ProjectPSX.Core {
         private void GP0_E2_SetTextureWindow(uint val) {
             uint bits = val & 0xFF_FFFF;
 
-            if (bits == textureWindowBits) return;
+            if (bits == TextureWindowBits) return;
 
-            textureWindowBits = bits;
+            TextureWindowBits = bits;
 
             byte textureWindowMaskX = (byte)(val & 0x1F);
             byte textureWindowMaskY = (byte)((val >> 5) & 0x1F);
             byte textureWindowOffsetX = (byte)((val >> 10) & 0x1F);
             byte textureWindowOffsetY = (byte)((val >> 15) & 0x1F);
 
-            preMaskX = ~(textureWindowMaskX * 8);
-            preMaskY = ~(textureWindowMaskY * 8);
-            postMaskX = (textureWindowOffsetX & textureWindowMaskX) * 8;
-            postMaskY = (textureWindowOffsetY & textureWindowMaskY) * 8;
+            PreMaskX = ~(textureWindowMaskX * 8);
+            PreMaskY = ~(textureWindowMaskY * 8);
+            PostMaskX = (textureWindowOffsetX & textureWindowMaskX) * 8;
+            PostMaskY = (textureWindowOffsetY & textureWindowMaskY) * 8;
         }
 
         private void GP0_E3_SetDrawingAreaTopLeft(uint val) {
-            drawingAreaTop = (ushort)((val >> 10) & 0x1FF);
-            drawingAreaLeft = (ushort)(val & 0x3FF);
+            DrawingAreaTop = (ushort)((val >> 10) & 0x1FF);
+            DrawingAreaLeft = (ushort)(val & 0x3FF);
         }
 
         private void GP0_E4_SetDrawingAreaBottomRight(uint val) {
-            drawingAreaBottom = (ushort)((val >> 10) & 0x1FF);
-            drawingAreaRight = (ushort)(val & 0x3FF);
+            DrawingAreaBottom = (ushort)((val >> 10) & 0x1FF);
+            DrawingAreaRight = (ushort)(val & 0x3FF);
         }
 
         private void GP0_E5_SetDrawingOffset(uint val) {
-            drawingXOffset = signed11bit(val & 0x7FF);
-            drawingYOffset = signed11bit((val >> 11) & 0x7FF);
+            DrawingXOffset = signed11bit(val & 0x7FF);
+            DrawingYOffset = signed11bit((val >> 11) & 0x7FF);
         }
 
         private void GP0_E6_SetMaskBit(uint val) {
-            maskWhileDrawing = (int)(val & 0x1);
-            checkMaskBeforeDraw = (val & 0x2) != 0;
+            MaskWhileDrawing = (int)(val & 0x1);
+            CheckMaskBeforeDraw = (val & 0x2) != 0;
         }
 
         public void writeGP1(uint value) {
@@ -1065,47 +1065,47 @@ namespace ProjectPSX.Core {
 
         private void GP1_01_ResetCommandBuffer() => pointer = 0;
 
-        private void GP1_02_AckGPUInterrupt() => isInterruptRequested = false;
+        private void GP1_02_AckGPUInterrupt() => IsInterruptRequested = false;
 
-        private void GP1_03_DisplayEnable(uint value) => isDisplayDisabled = (value & 1) != 0;
+        private void GP1_03_DisplayEnable(uint value) => IsDisplayDisabled = (value & 1) != 0;
 
-        private void GP1_04_DMADirection(uint value) => dmaDirection = (byte)(value & 0x3);
+        private void GP1_04_DMADirection(uint value) => DmaDirection = (byte)(value & 0x3);
 
         private void GP1_05_DisplayVRAMStart(uint value) {
-            displayVRAMXStart = (ushort)(value & 0x3FE);
-            displayVRAMYStart = (ushort)((value >> 10) & 0x1FE);
+            DisplayVRAMStartX = (ushort)(value & 0x3FE);
+            DisplayVRAMStartY = (ushort)((value >> 10) & 0x1FE);
 
-            Console.WriteLine($"[GPU] {nameof(GP1_05_DisplayVRAMStart)}: {nameof(displayVRAMXStart)} = {displayVRAMXStart}, {nameof(displayVRAMYStart)} = {displayVRAMYStart}");
+            Console.WriteLine($"[GPU] {nameof(GP1_05_DisplayVRAMStart)}: {nameof(DisplayVRAMStartX)} = {DisplayVRAMStartX}, {nameof(DisplayVRAMStartY)} = {DisplayVRAMStartY}");
 
-            window.SetVRAMStart(displayVRAMXStart, displayVRAMYStart);
+            window.SetVRAMStart(DisplayVRAMStartX, DisplayVRAMStartY);
         }
 
         private void GP1_06_DisplayHorizontalRange(uint value) {
-            displayX1 = (ushort)(value & 0xFFF);
-            displayX2 = (ushort)((value >> 12) & 0xFFF);
+            DisplayX1 = (ushort)(value & 0xFFF);
+            DisplayX2 = (ushort)((value >> 12) & 0xFFF);
 
-            Console.WriteLine($"[GPU] {nameof(GP1_06_DisplayHorizontalRange)}: {nameof(displayX1)} = {displayX1}, {nameof(displayX2)} = {displayX2}");
+            Console.WriteLine($"[GPU] {nameof(GP1_06_DisplayHorizontalRange)}: {nameof(DisplayX1)} = {DisplayX1}, {nameof(DisplayX2)} = {DisplayX2}");
 
-            window.SetHorizontalRange(displayX1, displayX2);
+            window.SetHorizontalRange(DisplayX1, DisplayX2);
         }
 
         private void GP1_07_DisplayVerticalRange(uint value) {
-            displayY1 = (ushort)(value & 0x3FF);
-            displayY2 = (ushort)((value >> 10) & 0x3FF);
+            DisplayY1 = (ushort)(value & 0x3FF);
+            DisplayY2 = (ushort)((value >> 10) & 0x3FF);
 
-            Console.WriteLine($"[GPU] {nameof(GP1_07_DisplayVerticalRange)}: {nameof(displayY1)} = {displayY1}, {nameof(displayY2)} = {displayY2}");
+            Console.WriteLine($"[GPU] {nameof(GP1_07_DisplayVerticalRange)}: {nameof(DisplayY1)} = {DisplayY1}, {nameof(DisplayY2)} = {DisplayY2}");
 
-            window.SetVerticalRange(displayY1, displayY2);
+            window.SetVerticalRange(DisplayY1, DisplayY2);
         }
 
         private void GP1_08_DisplayMode(uint value)
         {
             DisplayMode = new DisplayMode(value);
           
-            isInterlaceField = DisplayMode.IsVerticalInterlace;
+            IsInterlaceField = DisplayMode.IsVerticalInterlace;
 
-            horizontalTiming = DisplayMode.IsPAL ? 3406 : 3413;
-            verticalTiming   = DisplayMode.IsPAL ? 314 : 263;
+            TimingHorizontal = DisplayMode.IsPAL ? 3406 : 3413;
+            TimingVertical   = DisplayMode.IsPAL ? 314 : 263;
 
             int horizontalRes = resolutions[DisplayMode.HorizontalResolution2 << 2 | DisplayMode.HorizontalResolution1];
             int verticalRes = DisplayMode.IsVerticalResolution480 ? 480 : 240;
@@ -1134,10 +1134,10 @@ namespace ProjectPSX.Core {
         private void GP1_GPUInfo(uint value) {
             uint info = value & 0xF;
             switch (info) {
-                case 0x2: GPUREAD = textureWindowBits; break;
-                case 0x3: GPUREAD = (uint)(drawingAreaTop << 10 | drawingAreaLeft); break;
-                case 0x4: GPUREAD = (uint)(drawingAreaBottom << 10 | drawingAreaRight); break;
-                case 0x5: GPUREAD = (uint)(drawingYOffset << 11 | (ushort)drawingXOffset); break;
+                case 0x2: GPUREAD = TextureWindowBits; break;
+                case 0x3: GPUREAD = (uint)(DrawingAreaTop << 10 | DrawingAreaLeft); break;
+                case 0x4: GPUREAD = (uint)(DrawingAreaBottom << 10 | DrawingAreaRight); break;
+                case 0x5: GPUREAD = (uint)(DrawingYOffset << 11 | (ushort)DrawingXOffset); break;
                 case 0x7: GPUREAD = 2; break;
                 case 0x8: GPUREAD = 0; break;
                 default: Console.WriteLine("[GPU] GP1 Unhandled GetInfo: " + info.ToString("x8")); break;
@@ -1147,15 +1147,15 @@ namespace ProjectPSX.Core {
         private uint getTexpageFromGPU() {
             uint texpage = 0;
 
-            texpage |= (isTexturedRectangleYFlipped ? 1u : 0) << 13;
-            texpage |= (isTexturedRectangleXFlipped ? 1u : 0) << 12;
-            texpage |= (isTextureDisabled ? 1u : 0) << 11;
-            texpage |= (isDrawingToDisplayAllowed ? 1u : 0) << 10;
-            texpage |= (isDithered ? 1u : 0) << 9;
-            texpage |= (uint)(textureDepth << 7);
-            texpage |= (uint)(transparencyMode << 5);
-            texpage |= (uint)(textureYBase << 4);
-            texpage |= textureXBase;
+            texpage |= (IsTexturedRectangleYFlipped ? 1u : 0) << 13;
+            texpage |= (IsTexturedRectangleXFlipped ? 1u : 0) << 12;
+            texpage |= (IsTextureDisabled ? 1u : 0) << 11;
+            texpage |= (IsDrawingToDisplayAllowed ? 1u : 0) << 10;
+            texpage |= (IsDithered ? 1u : 0) << 9;
+            texpage |= (uint)(TextureDepth << 7);
+            texpage |= (uint)(TransparencyMode << 5);
+            texpage |= (uint)(TextureYBase << 4);
+            texpage |= TextureXBase;
 
             return texpage;
         }
