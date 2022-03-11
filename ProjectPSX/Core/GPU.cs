@@ -67,11 +67,6 @@ namespace ProjectPSX.Core {
 
         #endregion
 
-        private ushort DrawingAreaLeft;
-        private ushort DrawingAreaRight;
-        private ushort DrawingAreaTop;
-        private ushort DrawingAreaBottom;
-
         private ushort DisplayVRAMStartX;
         private ushort DisplayVRAMStartY;
         private ushort DisplayX1;
@@ -486,10 +481,10 @@ namespace ProjectPSX.Core {
             if ((maxX - minX) > 1024 || (maxY - minY) > 512) return;
 
             /*clip*/
-            min.X = (short)Math.Max(minX, DrawingAreaLeft);
-            min.Y = (short)Math.Max(minY, DrawingAreaTop);
-            max.X = (short)Math.Min(maxX, DrawingAreaRight);
-            max.Y = (short)Math.Min(maxY, DrawingAreaBottom);
+            min.X = (short)Math.Max(minX, DrawingAreaTopLeft.X);
+            min.Y = (short)Math.Max(minY, DrawingAreaTopLeft.Y);
+            max.X = (short)Math.Min(maxX, DrawingAreaBottomRight.X);
+            max.Y = (short)Math.Min(maxY, DrawingAreaBottomRight.Y);
 
             int A01 = v0.Y - v1.Y, B01 = v1.X - v0.X;
             int A12 = v1.Y - v2.Y, B12 = v2.X - v1.X;
@@ -692,7 +687,7 @@ namespace ProjectPSX.Core {
                 //x = (short)Math.Min(Math.Max(x, drawingAreaLeft), drawingAreaRight); //this generates glitches on RR4
                 //y = (short)Math.Min(Math.Max(y, drawingAreaTop), drawingAreaBottom);
 
-                if (x >= DrawingAreaLeft && x < DrawingAreaRight && y >= DrawingAreaTop && y < DrawingAreaBottom) {
+                if (x >= DrawingAreaTopLeft.X && x < DrawingAreaBottomRight.X && y >= DrawingAreaTopLeft.Y && y < DrawingAreaBottomRight.Y) {
                     //if (primitive.isSemiTransparent && (!primitive.isTextured || (color & 0xFF00_0000) != 0)) {
                     if (isTransparent) {
                         color = handleSemiTransp(x, y, color, DrawMode.SemiTransparency);
@@ -790,10 +785,10 @@ namespace ProjectPSX.Core {
         }
 
         private void rasterizeRect(Point2D origin, Point2D size, TextureData texture, uint bgrColor, Primitive primitive) {
-            int xOrigin = Math.Max(origin.X, DrawingAreaLeft);
-            int yOrigin = Math.Max(origin.Y, DrawingAreaTop);
-            int width = Math.Min(size.X, DrawingAreaRight);
-            int height = Math.Min(size.Y, DrawingAreaBottom);
+            int xOrigin = Math.Max(origin.X, DrawingAreaTopLeft.X);
+            int yOrigin = Math.Max(origin.Y, DrawingAreaTopLeft.Y);
+            int width = Math.Min(size.X,  DrawingAreaBottomRight.X);
+            int height = Math.Min(size.Y, DrawingAreaBottomRight.Y);
 
             int uOrigin = texture.X + (xOrigin - origin.X);
             int vOrigin = texture.Y + (yOrigin - origin.Y);
@@ -998,14 +993,14 @@ namespace ProjectPSX.Core {
             TextureWindowPostMaskY = (textureWindow.OffsetY & textureWindow.MaskY) * 8;
         }
 
-        private void GP0_E3_SetDrawingAreaTopLeft(uint val) {
-            DrawingAreaTop = (ushort)((val >> 10) & 0x1FF);
-            DrawingAreaLeft = (ushort)(val & 0x3FF);
+        private void GP0_E3_SetDrawingAreaTopLeft(uint value)
+        {
+            DrawingAreaTopLeft = new DrawingArea(value);
         }
 
-        private void GP0_E4_SetDrawingAreaBottomRight(uint val) {
-            DrawingAreaBottom = (ushort)((val >> 10) & 0x1FF);
-            DrawingAreaRight = (ushort)(val & 0x3FF);
+        private void GP0_E4_SetDrawingAreaBottomRight(uint value)
+        {
+            DrawingAreaBottomRight = new DrawingArea(value);
         }
 
         private void GP0_E5_SetDrawingOffset(uint val)
@@ -1122,6 +1117,8 @@ namespace ProjectPSX.Core {
 
         private DrawMode      DrawMode;
         private DrawingOffset DrawingOffset;
+        private DrawingArea   DrawingAreaTopLeft;
+        private DrawingArea   DrawingAreaBottomRight;
 
         private  DisplayMode DisplayMode { get; set; }
         
@@ -1131,8 +1128,8 @@ namespace ProjectPSX.Core {
             uint info = value & 0xF;
             switch (info) {
                 case 0x2: GPUREAD = TextureWindowBits; break;
-                case 0x3: GPUREAD = (uint)(DrawingAreaTop << 10 | DrawingAreaLeft); break;
-                case 0x4: GPUREAD = (uint)(DrawingAreaBottom << 10 | DrawingAreaRight); break;
+                case 0x3: GPUREAD = (uint)(DrawingAreaTopLeft.Y << 10 | DrawingAreaTopLeft.X); break;
+                case 0x4: GPUREAD = (uint)(DrawingAreaBottomRight.Y << 10 | DrawingAreaBottomRight.X); break;
                 case 0x5: GPUREAD = (uint)(DrawingOffset.Y << 11 | (ushort)DrawingOffset.X); break;
                 case 0x7: GPUREAD = 2; break;
                 case 0x8: GPUREAD = 0; break;
