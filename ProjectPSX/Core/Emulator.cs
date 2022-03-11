@@ -67,7 +67,7 @@ namespace ProjectPSX {
 
         public void toggleDebug() {
             cpu.debug = !cpu.debug;
-            gpu.debug = !gpu.debug;
+            gpu.Debugging = !gpu.Debugging;
         }
 
         public void toggleCdRomLid() {
