@@ -43,16 +43,9 @@ namespace ProjectPSX.Core {
         private bool isTextureDisabledAllowed;
 
         //GP0
-        private byte TextureXBase;
-        private byte TextureYBase;
-        private byte TransparencyMode;
-        private byte TextureDepth;
-        private bool IsDithered;
-        private bool IsDrawingToDisplayAllowed;
         private int  MaskWhileDrawing;
         private bool CheckMaskBeforeDraw;
         private bool IsInterlaceField;
-        private bool IsTextureDisabled;
         private bool IsDisplayDisabled;
         private bool IsInterruptRequested;
         private bool IsDmaRequest;
@@ -63,9 +56,6 @@ namespace ProjectPSX.Core {
 
         private byte DmaDirection;
         private bool IsOddLine;
-
-        private bool IsTexturedRectangleXFlipped;
-        private bool IsTexturedRectangleYFlipped;
 
         private uint TextureWindowBits = 0xFFFF_FFFF;
         private int PreMaskX;
@@ -95,6 +85,7 @@ namespace ProjectPSX.Core {
             this.window = window;
             mode = Mode.COMMAND;
             GP1_00_ResetGPU();
+            DrawMode = new DrawMode();
         }
 
         public bool tick(int cycles) {
@@ -135,17 +126,17 @@ namespace ProjectPSX.Core {
         public uint loadGPUSTAT() {
             uint GPUSTAT = 0;
 
-            GPUSTAT |= TextureXBase;
-            GPUSTAT |= (uint)TextureYBase << 4;
-            GPUSTAT |= (uint)TransparencyMode << 5;
-            GPUSTAT |= (uint)TextureDepth << 7;
-            GPUSTAT |= (uint)(IsDithered ? 1 : 0) << 9;
-            GPUSTAT |= (uint)(IsDrawingToDisplayAllowed ? 1 : 0) << 10;
+            GPUSTAT |= DrawMode.TextureXBase;
+            GPUSTAT |= (uint)DrawMode.TextureYBase << 4;
+            GPUSTAT |= (uint)DrawMode.TransparencyMode << 5;
+            GPUSTAT |= (uint)DrawMode.TextureDepth << 7;
+            GPUSTAT |= (uint)(DrawMode.IsDithered ? 1 : 0) << 9;
+            GPUSTAT |= (uint)(DrawMode.IsDrawingToDisplayAllowed ? 1 : 0) << 10;
             GPUSTAT |= (uint)MaskWhileDrawing << 11;
             GPUSTAT |= (uint)(CheckMaskBeforeDraw ? 1 : 0) << 12;
             GPUSTAT |= (uint)(IsInterlaceField ? 1 : 0) << 13;
             GPUSTAT |= (uint)(DisplayMode.IsReverseFlag ? 1 : 0) << 14;
-            GPUSTAT |= (uint)(IsTextureDisabled ? 1 : 0) << 15;
+            GPUSTAT |= (uint)(DrawMode.IsTextureDisabled ? 1 : 0) << 15;
             GPUSTAT |= (uint)DisplayMode.HorizontalResolution2 << 16;
             GPUSTAT |= (uint)DisplayMode.HorizontalResolution1 << 17;
             GPUSTAT |= (uint)(DisplayMode.IsVerticalResolution480 ? 1 : 0);
@@ -430,7 +421,7 @@ namespace ProjectPSX.Core {
                 c[1] = color; //triangle 2 opaque color
             }
 
-            primitive.SemiTransparencyMode = TransparencyMode;
+            primitive.SemiTransparencyMode = DrawMode.TransparencyMode;
 
             for (int i = 0; i < vertexN; i++) {
                 if (isShaded) c[i] = buffer[pointer++];
@@ -451,16 +442,16 @@ namespace ProjectPSX.Core {
                         uint texpage = textureData >> 16;
 
                         //SET GLOBAL GPU E1
-                        TextureXBase = (byte)(texpage & 0xF);
-                        TextureYBase = (byte)((texpage >> 4) & 0x1);
-                        TransparencyMode = (byte)((texpage >> 5) & 0x3);
-                        TextureDepth = (byte)((texpage >> 7) & 0x3);
-                        IsTextureDisabled = isTextureDisabledAllowed && ((texpage >> 11) & 0x1) != 0;
+                        DrawMode.TextureXBase     = (byte)(texpage & 0xF);
+                        DrawMode.TextureYBase     = (byte)((texpage >> 4) & 0x1);
+                        DrawMode.TransparencyMode = (byte)((texpage >> 5) & 0x3);
+                        DrawMode.TextureDepth     = (byte)((texpage >> 7) & 0x3);
+                        DrawMode.IsTextureDisabled       = isTextureDisabledAllowed && ((texpage >> 11) & 0x1) != 0;
 
-                        primitive.Depth = TextureDepth;
-                        primitive.TextureBase.X = (short)(TextureXBase << 6);
-                        primitive.TextureBase.Y = (short)(TextureYBase << 8);
-                        primitive.SemiTransparencyMode = TransparencyMode;
+                        primitive.Depth                = DrawMode.TextureDepth;
+                        primitive.TextureBase.X        = (short)(DrawMode.TextureXBase << 6);
+                        primitive.TextureBase.Y        = (short)(DrawMode.TextureYBase << 8);
+                        primitive.SemiTransparencyMode = DrawMode.TransparencyMode;
                     }
                 }
             }
@@ -700,7 +691,7 @@ namespace ProjectPSX.Core {
                 if (x >= DrawingAreaLeft && x < DrawingAreaRight && y >= DrawingAreaTop && y < DrawingAreaBottom) {
                     //if (primitive.isSemiTransparent && (!primitive.isTextured || (color & 0xFF00_0000) != 0)) {
                     if (isTransparent) {
-                        color = handleSemiTransp(x, y, color, TransparencyMode);
+                        color = handleSemiTransp(x, y, color, DrawMode.TransparencyMode);
                     }
 
                     color |= MaskWhileDrawing << 24;
@@ -755,10 +746,10 @@ namespace ProjectPSX.Core {
                 primitive.Clut.Y = (short)((palette >> 6) & 0x1FF);
             }
 
-            primitive.Depth = TextureDepth;
-            primitive.TextureBase.X = (short)(TextureXBase << 6);
-            primitive.TextureBase.Y = (short)(TextureYBase << 8);
-            primitive.SemiTransparencyMode = TransparencyMode;
+            primitive.Depth                = DrawMode.TextureDepth;
+            primitive.TextureBase.X        = (short)(DrawMode.TextureXBase << 6);
+            primitive.TextureBase.Y        = (short)(DrawMode.TextureYBase << 8);
+            primitive.SemiTransparencyMode = DrawMode.TransparencyMode;
 
             short width = 0;
             short heigth = 0;
@@ -974,15 +965,15 @@ namespace ProjectPSX.Core {
         }
 
         private void GP0_E1_SetDrawMode(uint val) {
-            TextureXBase = (byte)(val & 0xF);
-            TextureYBase = (byte)((val >> 4) & 0x1);
-            TransparencyMode = (byte)((val >> 5) & 0x3);
-            TextureDepth = (byte)((val >> 7) & 0x3);
-            IsDithered = ((val >> 9) & 0x1) != 0;
-            IsDrawingToDisplayAllowed = ((val >> 10) & 0x1) != 0;
-            IsTextureDisabled = isTextureDisabledAllowed && ((val >> 11) & 0x1) != 0;
-            IsTexturedRectangleXFlipped = ((val >> 12) & 0x1) != 0;
-            IsTexturedRectangleYFlipped = ((val >> 13) & 0x1) != 0;
+            DrawMode.TextureXBase                = (byte)(val & 0xF);
+            DrawMode.TextureYBase                = (byte)((val >> 4) & 0x1);
+            DrawMode.TransparencyMode            = (byte)((val >> 5) & 0x3);
+            DrawMode.TextureDepth                = (byte)((val >> 7) & 0x3);
+            DrawMode.IsDithered                  = ((val >> 9) & 0x1) != 0;
+            DrawMode.IsDrawingToDisplayAllowed   = ((val >> 10) & 0x1) != 0;
+            DrawMode.IsTextureDisabled           = isTextureDisabledAllowed && ((val >> 11) & 0x1) != 0;
+            DrawMode.IsTexturedRectangleXFlipped = ((val >> 12) & 0x1) != 0;
+            DrawMode.IsTexturedRectangleYFlipped        = ((val >> 13) & 0x1) != 0;
 
             //Console.WriteLine("[GPU] [GP0] DrawMode ");
         }
@@ -1123,10 +1114,12 @@ namespace ProjectPSX.Core {
             last24 = DisplayMode.Is24BitDepth;
         }
 
-        private int  lastHr;
-        private int  lastVr;
-        private bool last24;
+        private          int      lastHr;
+        private          int      lastVr;
+        private          bool     last24;
         
+        private DrawMode DrawMode;
+
         private  DisplayMode DisplayMode { get; set; }
         
         private void GP1_09_TextureDisable(uint value) => isTextureDisabledAllowed = (value & 0x1) != 0;
@@ -1147,15 +1140,15 @@ namespace ProjectPSX.Core {
         private uint getTexpageFromGPU() {
             uint texpage = 0;
 
-            texpage |= (IsTexturedRectangleYFlipped ? 1u : 0) << 13;
-            texpage |= (IsTexturedRectangleXFlipped ? 1u : 0) << 12;
-            texpage |= (IsTextureDisabled ? 1u : 0) << 11;
-            texpage |= (IsDrawingToDisplayAllowed ? 1u : 0) << 10;
-            texpage |= (IsDithered ? 1u : 0) << 9;
-            texpage |= (uint)(TextureDepth << 7);
-            texpage |= (uint)(TransparencyMode << 5);
-            texpage |= (uint)(TextureYBase << 4);
-            texpage |= TextureXBase;
+            texpage |= (DrawMode.IsTexturedRectangleYFlipped ? 1u : 0) << 13;
+            texpage |= (DrawMode.IsTexturedRectangleXFlipped ? 1u : 0) << 12;
+            texpage |= (DrawMode.IsTextureDisabled ? 1u : 0) << 11;
+            texpage |= (DrawMode.IsDrawingToDisplayAllowed ? 1u : 0) << 10;
+            texpage |= (DrawMode.IsDithered ? 1u : 0) << 9;
+            texpage |= (uint)(DrawMode.TextureDepth << 7);
+            texpage |= (uint)(DrawMode.TransparencyMode << 5);
+            texpage |= (uint)(DrawMode.TextureYBase << 4);
+            texpage |= DrawMode.TextureXBase;
 
             return texpage;
         }
