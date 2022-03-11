@@ -1,14 +1,27 @@
-﻿namespace ProjectPSX.Core.Graphics;
+﻿// ReSharper disable CommentTypo
 
+namespace ProjectPSX.Core.Graphics;
+
+/// <summary>
+///     GP0(E1h) - Draw Mode setting (aka "Texpage")
+/// </summary>
 public struct DrawMode
 {
-    public byte TextureXBase;
-    public byte TextureYBase;
-    public byte TransparencyMode;
-    public byte TextureDepth;
-    public bool IsDithered;
-    public bool IsDrawingToDisplayAllowed;
-    public bool IsTextureDisabled;
-    public bool IsTexturedRectangleXFlipped;
-    public bool IsTexturedRectangleYFlipped;
+    public byte TexturePageXBase { get; set; }
+
+    public byte TexturePageYBase { get; set; }
+
+    public byte SemiTransparency { get; set; }
+
+    public byte TexturePageColors { get; set; }
+
+    public bool Dither24BitTo15Bit { get; set; }
+
+    public bool DrawingToDisplayArea { get; set; }
+
+    public bool TextureDisable { get; set; }
+
+    public bool TexturedRectangleXFlip { get; set; }
+
+    public bool TexturedRectangleYFlip { get; set; }
 }
