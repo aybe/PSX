@@ -39,8 +39,8 @@ namespace ProjectPSX {
 
             cd = new CD(diskFilename);
             spu = new SPU(window, interruptController);
-            gpu = new Gpu(window);
             cdrom = new CDROM(cd, spu);
+            gpu    = new Gpu(window, logger);
             joypad = new JOYPAD(controller, memoryCard);
             timers = new TIMERS();
             mdec = new MDEC();

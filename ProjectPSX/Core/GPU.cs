@@ -4,12 +4,27 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using ProjectPSX.Core.Graphics;
 using ProjectPSX.Graphics;
+using Serilog;
 
 // ReSharper disable CommentTypo
 
 namespace ProjectPSX.Core;
 
-public class Gpu
+public partial class Gpu
+{
+    public Gpu(IHostWindow window, ILogger logger)
+    {
+        Window = window;
+        Logger = logger;
+        Mode   = Mode.COMMAND;
+
+        GP1_00_ResetGPU();
+    }
+
+    private ILogger Logger { get;  }
+}
+
+public partial class Gpu
 {
     //This needs to go away once a BGR bitmap is achieved
 
@@ -92,13 +107,6 @@ public class Gpu
     private int VideoCycles;
 
     private VRamTransfer VRamTransfer;
-
-    public Gpu(IHostWindow window)
-    {
-        Window = window;
-        Mode   = Mode.COMMAND;
-        GP1_00_ResetGPU();
-    }
 
     private DisplayMode DisplayMode { get; set; }
 
