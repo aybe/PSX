@@ -5,6 +5,8 @@ using ProjectPSX.Devices.CdRom;
 using ProjectPSX.Input;
 using ProjectPSX.Sound;
 using ProjectPSX.Storage;
+using Serilog;
+using Serilog.Core;
 
 namespace ProjectPSX {
     public class Emulator : IDisposable {
@@ -27,7 +29,9 @@ namespace ProjectPSX {
         private CD cd;
         private InterruptController interruptController;
 
-        public Emulator(IHostWindow window, string diskFilename) {
+        public Emulator(IHostWindow window, string diskFilename, ILogger? logger = null) {
+            logger ??= Logger.None;
+
             controller = new DigitalController();
             memoryCard = new MemoryCard();
 

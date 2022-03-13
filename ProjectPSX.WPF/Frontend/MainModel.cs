@@ -8,6 +8,7 @@ using ProjectPSX.WPF.Emulation;
 using ProjectPSX.WPF.Emulation.Messaging;
 using ProjectPSX.WPF.Frontend.Services;
 using ProjectPSX.WPF.Frontend.Shared;
+using ProjectPSX.WPF.Logging;
 
 namespace ProjectPSX.WPF.Frontend;
 
@@ -64,7 +65,7 @@ internal sealed class MainModel :
             UpdateVideoSizeHandler = UpdateVideoSize
         };
 
-        Emulator = new Emulator(window, EmulatorContent);
+        Emulator = new Emulator(window, EmulatorContent, LoggingUtility.GetDefaultLogger());
 
         EmulatorPaused = false;
 
