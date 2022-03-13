@@ -14,5 +14,6 @@ resharper_enforce_line_ending_style = true
 resharper_int_align_assignments = true
 resharper_int_align_fields = true
 resharper_int_align_invocations = true
+resharper_int_align_switch_expressions = true
 resharper_place_field_attribute_on_same_line = false
 resharper_place_simple_embedded_statement_on_same_line = false
