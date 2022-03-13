@@ -294,7 +294,9 @@ public partial class Gpu
                 break;
 
             default:
-                Console.WriteLine("[GPU] Unsupported GP0 Command " + opcode.ToString("x8")); /*Console.ReadLine();*/
+                Logger.Fatal(
+                    "ExecuteGP0: Unsupported GP0 command: {Command}", $"0x{opcode:X8}");
+
                 GP0_00_NOP();
                 break;
         }
@@ -596,7 +598,7 @@ public partial class Gpu
                 WriteGP1(value);
                 break;
             default:
-                Console.WriteLine($"[GPU] Unhandled GPU write access to register {register}: {value}");
+                Logger.Fatal("Unhandled GPU write access to register: {Register}: {Value}", register, value);
                 break;
         }
     }
@@ -657,8 +659,7 @@ public partial class Gpu
                 GP1_GPUInfo(value);
                 break;
             default:
-                Console.WriteLine("[GPU] Unsupported GP1 Command " + opcode.ToString("x8"));
-                Console.ReadLine();
+                Logger.Fatal("Unsupported GP1 Command: {Opcode}", $"0x{opcode:X8}");
                 break;
         }
     }
@@ -1452,8 +1453,7 @@ public partial class Gpu
         DisplayVRAMStartX = (ushort)(value & 0x3FE);
         DisplayVRAMStartY = (ushort)((value >> 10) & 0x1FE);
 
-        Console.WriteLine(
-            $"[GPU] {nameof(GP1_05_DisplayVRAMStart)}: {nameof(DisplayVRAMStartX)} = {DisplayVRAMStartX}, {nameof(DisplayVRAMStartY)} = {DisplayVRAMStartY}");
+        Logger.Debug("GP1_05_DisplayVRAMStart: X = {X}, Y = {X}", DisplayVRAMStartX, DisplayVRAMStartY);
 
         Window.SetVRAMStart(DisplayVRAMStartX, DisplayVRAMStartY);
     }
@@ -1463,8 +1463,7 @@ public partial class Gpu
         DisplayX1 = (ushort)(value & 0xFFF);
         DisplayX2 = (ushort)((value >> 12) & 0xFFF);
 
-        Console.WriteLine(
-            $"[GPU] {nameof(GP1_06_DisplayHorizontalRange)}: {nameof(DisplayX1)} = {DisplayX1}, {nameof(DisplayX2)} = {DisplayX2}");
+        Logger.Debug("GP1_06_DisplayHorizontalRange: X1 = {X1}, Y2 = {X2}", DisplayX1, DisplayX2);
 
         Window.SetHorizontalRange(DisplayX1, DisplayX2);
     }
@@ -1474,8 +1473,7 @@ public partial class Gpu
         DisplayY1 = (ushort)(value & 0x3FF);
         DisplayY2 = (ushort)((value >> 10) & 0x3FF);
 
-        Console.WriteLine(
-            $"[GPU] {nameof(GP1_07_DisplayVerticalRange)}: {nameof(DisplayY1)} = {DisplayY1}, {nameof(DisplayY2)} = {DisplayY2}");
+        Logger.Debug("GP1_07_DisplayVerticalRange: Y1 = {Y1}, Y2 = {Y2}", DisplayY1, DisplayY2);
 
         Window.SetVerticalRange(DisplayY1, DisplayY2);
     }
@@ -1492,12 +1490,11 @@ public partial class Gpu
         var horizontalRes = Resolutions[(DisplayMode.HorizontalResolution2 << 2) | DisplayMode.HorizontalResolution1];
         var verticalRes = DisplayMode.IsVerticalResolution480 ? 480 : 240;
 
-
         if (LastHr == horizontalRes && LastVr == verticalRes && Last24 == DisplayMode.Is24BitDepth)
             return;
-
-        Console.WriteLine(
-            $"[GPU] {nameof(GP1_08_DisplayMode)}: {nameof(horizontalRes)} = {horizontalRes}, {nameof(verticalRes)} = {verticalRes}, {nameof(DisplayMode.Is24BitDepth)} = {DisplayMode.Is24BitDepth}");
+        
+        Logger.Debug(
+            "GP1_08_DisplayMode: H = {HRes}, VRes = {VRes}, 24Bit = {24Bit}", horizontalRes, verticalRes, DisplayMode.Is24BitDepth);
 
         Window.SetDisplayMode(horizontalRes, verticalRes, DisplayMode.Is24BitDepth);
 
@@ -1536,7 +1533,7 @@ public partial class Gpu
                 GPUREAD = 0;
                 break;
             default:
-                Console.WriteLine($"[GPU] GP1 Unhandled GetInfo: 0x{info:x8}");
+                Logger.Fatal("GP1 Unhandled GetInfo: {Info}", $"0x{info:X8}");
                 break;
         }
     }
