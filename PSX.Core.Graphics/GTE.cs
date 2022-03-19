@@ -3,7 +3,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace ProjectPSX {
-    class GTE { //PSX MIPS Coprocessor 02 - Geometry Transformation Engine
+    public class GTE { //PSX MIPS Coprocessor 02 - Geometry Transformation Engine
 
         private static ReadOnlySpan<byte> unrTable => new byte[] {
             0xFF, 0xFD, 0xFB, 0xF9, 0xF7, 0xF5, 0xF3, 0xF1, 0xEF, 0xEE, 0xEC, 0xEA, 0xE8, 0xE6, 0xE4, 0xE3,
@@ -84,7 +84,7 @@ namespace ProjectPSX {
         private bool lm;                    //Saturate IR1,IR2,IR3 result (0=To -8000h..+7FFFh, 1=To 0..+7FFFh)
         private uint currentCommand;        //GTE current command temporary stored for MVMVA decoding
 
-        internal void execute(uint command) {
+        public void execute(uint command) {
             //Console.WriteLine($"GTE EXECUTE {(command & 0x3F):x2}");
 
             currentCommand = command;
@@ -790,7 +790,7 @@ namespace ProjectPSX {
             return leadingCount;
         }
 
-        internal uint loadData(uint fs) {
+        public uint loadData(uint fs) {
             var value = fs switch {
                 00 => V[0].XY,
                 01 => (uint)V[0].z,

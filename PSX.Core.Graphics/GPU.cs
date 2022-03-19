@@ -506,7 +506,7 @@ public partial class Gpu
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal void ProcessDma(Span<uint> dma)
+    public void ProcessDma(Span<uint> dma)
     {
         if (Mode == Mode.COMMAND)
         {
