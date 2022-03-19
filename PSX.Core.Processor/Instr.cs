@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX;
+﻿namespace PSX.Core.Processor;
 
 public struct Instr {
     public uint value;                 //raw

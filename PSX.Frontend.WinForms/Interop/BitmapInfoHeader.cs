@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace ProjectPSX.WinForms.Interop;
+namespace PSX.Frontend.WinForms.Interop;
 
 [StructLayout(LayoutKind.Sequential)]
 internal struct BitmapInfoHeader

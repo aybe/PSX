@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace ProjectPSX.Util;
+namespace PSX.Util;
 
 public static class Storage {
     public static bool TryGetExecutable(IEnumerable<string>? args, out string result) {

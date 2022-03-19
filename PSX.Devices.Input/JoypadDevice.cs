@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.Input;
+﻿namespace PSX.Devices.Input;
 
 internal enum JoypadDevice
 {

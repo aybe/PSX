@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
-using ProjectPSX.WPF.Emulation;
-using ProjectPSX.WPF.Emulation.Messaging;
-using ProjectPSX.WPF.Sound;
+using PSX.Core;
+using PSX.Frontend.WPF.Emulation;
+using PSX.Frontend.WPF.Emulation.Messaging;
+using PSX.Frontend.WPF.Sound;
 using Un4seen.Bass;
 using Un4seen.Bass.AddOn.Mix;
 
-namespace ProjectPSX.WPF.Frontend;
+namespace PSX.Frontend.WPF.Frontend;
 
 internal sealed partial class MainWindow
 {

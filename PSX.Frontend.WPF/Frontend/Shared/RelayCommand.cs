@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace ProjectPSX.WPF.Frontend.Shared;
+namespace PSX.Frontend.WPF.Frontend.Shared;
 
 internal sealed class RelayCommand : ICommand
     // because their implementation totally sucks https://github.com/CommunityToolkit/MVVM-Samples/issues/41

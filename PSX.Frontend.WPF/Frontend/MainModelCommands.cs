@@ -1,8 +1,8 @@
 ﻿using JetBrains.Annotations;
-using ProjectPSX.WPF.Frontend.Shared;
-using ProjectPSX.WPF.Interop;
+using PSX.Frontend.WPF.Frontend.Shared;
+using PSX.Frontend.WPF.Interop;
 
-namespace ProjectPSX.WPF.Frontend;
+namespace PSX.Frontend.WPF.Frontend;
 
 [UsedImplicitly]
 internal sealed class MainModelCommands : BaseModelCommands<MainModel>

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace ProjectPSX.WinForms.UI;
+namespace PSX.Frontend.WinForms.UI;
 
 public class DoubleBufferedPanel : Panel
 {

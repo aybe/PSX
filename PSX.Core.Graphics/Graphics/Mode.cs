@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace ProjectPSX.Core.Graphics;
+namespace PSX.Core.Graphics.Graphics;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 internal enum Mode

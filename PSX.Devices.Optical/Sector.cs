@@ -1,8 +1,8 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using PSX.Core;
 
-namespace ProjectPSX.Devices.CdRom {
+namespace PSX.Devices.Optical {
     public class Sector : ISector
     {
 

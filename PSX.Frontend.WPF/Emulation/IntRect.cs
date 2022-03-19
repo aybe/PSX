@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.WPF.Emulation;
+﻿namespace PSX.Frontend.WPF.Emulation;
 
 public readonly struct IntRect
 {

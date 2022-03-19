@@ -1,6 +1,6 @@
-﻿using ProjectPSX.WPF.Frontend.Shared;
+﻿using PSX.Frontend.WPF.Frontend.Shared;
 
-namespace ProjectPSX.WPF.Frontend;
+namespace PSX.Frontend.WPF.Frontend;
 
 internal class VideoMemoryWindowShim : BaseWindow<VideoMemoryModel>
     // because generics in XAML don't work well

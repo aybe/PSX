@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX;
+﻿namespace PSX.Core;
 
 public enum Interrupt {
     VBLANK = 0x1,

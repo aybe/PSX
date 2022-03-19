@@ -3,9 +3,10 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using ProjectPSX.Input;
+using PSX.Core;
+using PSX.Devices.Input;
 
-namespace ProjectPSX.OpenTK;
+namespace PSX.Frontend.OpenTK;
 
 public class Window : GameWindow, IHostWindow
 {

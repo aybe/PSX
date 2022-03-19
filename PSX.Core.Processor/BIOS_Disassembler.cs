@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProjectPSX.Disassembler {
+﻿namespace PSX.Core.Processor {
     public class BIOS_Disassembler {
 
         private BUS bus;

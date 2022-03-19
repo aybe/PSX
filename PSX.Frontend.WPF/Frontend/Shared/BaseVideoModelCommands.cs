@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace ProjectPSX.WPF.Frontend.Shared;
+namespace PSX.Frontend.WPF.Frontend.Shared;
 
 [UsedImplicitly]
 internal class BaseVideoModelCommands : BaseModelCommands<BaseVideoModel>

@@ -1,6 +1,6 @@
 ﻿// ReSharper disable CommentTypo
 
-namespace ProjectPSX.Core.Graphics;
+namespace PSX.Core.Graphics.Graphics;
 
 /// <summary>
 ///     GP0(E1h) - Draw Mode setting (aka "Texpage")

@@ -2,7 +2,7 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ProjectPSX.WPF.Frontend.Shared;
+namespace PSX.Frontend.WPF.Frontend.Shared;
 
 public class BaseWindow<T> : Window where T : BaseModel
 {

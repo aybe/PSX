@@ -2,7 +2,7 @@
 using OpenTK.Audio.OpenAL;
 using OpenTK.Mathematics;
 
-namespace ProjectPSX.OpenTK;
+namespace PSX.Frontend.OpenTK;
 
 public class AudioPlayer
 {

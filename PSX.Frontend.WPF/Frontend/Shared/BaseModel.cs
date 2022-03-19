@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 
-namespace ProjectPSX.WPF.Frontend.Shared;
+namespace PSX.Frontend.WPF.Frontend.Shared;
 
 public abstract class BaseModel : ObservableRecipient
 {

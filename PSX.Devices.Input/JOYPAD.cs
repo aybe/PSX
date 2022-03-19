@@ -1,9 +1,8 @@
-﻿using System;
-using ProjectPSX.Storage;
+﻿using PSX.Core;
 
 // ReSharper disable CommentTypo
 
-namespace ProjectPSX.Input;
+namespace PSX.Devices.Input;
 
 // ReSharper disable once InconsistentNaming
 public class JOYPAD

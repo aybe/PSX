@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.Sound;
+﻿namespace PSX.Core;
 
 public interface ISPU
 {

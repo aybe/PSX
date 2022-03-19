@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.Devices.CdRom;
+﻿namespace PSX.Core;
 
 public interface ISector
 {

@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.Graphics;
+﻿namespace PSX.Core.Graphics.Graphics;
 
 public sealed class VRAM32 : VRAM<int>
 {

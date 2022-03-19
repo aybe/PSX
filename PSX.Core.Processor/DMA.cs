@@ -1,8 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-
-namespace ProjectPSX.Devices {
+﻿namespace PSX.Core.Processor {
     public class DMA {
 
         public abstract class AChannel {

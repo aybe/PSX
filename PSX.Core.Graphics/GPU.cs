@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using ProjectPSX.Core.Graphics;
-using ProjectPSX.Graphics;
+using PSX.Core.Graphics.Graphics;
 using Serilog;
 
 // ReSharper disable CommentTypo
 
-namespace ProjectPSX.Core;
+namespace PSX.Core.Graphics;
 
 public partial class Gpu
 {

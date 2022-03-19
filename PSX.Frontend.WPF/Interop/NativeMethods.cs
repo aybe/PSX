@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace ProjectPSX.WPF.Interop;
+namespace PSX.Frontend.WPF.Interop;
 
 internal static class NativeMethods
 {

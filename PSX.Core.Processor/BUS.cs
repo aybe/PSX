@@ -1,13 +1,11 @@
-﻿using ProjectPSX.Devices;
-using System;
-using System.IO;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using ProjectPSX.Core;
-using ProjectPSX.Input;
-using ProjectPSX.Sound;
+using PSX.Core.Graphics;
+using PSX.Core.Sound;
+using PSX.Devices.Input;
+using PSX.Devices.Optical;
 
-namespace ProjectPSX {
+namespace PSX.Core.Processor {
 
     public class BUS {
         //todo write32/16/8 unification pending .NET 7 IBinaryNumber

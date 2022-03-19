@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static ProjectPSX.CPU;
+﻿using System.Text;
 
-namespace ProjectPSX.Disassembler {
+namespace PSX.Core.Processor {
     public class MIPS_Disassembler {
 
         public MIPS_Disassembler(ref uint HI, ref uint LO, uint[] GPR, uint[] COP0_GPR) { //TODO FIX HI LO

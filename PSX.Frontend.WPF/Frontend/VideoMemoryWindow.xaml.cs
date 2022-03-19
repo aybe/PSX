@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.WPF.Frontend;
+﻿namespace PSX.Frontend.WPF.Frontend;
 
 internal sealed partial class VideoMemoryWindow
 {

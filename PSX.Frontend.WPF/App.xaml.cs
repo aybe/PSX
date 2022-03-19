@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
-using ProjectPSX.WPF.Frontend;
-using ProjectPSX.WPF.Frontend.Services;
+using PSX.Frontend.WPF.Frontend;
+using PSX.Frontend.WPF.Frontend.Services;
 
-namespace ProjectPSX.WPF;
+namespace PSX.Frontend.WPF;
 
 public partial class App
 {

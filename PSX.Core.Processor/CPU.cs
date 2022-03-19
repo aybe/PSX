@@ -1,9 +1,9 @@
 ﻿//#define CPU_EXCEPTIONS
-using System;
-using System.Runtime.CompilerServices;
-using ProjectPSX.Disassembler;
 
-namespace ProjectPSX {
+using System.Runtime.CompilerServices;
+using PSX.Core.Graphics;
+
+namespace PSX.Core.Processor {
     public unsafe class CPU {  //MIPS R3000A-compatible 32-bit RISC CPU MIPS R3051 with 5 KB L1 cache, running at 33.8688 MHz // 33868800
 
         private uint PC_Now; // PC on current execution as PC and PC Predictor go ahead after fetch. This is handy on Branch Delay so it dosn't give erronious PC-4

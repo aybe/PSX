@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ProjectPSX.WinForms.Interop;
+namespace PSX.Frontend.WinForms.Interop;
 
 internal readonly ref struct GdiDeviceContext
 {

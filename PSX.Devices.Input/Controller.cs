@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProjectPSX.Input;
+﻿namespace PSX.Devices.Input;
 
 public abstract class Controller
 {

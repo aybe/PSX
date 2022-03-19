@@ -1,10 +1,8 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
+﻿using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace ProjectPSX.Devices {
+namespace PSX.Core.Graphics {
     public class MDEC {
 
         private const int NUM_BLOCKS = 6;

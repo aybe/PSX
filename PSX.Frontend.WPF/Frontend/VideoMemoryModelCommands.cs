@@ -1,10 +1,9 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.Toolkit.Mvvm.Input;
-using ProjectPSX.WPF.Emulation;
-using ProjectPSX.WPF.Emulation.Messaging;
-using ProjectPSX.WPF.Frontend.Shared;
+using PSX.Frontend.WPF.Emulation.Messaging;
+using PSX.Frontend.WPF.Frontend.Shared;
 
-namespace ProjectPSX.WPF.Frontend;
+namespace PSX.Frontend.WPF.Frontend;
 
 [UsedImplicitly]
 internal sealed class VideoMemoryModelCommands : BaseModelCommands<VideoMemoryModel>

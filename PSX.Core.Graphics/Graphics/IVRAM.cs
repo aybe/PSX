@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.Graphics;
+﻿namespace PSX.Core.Graphics.Graphics;
 
 public interface IVRAM<T> where T : unmanaged
 {

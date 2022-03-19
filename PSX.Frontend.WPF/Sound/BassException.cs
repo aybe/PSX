@@ -1,7 +1,7 @@
 ﻿using System;
 using Un4seen.Bass;
 
-namespace ProjectPSX.WPF.Sound;
+namespace PSX.Frontend.WPF.Sound;
 
 internal sealed class BassException : Exception
 {

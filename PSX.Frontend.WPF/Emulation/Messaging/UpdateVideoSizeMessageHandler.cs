@@ -1,3 +1,3 @@
-﻿namespace ProjectPSX.WPF.Emulation.Messaging;
+﻿namespace PSX.Frontend.WPF.Emulation.Messaging;
 
 public delegate void UpdateVideoSizeMessageHandler(UpdateVideoSizeMessage message);

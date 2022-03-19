@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.Sound;
+﻿namespace PSX.Core.Sound;
 
 internal struct SPUControl
 {

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace ProjectPSX {
+namespace PSX.Core.Graphics {
     public class GTE { //PSX MIPS Coprocessor 02 - Geometry Transformation Engine
 
         private static ReadOnlySpan<byte> unrTable => new byte[] {

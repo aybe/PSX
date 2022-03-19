@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace ProjectPSX.Devices.CdRom
+﻿namespace PSX.Devices.Optical
 {
     public class CD {
         private const int BYTES_PER_SECTOR_RAW = 2352;

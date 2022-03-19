@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.Core;
+﻿namespace PSX.Core.Graphics;
 
 internal readonly struct DrawingOffset
 {

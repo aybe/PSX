@@ -4,13 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using ProjectPSX.WPF.Emulation;
-using ProjectPSX.WPF.Emulation.Messaging;
-using ProjectPSX.WPF.Frontend.Services;
-using ProjectPSX.WPF.Frontend.Shared;
-using ProjectPSX.WPF.Logging;
+using PSX.Core;
+using PSX.Frontend.WPF.Emulation;
+using PSX.Frontend.WPF.Emulation.Messaging;
+using PSX.Frontend.WPF.Frontend.Services;
+using PSX.Frontend.WPF.Frontend.Shared;
+using PSX.Frontend.WPF.Logging;
 
-namespace ProjectPSX.WPF.Frontend;
+namespace PSX.Frontend.WPF.Frontend;
 
 internal sealed class MainModel :
     BaseModel<MainModelCommands>,

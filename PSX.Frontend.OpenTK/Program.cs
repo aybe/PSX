@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 
-namespace ProjectPSX.OpenTK;
+namespace PSX.Frontend.OpenTK;
 
 internal static class Program
 {

@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.Graphics;
+﻿namespace PSX.Core.Graphics.Graphics;
 
 public sealed class VRAM16 : VRAM<ushort> // TODO this should be signed just like other VRAM is
 {

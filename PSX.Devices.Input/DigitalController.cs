@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.Input;
+﻿namespace PSX.Devices.Input;
 
 public sealed class DigitalController : Controller
 {

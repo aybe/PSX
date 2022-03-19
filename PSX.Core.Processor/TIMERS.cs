@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProjectPSX.Devices {
+﻿namespace PSX.Core.Processor {
     public class TIMERS {
 
         private TIMER[] timer = new TIMER[3];

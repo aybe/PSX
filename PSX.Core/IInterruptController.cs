@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.Devices;
+﻿namespace PSX.Core;
 
 public interface IInterruptController
 {

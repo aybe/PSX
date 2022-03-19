@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace ProjectPSX.WinForms.Interop;
+namespace PSX.Frontend.WinForms.Interop;
 
 internal class GdiBitmap : IDisposable
 {

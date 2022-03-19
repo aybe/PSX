@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ProjectPSX.WPF.Emulation.Messaging;
+namespace PSX.Frontend.WPF.Emulation.Messaging;
 
 internal sealed class BaseUpdateMessage<T> where T : Delegate
 {

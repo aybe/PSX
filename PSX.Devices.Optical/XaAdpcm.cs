@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ProjectPSX.Devices.CdRom {
+﻿namespace PSX.Devices.Optical {
     public class XaAdpcm {
 
         private const int BYTES_PER_HEADER = 24;

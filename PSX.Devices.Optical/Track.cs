@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProjectPSX.Devices.CdRom;
+﻿namespace PSX.Devices.Optical;
 
 public class Track
 {

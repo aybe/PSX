@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.WPF.Frontend.Services;
+﻿namespace PSX.Frontend.WPF.Frontend.Services;
 
 public interface IFilePickerService
 {

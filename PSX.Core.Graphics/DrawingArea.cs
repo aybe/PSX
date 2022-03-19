@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProjectPSX.Core;
+﻿namespace PSX.Core.Graphics;
 
 public readonly struct DrawingArea : IEquatable<DrawingArea>
 {

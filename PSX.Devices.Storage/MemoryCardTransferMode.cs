@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.Storage;
+﻿namespace PSX.Devices.Storage;
 
 internal enum MemoryCardTransferMode
 {

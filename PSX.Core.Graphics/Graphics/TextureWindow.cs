@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.Core.Graphics;
+﻿namespace PSX.Core.Graphics.Graphics;
 
 /// <summary>
 ///     GP0(E2h) - Texture Window setting

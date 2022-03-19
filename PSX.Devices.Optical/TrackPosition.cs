@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProjectPSX.Devices.CdRom;
+﻿namespace PSX.Devices.Optical;
 
 public readonly struct TrackPosition
 {

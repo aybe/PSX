@@ -1,9 +1,6 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using ProjectPSX.Devices;
-using ProjectPSX.Devices.CdRom;
+﻿using System.Runtime.InteropServices;
 
-namespace ProjectPSX.Sound;
+namespace PSX.Core.Sound;
 
 public class SPU : ISPU
 {

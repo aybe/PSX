@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.Storage;
+﻿namespace PSX.Core;
 
 public interface IMemoryCard
 {

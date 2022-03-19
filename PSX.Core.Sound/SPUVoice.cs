@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ProjectPSX.Sound;
+﻿namespace PSX.Core.Sound;
 
 public class SPUVoice
 {

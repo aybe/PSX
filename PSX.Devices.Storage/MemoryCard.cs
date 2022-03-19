@@ -1,10 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using PSX.Core;
 
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
 
-namespace ProjectPSX.Storage;
+namespace PSX.Devices.Storage;
 
 public class MemoryCard : IMemoryCard
 {

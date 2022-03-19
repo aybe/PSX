@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.WinForms.Interop;
+﻿namespace PSX.Frontend.WinForms.Interop;
 
 internal static class ExternDll
 {

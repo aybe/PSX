@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
-using ProjectPSX.WinForms.UI;
+using PSX.Frontend.WinForms.UI;
 
-namespace ProjectPSX.WinForms;
+namespace PSX.Frontend.WinForms;
 
 internal static class Program
 {

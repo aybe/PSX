@@ -1,8 +1,8 @@
-﻿using ProjectPSX.WPF.Logging.Extensions;
+﻿using PSX.Frontend.WPF.Logging.Extensions;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
-namespace ProjectPSX.WPF.Logging;
+namespace PSX.Frontend.WPF.Logging;
 
 public static class LoggingUtility
 {

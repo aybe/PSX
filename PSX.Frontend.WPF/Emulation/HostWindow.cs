@@ -1,6 +1,7 @@
-﻿using ProjectPSX.WPF.Emulation.Messaging;
+﻿using PSX.Core;
+using PSX.Frontend.WPF.Emulation.Messaging;
 
-namespace ProjectPSX.WPF.Emulation;
+namespace PSX.Frontend.WPF.Emulation;
 
 internal sealed class HostWindow : IHostWindow
 {

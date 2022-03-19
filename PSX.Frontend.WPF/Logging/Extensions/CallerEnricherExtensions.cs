@@ -8,7 +8,7 @@ using Serilog.Configuration;
 using Serilog.Core;
 using Serilog.Events;
 
-namespace ProjectPSX.WPF.Logging.Extensions;
+namespace PSX.Frontend.WPF.Logging.Extensions;
 
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 internal static class CallerEnricherExtensions

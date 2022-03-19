@@ -1,11 +1,10 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using ProjectPSX.WPF.Emulation.Messaging;
+using PSX.Frontend.WPF.Emulation.Messaging;
 
-namespace ProjectPSX.WPF.Frontend.Shared;
+namespace PSX.Frontend.WPF.Frontend.Shared;
 
 internal class BaseVideoModel : BaseModel<BaseVideoModelCommands>
 // BUG these values should be cached to be fed when window opens after emu started

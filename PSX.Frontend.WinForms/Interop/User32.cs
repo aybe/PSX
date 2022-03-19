@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace ProjectPSX.WinForms.Interop;
+namespace PSX.Frontend.WinForms.Interop;
 
 [SuppressUnmanagedCodeSecurity]
 internal static partial class NativeMethods

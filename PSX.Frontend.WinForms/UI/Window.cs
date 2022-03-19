@@ -10,11 +10,12 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
 using NAudio.Wave;
-using ProjectPSX.Input;
-using ProjectPSX.WinForms.Interop;
+using PSX.Core;
+using PSX.Devices.Input;
+using PSX.Frontend.WinForms.Interop;
 using Timer = System.Timers.Timer;
 
-namespace ProjectPSX.WinForms.UI;
+namespace PSX.Frontend.WinForms.UI;
 
 public class Window : Form, IHostWindow
 {

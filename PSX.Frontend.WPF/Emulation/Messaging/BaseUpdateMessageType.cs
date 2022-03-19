@@ -1,4 +1,4 @@
-﻿namespace ProjectPSX.WPF.Emulation.Messaging;
+﻿namespace PSX.Frontend.WPF.Emulation.Messaging;
 
 internal enum BaseUpdateMessageType
 {

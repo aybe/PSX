@@ -1,14 +1,14 @@
 ﻿using System;
-using ProjectPSX.Core;
-using ProjectPSX.Devices;
-using ProjectPSX.Devices.CdRom;
-using ProjectPSX.Input;
-using ProjectPSX.Sound;
-using ProjectPSX.Storage;
+using PSX.Core.Graphics;
+using PSX.Core.Processor;
+using PSX.Core.Sound;
+using PSX.Devices.Input;
+using PSX.Devices.Optical;
+using PSX.Devices.Storage;
 using Serilog;
 using Serilog.Core;
 
-namespace ProjectPSX {
+namespace PSX.Core {
     public class Emulator : IDisposable {
         const int PSX_MHZ = 33868800;
         const int SYNC_CYCLES = 100;
