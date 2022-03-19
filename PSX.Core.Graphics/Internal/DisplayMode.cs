@@ -1,4 +1,4 @@
-﻿namespace PSX.Core.Graphics.Graphics;
+﻿namespace PSX.Core.Graphics.Internal;
 
 public readonly struct DisplayMode
     // TODO this doesn't exactly mimic GP1(08h) - Display mode

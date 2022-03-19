@@ -20,11 +20,11 @@ namespace PSX.Core {
         private CPU cpu;
         private BUS bus;
         private CDROM cdrom;
-        private Gpu gpu;
+        private GPU gpu;
         private SPU spu;
         private JOYPAD joypad;
         private TIMERS timers;
-        private MDEC mdec;
+        private MDEC MDEC;
         private Controller controller;
         private MemoryCard memoryCard;
         private CD cd;
@@ -41,11 +41,11 @@ namespace PSX.Core {
             cd     = new CD(diskFilename);
             spu    = new SPU(window, interruptController, new Sector(Sector.XA_BUFFER));
             cdrom  = new CDROM(cd, spu);
-            gpu    = new Gpu(window, logger);
+            gpu    = new GPU(window, logger);
             joypad = new JOYPAD(controller, memoryCard);
             timers = new TIMERS();
-            mdec   = new MDEC();
-            bus    = new BUS(gpu, cdrom, spu, joypad, timers, mdec, interruptController);
+            MDEC   = new MDEC();
+            bus    = new BUS(gpu, cdrom, spu, joypad, timers, MDEC, interruptController);
             cpu    = new CPU(bus);
 
             bus.loadBios();

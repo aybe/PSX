@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
-namespace PSX.Core.Graphics;
+namespace PSX.Core.Graphics.Internal;
 
 [StructLayout(LayoutKind.Explicit)]
 [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]

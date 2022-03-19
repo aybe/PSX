@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace PSX.Core.Graphics;
+namespace PSX.Core.Graphics.Internal;
 
 [StructLayout(LayoutKind.Explicit)]
 internal struct Point2D

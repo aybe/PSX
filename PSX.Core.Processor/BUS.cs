@@ -24,23 +24,23 @@ namespace PSX.Core.Processor {
         //Other Subsystems
         public InterruptController interruptController;
         private DMA dma;
-        private Gpu gpu;
+        private GPU gpu;
         private CDROM cdrom;
         private TIMERS timers;
         private JOYPAD joypad;
-        private MDEC mdec;
+        private MDEC MDEC;
         private SPU spu;
 
         //temporary hardcoded bios/ex1
         private static string bios = "./SCPH1001.BIN";
         private static string ex1 = "./caetlaEXP.BIN";
 
-        public BUS(Gpu gpu, CDROM cdrom, SPU spu, JOYPAD joypad, TIMERS timers, MDEC mdec, InterruptController interruptController) {
+        public BUS(GPU gpu, CDROM cdrom, SPU spu, JOYPAD joypad, TIMERS timers, MDEC mdec, InterruptController interruptController) {
             dma = new DMA(this);
             this.gpu = gpu;
             this.cdrom = cdrom;
             this.timers = timers;
-            this.mdec = mdec;
+            this.MDEC = mdec;
             this.spu = spu;
             this.joypad = joypad;
             this.interruptController = interruptController;
@@ -77,9 +77,9 @@ namespace PSX.Core.Processor {
             } else if (addr == 0x1F80_1814) {
                 return gpu.LoadGPUSTAT();
             } else if (addr == 0x1F80_1820) {
-                return mdec.readMDEC0_Data();
+                return MDEC.readMDEC0_Data();
             } else if (addr == 0x1F80_1824) {
-                return mdec.readMDEC1_Status();
+                return MDEC.readMDEC1_Status();
             } else if (addr < 0x1F80_2000) {
                 return spu.Load(addr);
             } else if (addr < 0x1F80_4000) {
@@ -124,7 +124,7 @@ namespace PSX.Core.Processor {
             } else if (addr < 0x1F80_1820) {
                 gpu.Write(addr, value);
             } else if (addr < 0x1F80_1830) {
-                mdec.write(addr, value);
+                MDEC.write(addr, value);
             } else if (addr < 0x1F80_2000) {
                 spu.Write(addr, (ushort)value);
             } else if (addr < 0x1F80_4000) {
@@ -165,7 +165,7 @@ namespace PSX.Core.Processor {
             } else if (addr < 0x1F80_1820) {
                 gpu.Write(addr, value);
             } else if (addr < 0x1F80_1830) {
-                mdec.write(addr, value);
+                MDEC.write(addr, value);
             } else if (addr < 0x1F80_2000) {
                 spu.Write(addr, value);
             } else if (addr < 0x1F80_4000) {
@@ -206,7 +206,7 @@ namespace PSX.Core.Processor {
             } else if (addr < 0x1F80_1820) {
                 gpu.Write(addr, value);
             } else if (addr < 0x1F80_1830) {
-                mdec.write(addr, value);
+                MDEC.write(addr, value);
             } else if (addr < 0x1F80_2000) {
                 spu.Write(addr, value);
             } else if (addr < 0x1F80_4000) {
@@ -375,12 +375,12 @@ namespace PSX.Core.Processor {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void DmaToMdecIn(Span<uint> dma) { //todo: actual process the whole array
             foreach (uint word in dma)
-                mdec.writeMDEC0_Command(word);
+                MDEC.writeMDEC0_Command(word);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void DmaFromMdecOut(uint address, int size) {
-            var dma = mdec.processDmaLoad(size);
+            var dma = MDEC.processDmaLoad(size);
             var dest = new Span<uint>(ramPtr + (address & 0x1F_FFFC), size);
             dma.CopyTo(dest);
         }

@@ -1,4 +1,4 @@
-﻿namespace PSX.Core.Graphics;
+﻿namespace PSX.Core.Graphics.Internal;
 
 internal readonly struct DrawingOffset
 {
@@ -8,7 +8,7 @@ internal readonly struct DrawingOffset
 
     public DrawingOffset(uint value)
     {
-        X = Gpu.Read11BitShort(value & 0x7FF);
-        Y = Gpu.Read11BitShort((value >> 11) & 0x7FF);
+        X = GPU.Read11BitShort(value & 0x7FF);
+        Y = GPU.Read11BitShort((value >> 11) & 0x7FF);
     }
 }

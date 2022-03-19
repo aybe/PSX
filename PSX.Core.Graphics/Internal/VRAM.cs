@@ -1,4 +1,4 @@
-﻿namespace PSX.Core.Graphics.Graphics;
+﻿namespace PSX.Core.Graphics.Internal;
 
 public abstract class VRAM<T> : IVRAM<T> where T : unmanaged
 {

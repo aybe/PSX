@@ -1,6 +1,6 @@
-﻿namespace PSX.Core.Graphics.Graphics;
+﻿namespace PSX.Core.Graphics.Internal;
 
-internal struct VRamTransfer
+internal struct VRAMTransfer
 {
     public int    X;
     public int    Y;

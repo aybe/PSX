@@ -1,4 +1,4 @@
-﻿namespace PSX.Core.Graphics;
+﻿namespace PSX.Core.Graphics.Internal;
 
 internal struct Primitive
 {

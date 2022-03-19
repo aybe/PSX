@@ -1,6 +1,6 @@
-﻿namespace PSX.Core.Graphics;
+﻿namespace PSX.Core.Graphics.Internal;
 
-public readonly struct DrawingArea : IEquatable<DrawingArea>
+internal readonly struct DrawingArea : IEquatable<DrawingArea>
 {
     public ushort X { get; }
 

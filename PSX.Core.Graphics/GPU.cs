@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using PSX.Core.Graphics.Graphics;
+using PSX.Core.Graphics.Internal;
 using PSX.Core.Interfaces;
 using Serilog;
 
@@ -8,9 +8,9 @@ using Serilog;
 
 namespace PSX.Core.Graphics;
 
-public partial class Gpu
+public partial class GPU
 {
-    public Gpu(IHostWindow window, ILogger logger)
+    public GPU(IHostWindow window, ILogger logger)
     {
         Window = window;
         Logger = logger;
@@ -22,7 +22,7 @@ public partial class Gpu
     private ILogger Logger { get;  }
 }
 
-public partial class Gpu
+public partial class GPU
 {
     //This needs to go away once a BGR bitmap is achieved
 
@@ -104,7 +104,7 @@ public partial class Gpu
 
     private int VideoCycles;
 
-    private VRamTransfer VRamTransfer;
+    private VRAMTransfer VRAMTransfer;
 
     private DisplayMode DisplayMode { get; set; }
 
@@ -205,33 +205,33 @@ public partial class Gpu
     {
         if (CheckMaskBeforeDraw)
         {
-            var bg = VRAM32.GetPixel(VRamTransfer.X, VRamTransfer.Y);
+            var bg = VRAM32.GetPixel(VRAMTransfer.X, VRAMTransfer.Y);
 
             if (bg >> 24 == 0)
             {
-                var y1 = VRamTransfer.Y & 0x1FF;
+                var y1 = VRAMTransfer.Y & 0x1FF;
                 var color = Color1555To8888(value);
-                VRAM32.SetPixel(VRamTransfer.X & 0x3FF, y1, color);
-                var y2 = VRamTransfer.Y & 0x1FF;
-                VRAM16.SetPixel(VRamTransfer.X & 0x3FF, y2, value);
+                VRAM32.SetPixel(VRAMTransfer.X & 0x3FF, y1, color);
+                var y2 = VRAMTransfer.Y & 0x1FF;
+                VRAM16.SetPixel(VRAMTransfer.X & 0x3FF, y2, value);
             }
         }
         else
         {
-            var y1 = VRamTransfer.Y & 0x1FF;
+            var y1 = VRAMTransfer.Y & 0x1FF;
             var color = Color1555To8888(value);
-            VRAM32.SetPixel(VRamTransfer.X & 0x3FF, y1, color);
-            var y2 = VRamTransfer.Y & 0x1FF;
-            VRAM16.SetPixel(VRamTransfer.X & 0x3FF, y2, value);
+            VRAM32.SetPixel(VRAMTransfer.X & 0x3FF, y1, color);
+            var y2 = VRAMTransfer.Y & 0x1FF;
+            VRAM16.SetPixel(VRAMTransfer.X & 0x3FF, y2, value);
         }
 
-        VRamTransfer.X++;
+        VRAMTransfer.X++;
 
-        if (VRamTransfer.X != VRamTransfer.OriginX + VRamTransfer.W)
+        if (VRAMTransfer.X != VRAMTransfer.OriginX + VRAMTransfer.W)
             return;
 
-        VRamTransfer.X -= VRamTransfer.W;
-        VRamTransfer.Y++;
+        VRAMTransfer.X -= VRAMTransfer.W;
+        VRAMTransfer.Y++;
     }
 
     private void ExecuteGP0(uint opcode, Span<uint> buffer)
@@ -440,7 +440,7 @@ public partial class Gpu
 
         uint value;
 
-        if (VRamTransfer.HalfWords > 0)
+        if (VRAMTransfer.HalfWords > 0)
         {
             value = ReadFromVRAM();
         }
@@ -528,16 +528,16 @@ public partial class Gpu
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private uint ReadFromVRAM()
     {
-        var pixel0 = VRAM16.GetPixel(VRamTransfer.X++ & 0x3FF, VRamTransfer.Y & 0x1FF);
-        var pixel1 = VRAM16.GetPixel(VRamTransfer.X++ & 0x3FF, VRamTransfer.Y & 0x1FF);
+        var pixel0 = VRAM16.GetPixel(VRAMTransfer.X++ & 0x3FF, VRAMTransfer.Y & 0x1FF);
+        var pixel1 = VRAM16.GetPixel(VRAMTransfer.X++ & 0x3FF, VRAMTransfer.Y & 0x1FF);
 
-        if (VRamTransfer.X == VRamTransfer.OriginX + VRamTransfer.W)
+        if (VRAMTransfer.X == VRAMTransfer.OriginX + VRAMTransfer.W)
         {
-            VRamTransfer.X -= VRamTransfer.W;
-            VRamTransfer.Y++;
+            VRAMTransfer.X -= VRAMTransfer.W;
+            VRAMTransfer.Y++;
         }
 
-        VRamTransfer.HalfWords -= 2;
+        VRAMTransfer.HalfWords -= 2;
 
         return (uint)((pixel1 << 16) | pixel0);
     }
@@ -675,7 +675,7 @@ public partial class Gpu
 
         // Force exit if we arrived to the end pixel (fixes weird artifacts on textures in Metal Gear Solid)
 
-        if (--VRamTransfer.HalfWords == 0)
+        if (--VRAMTransfer.HalfWords == 0)
         {
             Mode = Mode.COMMAND;
             return;
@@ -683,7 +683,7 @@ public partial class Gpu
 
         DrawVRAMPixel(pixel1);
 
-        if (--VRamTransfer.HalfWords == 0)
+        if (--VRAMTransfer.HalfWords == 0)
         {
             Mode = Mode.COMMAND;
         }
@@ -1371,13 +1371,13 @@ public partial class Gpu
         var w = (ushort)((((wh & 0xFFFF) - 1) & 0x3FF) + 1);
         var h = (ushort)((((wh >> 16) - 1) & 0x1FF) + 1);
 
-        VRamTransfer.X         = x;
-        VRamTransfer.Y         = y;
-        VRamTransfer.W         = w;
-        VRamTransfer.H         = h;
-        VRamTransfer.OriginX   = x;
-        VRamTransfer.OriginY   = y;
-        VRamTransfer.HalfWords = w * h;
+        VRAMTransfer.X         = x;
+        VRAMTransfer.Y         = y;
+        VRAMTransfer.W         = w;
+        VRAMTransfer.H         = h;
+        VRAMTransfer.OriginX   = x;
+        VRAMTransfer.OriginY   = y;
+        VRAMTransfer.HalfWords = w * h;
 
         Mode = Mode.VRAM;
     }
@@ -1394,13 +1394,13 @@ public partial class Gpu
         var w = (ushort)((((wh & 0xFFFF) - 1) & 0x3FF) + 1);
         var h = (ushort)((((wh >> 16) - 1) & 0x1FF) + 1);
 
-        VRamTransfer.X         = x;
-        VRamTransfer.Y         = y;
-        VRamTransfer.W         = w;
-        VRamTransfer.H         = h;
-        VRamTransfer.OriginX   = x;
-        VRamTransfer.OriginY   = y;
-        VRamTransfer.HalfWords = w * h;
+        VRAMTransfer.X         = x;
+        VRAMTransfer.Y         = y;
+        VRAMTransfer.W         = w;
+        VRAMTransfer.H         = h;
+        VRAMTransfer.OriginX   = x;
+        VRAMTransfer.OriginY   = y;
+        VRAMTransfer.HalfWords = w * h;
     }
 
     #endregion
