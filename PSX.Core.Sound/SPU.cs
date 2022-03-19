@@ -86,7 +86,7 @@ public class SPU
 
     private readonly int CyclesPerSample = 0x300; //33868800 / 44100hz
 
-    private readonly InterruptController InterruptController;
+    private readonly IInterruptController InterruptController;
 
     private readonly byte[] Ram = new byte[512 * 1024];
 
@@ -164,7 +164,7 @@ public class SPU
 
     private uint UnknownBC;
 
-    public SPU(IHostWindow window, InterruptController interruptController)
+    public SPU(IHostWindow window, IInterruptController interruptController)
     {
         Window              = window;
         InterruptController = interruptController;
