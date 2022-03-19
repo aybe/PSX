@@ -37,15 +37,15 @@ namespace ProjectPSX {
 
             interruptController = new InterruptController();
 
-            cd = new CD(diskFilename);
-            spu = new SPU(window, interruptController);
-            cdrom = new CDROM(cd, spu);
+            cd     = new CD(diskFilename);
+            spu    = new SPU(window, interruptController, new Sector(Sector.XA_BUFFER));
+            cdrom  = new CDROM(cd, spu);
             gpu    = new Gpu(window, logger);
             joypad = new JOYPAD(controller, memoryCard);
             timers = new TIMERS();
-            mdec = new MDEC();
-            bus = new BUS(gpu, cdrom, spu, joypad, timers, mdec, interruptController);
-            cpu = new CPU(bus);
+            mdec   = new MDEC();
+            bus    = new BUS(gpu, cdrom, spu, joypad, timers, mdec, interruptController);
+            cpu    = new CPU(bus);
 
             bus.loadBios();
             if (diskFilename.EndsWith(".exe")) {

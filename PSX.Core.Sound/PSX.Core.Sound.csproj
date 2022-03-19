@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PSX.Core.Devices\PSX.Core.Devices.csproj" />
     <ProjectReference Include="..\PSX.Core\PSX.Core.csproj" />
   </ItemGroup>
 

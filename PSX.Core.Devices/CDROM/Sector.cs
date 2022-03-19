@@ -3,7 +3,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace ProjectPSX.Devices.CdRom {
-    public class Sector {
+    public class Sector : ISector
+    {
 
         // Standard size for a raw sector / CDDA
         public const int RAW_BUFFER = 2352;

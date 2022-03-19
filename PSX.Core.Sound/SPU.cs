@@ -82,7 +82,7 @@ public class SPU
         0x5997, 0x599E, 0x59A4, 0x59A9, 0x59AD, 0x59B0, 0x59B2, 0x59B3
     };
 
-    private readonly Sector CdBuffer = new(Sector.XA_BUFFER);
+    private readonly ISector CdBuffer;
 
     private readonly int CyclesPerSample = 0x300; //33868800 / 44100hz
 
@@ -164,10 +164,11 @@ public class SPU
 
     private uint UnknownBC;
 
-    public SPU(IHostWindow window, IInterruptController interruptController)
+    public SPU(IHostWindow window, IInterruptController interruptController, ISector cdBuffer)
     {
         Window              = window;
         InterruptController = interruptController;
+        CdBuffer            = cdBuffer;
 
         for (var i = 0; i < Voices.Length; i++)
         {
