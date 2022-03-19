@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace ProjectPSX.Disassembler {
-    internal class BIOS_Disassembler {
+    public class BIOS_Disassembler {
 
         private BUS bus;
         private string msg = "";

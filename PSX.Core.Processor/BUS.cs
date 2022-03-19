@@ -220,7 +220,7 @@ namespace ProjectPSX {
             }
         }
 
-        internal unsafe void loadBios() {
+        public unsafe void loadBios() {
             try {
                 byte[] rom = File.ReadAllBytes(bios);
                 Marshal.Copy(rom, 0, (IntPtr)biosPtr, rom.Length);
