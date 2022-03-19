@@ -65,7 +65,7 @@ public class MemoryCard
         }
     }
 
-    internal byte Process(byte value)
+    public byte Process(byte value)
         //This should be handled with some early response and post address queues but atm its easier to handle as a state machine
     {
         //Console.WriteLine($"[MemCard] rawProcess {value:x2} previous ACK {ACK}");
@@ -126,7 +126,7 @@ public class MemoryCard
         }
     }
 
-    internal void ResetToIdle()
+    public void ResetToIdle()
     {
         ReadPointer  = 0;
         TransferMode = MemoryCardTransferMode.Undefined;
