@@ -31,8 +31,4 @@
     <ProjectReference Include="..\PSX.Core.Sound\PSX.Core.Sound.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Input\" />
-  </ItemGroup>
-
 </Project>
