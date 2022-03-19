@@ -109,9 +109,9 @@ namespace ProjectPSX.Devices {
         private Queue<byte> interruptQueue = new Queue<byte>();
 
         private CD cd;
-        private SPU spu;
+        private ISPU spu;
 
-        public CDROM(CD cd, SPU spu) {
+        public CDROM(CD cd, ISPU spu) {
             this.cd = cd;
             this.spu = spu;
         }

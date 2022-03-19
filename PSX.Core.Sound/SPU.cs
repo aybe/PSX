@@ -5,7 +5,7 @@ using ProjectPSX.Devices.CdRom;
 
 namespace ProjectPSX.Sound;
 
-public class SPU
+public class SPU : ISPU
 {
     // Todo:
     // Spu Enable/Disable (koff voices? Ints?)
