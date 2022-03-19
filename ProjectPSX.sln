@@ -3,38 +3,38 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3FEE6F99-41AB-40F4-97F4-F295A84D5095}"
+	ProjectSection(SolutionItems) = preProject
+		TODO.txt = TODO.txt
+	EndProjectSection
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX", "PSX\PSX.csproj", "{6351ED6D-2403-43EE-8DD8-EB7E796B41EB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Frontend.WinForms", "PSX.Frontend.WinForms\PSX.Frontend.WinForms.csproj", "{826358E3-4610-4688-96DD-86963BE51A58}"
-	ProjectSection(ProjectDependencies) = postProject
-		{6351ED6D-2403-43EE-8DD8-EB7E796B41EB} = {6351ED6D-2403-43EE-8DD8-EB7E796B41EB}
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Core", "PSX.Core\PSX.Core.csproj", "{0BA25B1D-ECA7-4011-82E6-D2F2710A5638}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Core.Graphics", "PSX.Core.Graphics\PSX.Core.Graphics.csproj", "{E85A03C4-C65B-4390-A0CD-899F1CC864A1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Core.Processor", "PSX.Core.Processor\PSX.Core.Processor.csproj", "{F4028964-4975-4F37-A242-F2421F43AFDD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Core.Sound", "PSX.Core.Sound\PSX.Core.Sound.csproj", "{F0FCDB0A-3D05-400F-B04F-8CE33F10E3D6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Devices.Input", "PSX.Devices.Input\PSX.Devices.Input.csproj", "{386CD52A-B3EC-4877-A9BA-8B4BECC94CF7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Devices.Optical", "PSX.Devices.Optical\PSX.Devices.Optical.csproj", "{E958F190-2909-4D61-AFFA-3EF5F30CAA10}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Devices.Storage", "PSX.Devices.Storage\PSX.Devices.Storage.csproj", "{FC70723D-0950-4BCE-AA12-5FE3908F6A7B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Frontend.OpenTK", "PSX.Frontend.OpenTK\PSX.Frontend.OpenTK.csproj", "{8206B712-6B1E-4DEE-8156-5757EDBD3315}"
 	ProjectSection(ProjectDependencies) = postProject
 		{6351ED6D-2403-43EE-8DD8-EB7E796B41EB} = {6351ED6D-2403-43EE-8DD8-EB7E796B41EB}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Frontend.WPF", "PSX.Frontend.WPF\PSX.Frontend.WPF.csproj", "{B3050D06-2B44-43AF-8919-70273DA69E3F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Core.Graphics", "PSX.Core.Graphics\PSX.Core.Graphics.csproj", "{E85A03C4-C65B-4390-A0CD-899F1CC864A1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Core", "PSX.Core\PSX.Core.csproj", "{0BA25B1D-ECA7-4011-82E6-D2F2710A5638}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Core.Sound", "PSX.Core.Sound\PSX.Core.Sound.csproj", "{F0FCDB0A-3D05-400F-B04F-8CE33F10E3D6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Devices.Input", "PSX.Devices.Input\PSX.Devices.Input.csproj", "{386CD52A-B3EC-4877-A9BA-8B4BECC94CF7}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Core.Processor", "PSX.Core.Processor\PSX.Core.Processor.csproj", "{F4028964-4975-4F37-A242-F2421F43AFDD}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3FEE6F99-41AB-40F4-97F4-F295A84D5095}"
-	ProjectSection(SolutionItems) = preProject
-		TODO.txt = TODO.txt
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Frontend.WinForms", "PSX.Frontend.WinForms\PSX.Frontend.WinForms.csproj", "{826358E3-4610-4688-96DD-86963BE51A58}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6351ED6D-2403-43EE-8DD8-EB7E796B41EB} = {6351ED6D-2403-43EE-8DD8-EB7E796B41EB}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Devices.Optical", "PSX.Devices.Optical\PSX.Devices.Optical.csproj", "{E958F190-2909-4D61-AFFA-3EF5F30CAA10}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Devices.Storage", "PSX.Devices.Storage\PSX.Devices.Storage.csproj", "{FC70723D-0950-4BCE-AA12-5FE3908F6A7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Frontend.WPF", "PSX.Frontend.WPF\PSX.Frontend.WPF.csproj", "{B3050D06-2B44-43AF-8919-70273DA69E3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
