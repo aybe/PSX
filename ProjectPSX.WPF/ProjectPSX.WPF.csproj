@@ -20,7 +20,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\ProjectPSX\ProjectPSX.csproj" />
+		<ProjectReference Include="..\PSX\PSX.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
