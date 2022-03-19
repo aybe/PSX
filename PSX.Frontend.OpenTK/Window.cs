@@ -4,6 +4,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using PSX.Core;
+using PSX.Core.Interfaces;
 using PSX.Devices.Input;
 
 namespace PSX.Frontend.OpenTK;

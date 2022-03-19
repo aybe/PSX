@@ -1,8 +1,9 @@
 ﻿using System.Runtime.InteropServices;
+using PSX.Core.Interfaces;
 
 namespace PSX.Core.Sound;
 
-public class SPU : ISPU
+public class SPU : ISpu
 {
     // Todo:
     // Spu Enable/Disable (koff voices? Ints?)
@@ -479,7 +480,7 @@ public class SPU : ISPU
 
     public void PushCdBufferSamples(byte[] decodedXaAdpcm)
     {
-        CdBuffer.fillWith(decodedXaAdpcm);
+        CdBuffer.FillWith(decodedXaAdpcm);
     }
 
     public bool Tick(int cycles)
@@ -563,12 +564,12 @@ public class SPU : ISPU
         //Merge in CD audio (CDDA or XA)
         short cdL = 0;
         short cdR = 0;
-        if (Control.CdAudioEnabled && CdBuffer.hasSamples())
+        if (Control.CdAudioEnabled && CdBuffer.HasSamples())
         {
             //Be sure theres something on the queue...
             //todo refactor the byte/short queues and casts
-            cdL = CdBuffer.readShort();
-            cdR = CdBuffer.readShort();
+            cdL = CdBuffer.ReadShort();
+            cdR = CdBuffer.ReadShort();
 
             //Apply Spu Cd In (CDDA/XA) Volume
             cdL = (short)((cdL * CdVolumeLeft) >> 15);
@@ -714,7 +715,7 @@ public class SPU : ISPU
         //so check if it's in the size range and trigger int
         if (RamIrqAddress > RamDataTransferAddressInternal && RamIrqAddress < RamDataTransferAddressInternal + size)
         {
-            InterruptController.set(Interrupt.SPU);
+            InterruptController.Set(Interrupt.SPU);
         }
 
         RamDataTransferAddressInternal = (uint)(RamDataTransferAddressInternal + size * 4);
@@ -736,7 +737,7 @@ public class SPU : ISPU
 
         if (RamIrqAddress > RamDataTransferAddressInternal && RamIrqAddress < RamDataTransferAddressInternal + size)
         {
-            InterruptController.set(Interrupt.SPU);
+            InterruptController.Set(Interrupt.SPU);
         }
 
         if (destAddress <= 0x7FFFF)

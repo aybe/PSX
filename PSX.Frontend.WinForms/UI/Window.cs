@@ -11,6 +11,7 @@ using System.Timers;
 using System.Windows.Forms;
 using NAudio.Wave;
 using PSX.Core;
+using PSX.Core.Interfaces;
 using PSX.Devices.Input;
 using PSX.Frontend.WinForms.Interop;
 using Timer = System.Timers.Timer;

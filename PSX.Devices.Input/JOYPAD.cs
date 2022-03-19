@@ -1,4 +1,5 @@
 ﻿using PSX.Core;
+using PSX.Core.Interfaces;
 
 // ReSharper disable CommentTypo
 
@@ -156,7 +157,7 @@ public class JOYPAD
                     else if (JoypadDevice == JoypadDevice.MemoryCard)
                     {
                         JOY_RX_DATA   = MemoryCard.Process(JOY_TX_DATA);
-                        ACKInputLevel = MemoryCard.ACK;
+                        ACKInputLevel = MemoryCard.Ack;
                         if (ACKInputLevel) Counter = 500;
                         //Console.WriteLine($"[JOYPAD] MemCard TICK Enqueued RX response {JOY_RX_DATA:x2} ACK: {ackInputLevel}");
                         //Console.ReadLine();

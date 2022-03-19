@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using PSX.Core;
 using PSX.Core.Extensions;
+using PSX.Core.Interfaces;
 
 namespace PSX.Devices.Optical {
     //TODO This is class is pretty much broken and the culprit ofc that many games doesn't work.
@@ -106,9 +107,9 @@ namespace PSX.Devices.Optical {
         private Queue<byte> interruptQueue = new Queue<byte>();
 
         private CD cd;
-        private ISPU spu;
+        private ISpu spu;
 
-        public CDROM(CD cd, ISPU spu) {
+        public CDROM(CD cd, ISpu spu) {
             this.cd = cd;
             this.spu = spu;
         }
@@ -230,10 +231,10 @@ namespace PSX.Devices.Optical {
                     //If we arived here sector is supposed to be delivered to CPU so slice out sync and header based on flag
                     if (!isSectorSizeRAW) {
                         var dataSector = readSector.AsSpan().Slice(24, 0x800);
-                        lastReadSector.fillWith(dataSector);
+                        lastReadSector.FillWith(dataSector);
                     } else {
                         var rawSector = readSector.AsSpan().Slice(12);
-                        lastReadSector.fillWith(rawSector);
+                        lastReadSector.FillWith(rawSector);
                     }
 
                     responseBuffer.Enqueue(STAT);
@@ -275,7 +276,7 @@ namespace PSX.Devices.Optical {
                     if (cdDebug) Console.WriteLine("[CDROM] [L02] DATA");
                     //Console.WriteLine(dataBuffer.Count);
                     //Console.ReadLine();
-                    return currentSector.readByte();
+                    return currentSector.ReadByte();
 
                 case 0x1F801803:
                     switch (INDEX) {
@@ -353,15 +354,15 @@ namespace PSX.Devices.Optical {
                             //7   BFRD Want Data(0 = No / Reset Data Fifo, 1 = Yes / Load Data Fifo)
                             if ((value & 0x80) != 0) {
                                 //Console.WriteLine("[CDROM] [W03.0]  Want Data (Copy from cd buffer to databuffer)");
-                                if (currentSector.hasData()) { /*Console.WriteLine(">>>>>>> CDROM BUFFER WAS NOT EMPTY <<<<<<<<<");*/ return; }
-                                currentSector.fillWith(lastReadSector.read());
+                                if (currentSector.HasData()) { /*Console.WriteLine(">>>>>>> CDROM BUFFER WAS NOT EMPTY <<<<<<<<<");*/ return; }
+                                currentSector.FillWith(lastReadSector.Read());
                             } else {
                                 if (cdDebug) {
                                     Console.ForegroundColor = ConsoleColor.Red;
                                     Console.WriteLine("[CDROM] [W03.0] Data Clear");
                                     Console.ResetColor();
                                 }
-                                currentSector.clear();
+                                currentSector.Clear();
                             }
                             break;
                         case 1:
@@ -890,7 +891,7 @@ namespace PSX.Devices.Optical {
         }
 
         private int dataBuffer_hasData() {
-            return (currentSector.hasData()) ? 1 : 0;
+            return (currentSector.HasData()) ? 1 : 0;
         }
 
         private int parametterBuffer_isEmpty() {
@@ -942,7 +943,7 @@ namespace PSX.Devices.Optical {
         }
 
         public Span<uint> processDmaLoad(int size) {
-            return currentSector.read(size);
+            return currentSector.Read(size);
         }
 
         public void toggleLid() {

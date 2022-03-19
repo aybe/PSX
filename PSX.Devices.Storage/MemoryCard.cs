@@ -1,4 +1,5 @@
 ﻿using PSX.Core;
+using PSX.Core.Interfaces;
 
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
@@ -28,7 +29,7 @@ public class MemoryCard : IMemoryCard
 
     private readonly byte[] Memory = new byte[128 * 1024]; //Standard memcard 128KB
 
-    public bool ACK { get; private set; }
+    public bool Ack { get; private set; }
 
     private ushort Address;
 
@@ -83,11 +84,11 @@ public class MemoryCard : IMemoryCard
                     case 0x81:
                         //Console.WriteLine("[MemCard] Idle Process 0x81");
                         Mode = MemoryCardMode.Transfer;
-                        ACK  = true;
+                        Ack  = true;
                         return 0xFF;
                     default:
                         //Console.WriteLine("[MemCard] Idle value WARNING " + value);
-                        ACK = false;
+                        Ack = false;
                         return 0xFF;
                 }
 
@@ -109,18 +110,18 @@ public class MemoryCard : IMemoryCard
                     default:
                         //Console.WriteLine($"[MemCard] Unhandled Transfer Process {value:x2}");
                         TransferMode = MemoryCardTransferMode.Undefined;
-                        ACK          = false;
+                        Ack          = false;
                         return 0xFF;
                 }
 
                 var prevFlag = Flag;
-                ACK  =  true;
+                Ack  =  true;
                 Flag &= unchecked((byte)~FLAG_ERROR);
                 return prevFlag;
 
             default:
                 //Console.WriteLine("[[MemCard]] Unreachable Mode Warning");
-                ACK = false;
+                Ack = false;
                 return 0xFF;
         }
     }
@@ -152,7 +153,7 @@ public class MemoryCard : IMemoryCard
         */
     {
         //Console.WriteLine($"[MemCard] readMemory pointer: {readPointer} value: {value:x2} ACK {ACK}");
-        ACK = true;
+        Ack = true;
         switch (ReadPointer++)
         {
             case 0: return MEMORY_CARD_ID_1;
@@ -182,14 +183,14 @@ public class MemoryCard : IMemoryCard
                 TransferMode = MemoryCardTransferMode.Undefined;
                 Mode         = MemoryCardMode.Idle;
                 ReadPointer  = 0;
-                ACK          = false;
+                Ack          = false;
                 return 0x47;
             default:
                 Console.WriteLine($"[MemCard] Unreachable! {ReadPointer}");
                 TransferMode = MemoryCardTransferMode.Undefined;
                 Mode         = MemoryCardMode.Idle;
                 ReadPointer  = 0;
-                ACK          = false;
+                Ack          = false;
                 return 0xFF;
         }
     }
@@ -256,7 +257,7 @@ public class MemoryCard : IMemoryCard
                 TransferMode =  MemoryCardTransferMode.Undefined;
                 Mode         =  MemoryCardMode.Idle;
                 ReadPointer  =  0;
-                ACK          =  false;
+                Ack          =  false;
                 Flag         &= unchecked((byte)~FLAG_NOT_READ);
                 HandleSave();
                 return EndTransfer;
@@ -266,7 +267,7 @@ public class MemoryCard : IMemoryCard
                 TransferMode = MemoryCardTransferMode.Undefined;
                 Mode         = MemoryCardMode.Idle;
                 ReadPointer  = 0;
-                ACK          = false;
+                Ack          = false;
                 return 0xFF;
         }
     }

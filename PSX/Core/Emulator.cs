@@ -1,5 +1,6 @@
 ﻿using System;
 using PSX.Core.Graphics;
+using PSX.Core.Interfaces;
 using PSX.Core.Processor;
 using PSX.Core.Sound;
 using PSX.Devices.Input;

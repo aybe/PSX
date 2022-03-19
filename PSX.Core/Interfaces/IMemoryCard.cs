@@ -1,8 +1,8 @@
-﻿namespace PSX.Core;
+﻿namespace PSX.Core.Interfaces;
 
 public interface IMemoryCard
 {
-    bool ACK { get; }
+    bool Ack { get; }
 
     byte Process(byte value);
 

@@ -192,7 +192,7 @@ namespace PSX.Core.Processor {
                 return;
             }
 
-            if (bus.interruptController.interruptPending()) {
+            if (bus.interruptController.InterruptPending()) {
                 COP0_GPR[CAUSE] |= 0x400;
             } else {
                 COP0_GPR[CAUSE] &= ~(uint)0x400;

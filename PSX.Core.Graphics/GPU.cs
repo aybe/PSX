@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using PSX.Core.Graphics.Graphics;
+using PSX.Core.Interfaces;
 using Serilog;
 
 // ReSharper disable CommentTypo

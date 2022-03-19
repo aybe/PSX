@@ -65,7 +65,7 @@ namespace PSX.Core.Processor {
             } else if (addr < 0x1F80_1070) {
                 return load<uint>(addr & 0xF, memoryControl2);
             } else if (addr < 0x1F80_1080) {
-                return interruptController.load(addr);
+                return interruptController.Load(addr);
             } else if (addr < 0x1F80_1100) {
                 return dma.load(addr);
             } else if (addr < 0x1F80_1140) {
@@ -114,7 +114,7 @@ namespace PSX.Core.Processor {
             } else if (addr < 0x1F80_1070) {
                 write(addr & 0xF, value, memoryControl2);
             } else if (addr < 0x1F80_1080) {
-                interruptController.write(addr, value);
+                interruptController.Write(addr, value);
             } else if (addr < 0x1F80_1100) {
                 dma.write(addr, value);
             } else if (addr < 0x1F80_1140) {
@@ -155,7 +155,7 @@ namespace PSX.Core.Processor {
             } else if (addr < 0x1F80_1070) {
                 write(addr & 0xF, value, memoryControl2);
             } else if (addr < 0x1F80_1080) {
-                interruptController.write(addr, value);
+                interruptController.Write(addr, value);
             } else if (addr < 0x1F80_1100) {
                 dma.write(addr, value);
             } else if (addr < 0x1F80_1140) {
@@ -196,7 +196,7 @@ namespace PSX.Core.Processor {
             } else if (addr < 0x1F80_1070) {
                 write(addr & 0xF, value, memoryControl2);
             } else if (addr < 0x1F80_1080) {
-                interruptController.write(addr, value);
+                interruptController.Write(addr, value);
             } else if (addr < 0x1F80_1100) {
                 dma.write(addr, value);
             } else if (addr < 0x1F80_1140) {
@@ -303,17 +303,17 @@ namespace PSX.Core.Processor {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void tick(int cycles) {
-            if (gpu.Tick(cycles)) interruptController.set(Interrupt.VBLANK);
-            if (cdrom.tick(cycles)) interruptController.set(Interrupt.CDROM);
-            if (dma.tick()) interruptController.set(Interrupt.DMA);
+            if (gpu.Tick(cycles)) interruptController.Set(Interrupt.VBLANK);
+            if (cdrom.tick(cycles)) interruptController.Set(Interrupt.CDROM);
+            if (dma.tick()) interruptController.Set(Interrupt.DMA);
 
             timers.syncGPU(gpu.GetBlanksAndDot());
 
-            if (timers.tick(0, cycles)) interruptController.set(Interrupt.TIMER0);
-            if (timers.tick(1, cycles)) interruptController.set(Interrupt.TIMER1);
-            if (timers.tick(2, cycles)) interruptController.set(Interrupt.TIMER2);
-            if (joypad.Tick()) interruptController.set(Interrupt.CONTR);
-            if (spu.Tick(cycles)) interruptController.set(Interrupt.SPU);
+            if (timers.tick(0, cycles)) interruptController.Set(Interrupt.TIMER0);
+            if (timers.tick(1, cycles)) interruptController.Set(Interrupt.TIMER1);
+            if (timers.tick(2, cycles)) interruptController.Set(Interrupt.TIMER2);
+            if (joypad.Tick()) interruptController.Set(Interrupt.CONTR);
+            if (spu.Tick(cycles)) interruptController.Set(Interrupt.SPU);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

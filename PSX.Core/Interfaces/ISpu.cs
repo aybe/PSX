@@ -1,6 +1,6 @@
-﻿namespace PSX.Core;
+﻿namespace PSX.Core.Interfaces;
 
-public interface ISPU
+public interface ISpu
 {
     void PushCdBufferSamples(byte[] decodedXaAdpcm);
 }

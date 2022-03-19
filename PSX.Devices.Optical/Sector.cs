@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using PSX.Core;
+using PSX.Core.Interfaces;
 
 namespace PSX.Devices.Optical {
     public class Sector : ISector
@@ -22,19 +23,19 @@ namespace PSX.Devices.Optical {
             sectorBuffer = new byte[size];
         }
 
-        public void fillWith(Span<byte> data) {
+        public void FillWith(Span<byte> data) {
             pointer = 0;
             size = data.Length;
             var dest = sectorBuffer.AsSpan();
             data.CopyTo(dest);
         }
 
-        public ref byte readByte() {
+        public ref byte ReadByte() {
             ref var data = ref MemoryMarshal.GetArrayDataReference(sectorBuffer);
             return ref Unsafe.Add(ref data, pointer++);
         }
 
-        public ref short readShort() {
+        public ref short ReadShort() {
             ref var data = ref MemoryMarshal.GetArrayDataReference(sectorBuffer);
             ref var valueB = ref Unsafe.Add(ref data, pointer);
             ref var valueS = ref Unsafe.As<byte, short>(ref valueB);
@@ -42,19 +43,19 @@ namespace PSX.Devices.Optical {
             return ref valueS;
         }
 
-        public Span<uint> read(int size) { //size from dma comes as u32
+        public Span<uint> Read(int size) { //size from dma comes as u32
             var dma = sectorBuffer.AsSpan().Slice(pointer, size * 4);
             pointer += size * 4;
             return MemoryMarshal.Cast<byte, uint>(dma);
         }
 
-        public Span<byte> read() => sectorBuffer.AsSpan().Slice(0, size);
+        public Span<byte> Read() => sectorBuffer.AsSpan().Slice(0, size);
 
-        public bool hasData() => pointer < size;
+        public bool HasData() => pointer < size;
 
-        public bool hasSamples() => size - pointer > 3;
+        public bool HasSamples() => size - pointer > 3;
 
-        public void clear() {
+        public void Clear() {
             pointer = 0;
             size = 0;
         }

@@ -1,6 +1,11 @@
-﻿namespace PSX.Core;
+﻿using System.Diagnostics.CodeAnalysis;
 
-public enum Interrupt {
+namespace PSX.Core;
+
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("ReSharper", "IdentifierTypo")]
+public enum Interrupt
+{
     VBLANK = 0x1,
     GPU    = 0x2,
     CDROM  = 0x4,
