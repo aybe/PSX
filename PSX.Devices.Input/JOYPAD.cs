@@ -1,5 +1,4 @@
-﻿using PSX.Core;
-using PSX.Core.Interfaces;
+﻿using PSX.Core.Interfaces;
 
 // ReSharper disable CommentTypo
 

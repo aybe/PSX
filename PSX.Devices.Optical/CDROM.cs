@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using PSX.Core;
 using PSX.Core.Extensions;
 using PSX.Core.Interfaces;
 
