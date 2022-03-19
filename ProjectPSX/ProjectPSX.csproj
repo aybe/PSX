@@ -23,11 +23,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PSX.Core.Devices.Input\PSX.Core.Devices.Input.csproj" />
-    <ProjectReference Include="..\PSX.Core.Devices.Storage\PSX.Core.Devices.Storage.csproj" />
     <ProjectReference Include="..\PSX.Core.Graphics\PSX.Core.Graphics.csproj" />
     <ProjectReference Include="..\PSX.Core.Processor\PSX.Core.Processor.csproj" />
     <ProjectReference Include="..\PSX.Core.Sound\PSX.Core.Sound.csproj" />
     <ProjectReference Include="..\PSX.Devices.Optical\PSX.Devices.Optical.csproj" />
+    <ProjectReference Include="..\PSX.Devices.Storage\PSX.Devices.Storage.csproj" />
   </ItemGroup>
 
 </Project>
