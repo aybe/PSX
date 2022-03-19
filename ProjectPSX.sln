@@ -25,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{1F51
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Core.Sound", "PSX.Core.Sound\PSX.Core.Sound.csproj", "{F0FCDB0A-3D05-400F-B04F-8CE33F10E3D6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Core.Devices.Input", "PSX.Core.Devices.Input\PSX.Core.Devices.Input.csproj", "{386CD52A-B3EC-4877-A9BA-8B4BECC94CF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Devices.Input", "PSX.Devices.Input\PSX.Devices.Input.csproj", "{386CD52A-B3EC-4877-A9BA-8B4BECC94CF7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Core.Processor", "PSX.Core.Processor\PSX.Core.Processor.csproj", "{F4028964-4975-4F37-A242-F2421F43AFDD}"
 EndProject
