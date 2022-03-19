@@ -20,5 +20,6 @@ resharper_int_align_switch_expressions = true
 resharper_keep_existing_declaration_block_arrangement = false
 resharper_keep_existing_embedded_arrangement = false
 resharper_keep_existing_enum_arrangement = false
+resharper_place_accessorholder_attribute_on_same_line = false
 resharper_place_field_attribute_on_same_line = false
 resharper_place_simple_embedded_statement_on_same_line = false

@@ -1,6 +1,8 @@
-﻿namespace PSX.Core.Graphics.Internal;
+﻿using JetBrains.Annotations;
 
-public abstract class VRAM<T> : IVRAM<T> where T : unmanaged
+namespace PSX.Core.Graphics.Internal;
+
+public abstract class VRAM<T> where T : unmanaged
 {
     protected VRAM(int width, int height)
     {
@@ -15,14 +17,19 @@ public abstract class VRAM<T> : IVRAM<T> where T : unmanaged
         Pixels = new T[width * height];
     }
 
+    [PublicAPI]
     public int Width { get; }
 
+    [PublicAPI]
     public int Height { get; }
 
+    [PublicAPI]
     public T[] Pixels { get; }
 
+    [PublicAPI]
     public abstract T GetPixel(int x, int y);
 
+    [PublicAPI]
     public abstract void SetPixel(int x, int y, T color);
 
     protected int GetIndex(int x, int y)
