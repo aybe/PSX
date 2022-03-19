@@ -10,7 +10,7 @@ public class JOYPAD
 {
     private readonly Controller Controller;
 
-    private readonly MemoryCard MemoryCard;
+    private readonly IMemoryCard MemoryCard;
 
     private bool ACKInputLevel;
 
@@ -76,7 +76,7 @@ public class JOYPAD
 
     private bool TXReadyFlag2 = true;
 
-    public JOYPAD(Controller controller, MemoryCard memoryCard)
+    public JOYPAD(Controller controller, IMemoryCard memoryCard)
     {
         Controller = controller;
         MemoryCard = memoryCard;

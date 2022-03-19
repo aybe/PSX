@@ -6,7 +6,7 @@ using System.IO;
 
 namespace ProjectPSX.Storage;
 
-public class MemoryCard
+public class MemoryCard : IMemoryCard
 {
     //emulating a 3rd party one as it seems easier to and 0x3FF bad address than to handle the
     //original memcard badAddress 0xFFFF error and the IdCommand
@@ -29,7 +29,7 @@ public class MemoryCard
 
     private readonly byte[] Memory = new byte[128 * 1024]; //Standard memcard 128KB
 
-    public bool ACK;
+    public bool ACK { get; private set; }
 
     private ushort Address;
 
@@ -66,7 +66,7 @@ public class MemoryCard
     }
 
     public byte Process(byte value)
-        //This should be handled with some early response and post address queues but atm its easier to handle as a state machine
+        // TODO This should be handled with some early response and post address queues but atm its easier to handle as a state machine
     {
         //Console.WriteLine($"[MemCard] rawProcess {value:x2} previous ACK {ACK}");
         switch (TransferMode)
