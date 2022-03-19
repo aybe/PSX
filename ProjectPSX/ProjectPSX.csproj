@@ -22,7 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PSX.Core.Devices\PSX.Core.Devices.csproj" />
     <ProjectReference Include="..\PSX.Core.Graphics\PSX.Core.Graphics.csproj" />
+    <ProjectReference Include="..\PSX.Core.Sound2\PSX.Core.Sound2.csproj" />
+    <ProjectReference Include="..\PSX.Core.Sound\PSX.Core.Sound.csproj" />
   </ItemGroup>
 
 </Project>

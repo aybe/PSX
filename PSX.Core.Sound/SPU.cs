@@ -175,7 +175,7 @@ public class SPU
         }
     }
 
-    internal void Write(uint addr, ushort value)
+    public void Write(uint addr, ushort value)
     {
         switch (addr)
         {
@@ -356,7 +356,7 @@ public class SPU
         }
     }
 
-    internal ushort Load(uint addr)
+    public ushort Load(uint addr)
     {
         switch (addr)
         {
@@ -479,7 +479,7 @@ public class SPU
         }
     }
 
-    internal void PushCdBufferSamples(byte[] decodedXaAdpcm)
+    public void PushCdBufferSamples(byte[] decodedXaAdpcm)
     {
         CdBuffer.fillWith(decodedXaAdpcm);
     }

@@ -6,7 +6,7 @@ namespace ProjectPSX.Devices {
         private uint ISTAT; //IF Trigger that needs to be ACK
         private uint IMASK; //IE Global Interrupt enable
 
-        internal void set(Interrupt interrupt) {
+        public void set(Interrupt interrupt) {
             ISTAT |= (uint)interrupt;
             //Console.WriteLine($"ISTAT SET MANUAL FROM DEVICE: {ISTAT:x8} IMASK {IMASK:x8}");
         }
@@ -38,11 +38,11 @@ namespace ProjectPSX.Devices {
             return IMASK;
         }
 
-        internal bool interruptPending() {
+        public bool interruptPending() {
             return (ISTAT & IMASK) != 0;
         }
 
-        internal void write(uint addr, uint value) {
+        public void write(uint addr, uint value) {
             uint register = addr & 0xF;
             if(register == 0) {
                 ISTAT &= value & 0x7FF;
@@ -51,7 +51,7 @@ namespace ProjectPSX.Devices {
             }
         }
 
-        internal uint load(uint addr) {
+        public uint load(uint addr) {
             uint register = addr & 0xF;
             if (register == 0) {
                 return ISTAT;

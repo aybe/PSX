@@ -948,7 +948,7 @@ namespace ProjectPSX.Devices {
             return currentSector.read(size);
         }
 
-        internal void toggleLid() {
+        public void toggleLid() {
             isLidOpen = !isLidOpen;
             if (isLidOpen) {
                 STAT = 0x18;
