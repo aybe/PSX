@@ -36,7 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSX.Core.Devices.Optical", "PSX.Core.Devices.Optical\PSX.Core.Devices.Optical.csproj", "{E958F190-2909-4D61-AFFA-3EF5F30CAA10}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSX.Devices.Optical", "PSX.Devices.Optical\PSX.Devices.Optical.csproj", "{E958F190-2909-4D61-AFFA-3EF5F30CAA10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
