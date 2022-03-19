@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using PSX.Core;
+using PSX.Core.Extensions;
 
 namespace PSX.Devices.Optical {
     //TODO This is class is pretty much broken and the culprit ofc that many games doesn't work.
