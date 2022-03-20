@@ -1,20 +1,20 @@
-﻿namespace PSX.Core.Sound;
+﻿namespace PSX.Core.Sound.Internal;
 
-public struct SPUVoiceAdsr
+internal struct VoiceADSR
 {
-    public ushort Lo; //8
+    public ushort Lo; // 8
 
-    public ushort Hi; //A
+    public ushort Hi; // A
 
     public bool IsAttackModeExponential => ((Lo >> 15) & 0x1) != 0;
 
     public int AttackShift => (Lo >> 10) & 0x1F;
 
-    public int AttackStep => (Lo >> 8) & 0x3; //"+7,+6,+5,+4"
+    public int AttackStep => (Lo >> 8) & 0x3; // "+7,+6,+5,+4"
 
     public int DecayShift => (Lo >> 4) & 0xF;
 
-    public int SustainLevel => Lo & 0xF; //Level=(N+1)*800h
+    public int SustainLevel => Lo & 0xF; // Level=(N+1)*800h
 
     public bool IsSustainModeExponential => ((Hi >> 15) & 0x1) != 0;
 

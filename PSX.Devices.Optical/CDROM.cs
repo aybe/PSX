@@ -106,9 +106,9 @@ namespace PSX.Devices.Optical {
         private Queue<byte> interruptQueue = new Queue<byte>();
 
         private CD cd;
-        private ISpu spu;
+        private ISPU spu;
 
-        public CDROM(CD cd, ISpu spu) {
+        public CDROM(CD cd, ISPU spu) {
             this.cd = cd;
             this.spu = spu;
         }

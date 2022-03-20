@@ -1,6 +1,6 @@
-﻿namespace PSX.Core.Sound;
+﻿namespace PSX.Core.Sound.Internal;
 
-public struct SPUVoiceVolume
+internal struct VoiceVolume
 {
     public ushort Register;
 

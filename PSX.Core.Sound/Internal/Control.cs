@@ -1,6 +1,6 @@
-﻿namespace PSX.Core.Sound;
+﻿namespace PSX.Core.Sound.Internal;
 
-internal struct SPUControl
+internal struct Control
 {
     public ushort Register;
 

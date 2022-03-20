@@ -22,4 +22,5 @@ resharper_keep_existing_embedded_arrangement = false
 resharper_keep_existing_enum_arrangement = false
 resharper_place_accessorholder_attribute_on_same_line = false
 resharper_place_field_attribute_on_same_line = false
+resharper_place_simple_case_statement_on_same_line = if_owner_is_single_line
 resharper_place_simple_embedded_statement_on_same_line = false

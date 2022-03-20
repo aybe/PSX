@@ -1,8 +1,7 @@
-﻿namespace PSX.Core.Sound;
+﻿namespace PSX.Core.Sound.Internal;
 
-public struct SPUVoiceCounter
+internal struct VoiceCounter
 {
-    //internal
     public uint Register;
 
     public uint CurrentSampleIndex
