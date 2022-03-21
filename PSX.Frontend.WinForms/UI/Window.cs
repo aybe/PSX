@@ -314,7 +314,7 @@ public class Window : Form, IHostWindow
 
     private void ToggleDebug(object sender, MouseEventArgs e)
     {
-        Psx.toggleDebug();
+        Psx.ToggleDebug();
     }
 
     public int GetVps()

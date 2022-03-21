@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using PSX.Core.Graphics;
 using PSX.Core.Interfaces;
 using PSX.Core.Processor;
@@ -6,81 +7,98 @@ using PSX.Core.Sound;
 using PSX.Devices.Input;
 using PSX.Devices.Optical;
 using PSX.Devices.Storage;
-using Serilog;
-using Serilog.Core;
 
-namespace PSX.Core {
-    public class Emulator : IDisposable {
-        const int PSX_MHZ = 33868800;
-        const int SYNC_CYCLES = 100;
-        const int MIPS_UNDERCLOCK = 3; //Testing: This compensates the ausence of HALT instruction on MIPS Architecture, may broke some games.
-        const int CYCLES_PER_FRAME = PSX_MHZ / 60;
-        const int SYNC_LOOPS = (CYCLES_PER_FRAME / (SYNC_CYCLES * MIPS_UNDERCLOCK)) + 1;
+namespace PSX.Core;
 
-        private CPU cpu;
-        private BUS bus;
-        private CDROM cdrom;
-        private GPU gpu;
-        private SPU spu;
-        private JOYPAD joypad;
-        private TIMERS timers;
-        private MDEC MDEC;
-        private Controller controller;
-        private MemoryCard memoryCard;
-        private CD cd;
-        private InterruptController interruptController;
+public sealed class Emulator : IDisposable
+{
+    private const int PSX_MHZ          = 33868800;
+    private const int SYNC_CYCLES      = 100;
+    private const int MIPS_UNDERCLOCK  = 3; // Testing: This compensates the absence of HALT instruction on MIPS Architecture, may broke some games.
+    private const int CYCLES_PER_FRAME = PSX_MHZ / 60;
+    private const int SYNC_LOOPS       = CYCLES_PER_FRAME / (SYNC_CYCLES * MIPS_UNDERCLOCK) + 1;
 
-        public Emulator(IHostWindow window, string diskFilename, ILogger? logger = null) {
-            logger ??= Logger.None;
+    public Emulator(IHostWindow window, string path)
+    {
+        if (window == null)
+            throw new ArgumentNullException(nameof(window));
 
-            controller = new DigitalController();
-            memoryCard = new MemoryCard();
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(path));
 
-            interruptController = new InterruptController();
+        Controller = new DigitalController();
 
-            cd     = new CD(diskFilename);
-            spu    = new SPU(window, interruptController, new Sector(Sector.XA_BUFFER));
-            cdrom  = new CDROM(cd, spu);
-            gpu    = new GPU(window);
-            joypad = new JOYPAD(controller, memoryCard);
-            timers = new TIMERS();
-            MDEC   = new MDEC();
-            bus    = new BUS(gpu, cdrom, spu, joypad, timers, MDEC, interruptController);
-            cpu    = new CPU(bus);
+        var card          = new MemoryCard();
+        var irqController = new InterruptController();
+        var cd            = new CD(path);
+        var spu           = new SPU(window, irqController, new Sector(Sector.XA_BUFFER));
+        var joypad        = new JOYPAD(Controller, card);
+        var timers        = new TIMERS();
+        var mdec          = new MDEC();
 
-            bus.loadBios();
-            if (diskFilename.EndsWith(".exe")) {
-                bus.loadEXE(diskFilename);
+        Cdrom = new CDROM(cd, spu);
+        Gpu   = new GPU(window);
+        Bus   = new BUS(Gpu, Cdrom, spu, joypad, timers, mdec, irqController);
+        Cpu   = new CPU(Bus);
+
+        Bus.loadBios();
+
+        if (Path.GetExtension(path).ToUpperInvariant() is ".EXE")
+        {
+            Bus.loadEXE(path);
+        }
+    }
+
+    private BUS Bus { get; }
+
+    private CPU Cpu { get; }
+
+    private GPU Gpu { get; }
+
+    private CDROM Cdrom { get; }
+
+    private Controller Controller { get; }
+
+    public void Dispose()
+    {
+        // TODO dispose accordingly
+    }
+
+    public void RunFrame()
+    {
+        // a lame main loop with a workaround to be able to underclock
+
+        for (var i = 0; i < SYNC_LOOPS; i++)
+        {
+            for (var j = 0; j < SYNC_CYCLES; j++)
+            {
+                Cpu.Run(); // Cpu.handleInterrupts();
             }
+
+            Bus.tick(SYNC_CYCLES * MIPS_UNDERCLOCK);
+
+            Cpu.handleInterrupts();
         }
+    }
 
-        public void RunFrame() {
-            //A lame mainloop with a workaround to be able to underclock.
-            for (int i = 0; i < SYNC_LOOPS; i++) {
-                for (int j = 0; j < SYNC_CYCLES; j++) {
-                    cpu.Run();
-                    //cpu.handleInterrupts();
-                }
-                bus.tick(SYNC_CYCLES * MIPS_UNDERCLOCK);
-                cpu.handleInterrupts();
-            }
-        }
+    public void JoyPadUp(KeyboardInput button)
+    {
+        Controller.HandleJoyPadUp(button);
+    }
 
-        public void JoyPadUp(KeyboardInput button) => controller.HandleJoyPadUp(button);
+    public void JoyPadDown(KeyboardInput button)
+    {
+        Controller.HandleJoyPadDown(button);
+    }
 
-        public void JoyPadDown(KeyboardInput button) => controller.HandleJoyPadDown(button);
+    public void ToggleDebug()
+    {
+        Cpu.debug     = !Cpu.debug;
+        Gpu.Debugging = !Gpu.Debugging;
+    }
 
-        public void toggleDebug() {
-            cpu.debug = !cpu.debug;
-            gpu.Debugging = !gpu.Debugging;
-        }
-
-        public void toggleCdRomLid() {
-            cdrom.toggleLid();
-        }
-
-        public void Dispose() {
-            // TODO dispose accordingly
-        }
+    public void ToggleCdromLid()
+    {
+        Cdrom.toggleLid();
     }
 }
