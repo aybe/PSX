@@ -269,3 +269,4 @@ __pycache__/
 .temp
 launchSettings.json
 *.cd
+*[Tt][Ee][Mm][Pp]*
