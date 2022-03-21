@@ -1,3 +1,8 @@
 Architectural issues:
 - joypad should definitely not need to use memory card
 - there should be abstraction of logging
+
+Emulator:
+- frame by frame / vsync
+- save state
+- timer
