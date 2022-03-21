@@ -66,7 +66,9 @@ internal sealed class MainModel :
             UpdateVideoSizeHandler = UpdateVideoSize
         };
 
-        Emulator = new Emulator(window, EmulatorContent, LoggingUtility.GetDefaultLogger());
+        LoggingUtility.Initialize();
+
+        Emulator = new Emulator(window, EmulatorContent);
 
         EmulatorPaused = false;
 

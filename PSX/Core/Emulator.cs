@@ -41,7 +41,7 @@ namespace PSX.Core {
             cd     = new CD(diskFilename);
             spu    = new SPU(window, interruptController, new Sector(Sector.XA_BUFFER));
             cdrom  = new CDROM(cd, spu);
-            gpu    = new GPU(window, logger);
+            gpu    = new GPU(window);
             joypad = new JOYPAD(controller, memoryCard);
             timers = new TIMERS();
             MDEC   = new MDEC();

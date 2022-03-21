@@ -10,16 +10,15 @@ namespace PSX.Core.Graphics;
 
 public partial class GPU
 {
-    public GPU(IHostWindow window, ILogger logger)
+    public GPU(IHostWindow window)
     {
         Window = window;
-        Logger = logger;
         Mode   = Mode.COMMAND;
 
         GP1_00_ResetGPU();
     }
 
-    private ILogger Logger { get;  }
+    private ILogger? Logger { get; } = Log.ForContext<GPU>();
 }
 
 public partial class GPU
@@ -292,7 +291,7 @@ public partial class GPU
                 break;
 
             default:
-                Logger.Fatal(
+                Logger?.Fatal(
                     "ExecuteGP0: Unsupported GP0 command: {Command}", $"0x{opcode:X8}");
 
                 GP0_00_NOP();
@@ -1451,7 +1450,7 @@ public partial class GPU
         DisplayVRAMStartX = (ushort)(value & 0x3FE);
         DisplayVRAMStartY = (ushort)((value >> 10) & 0x1FE);
 
-        Logger.Debug("GP1_05_DisplayVRAMStart: X = {X}, Y = {X}", DisplayVRAMStartX, DisplayVRAMStartY);
+        Logger?.Debug("GP1_05_DisplayVRAMStart: X = {X}, Y = {X}", DisplayVRAMStartX, DisplayVRAMStartY);
 
         Window.SetVRAMStart(DisplayVRAMStartX, DisplayVRAMStartY);
     }
@@ -1461,7 +1460,7 @@ public partial class GPU
         DisplayX1 = (ushort)(value & 0xFFF);
         DisplayX2 = (ushort)((value >> 12) & 0xFFF);
 
-        Logger.Debug("GP1_06_DisplayHorizontalRange: X1 = {X1}, Y2 = {X2}", DisplayX1, DisplayX2);
+        Logger?.Debug("GP1_06_DisplayHorizontalRange: X1 = {X1}, Y2 = {X2}", DisplayX1, DisplayX2);
 
         Window.SetHorizontalRange(DisplayX1, DisplayX2);
     }
@@ -1471,7 +1470,7 @@ public partial class GPU
         DisplayY1 = (ushort)(value & 0x3FF);
         DisplayY2 = (ushort)((value >> 10) & 0x3FF);
 
-        Logger.Debug("GP1_07_DisplayVerticalRange: Y1 = {Y1}, Y2 = {Y2}", DisplayY1, DisplayY2);
+        Logger?.Debug("GP1_07_DisplayVerticalRange: Y1 = {Y1}, Y2 = {Y2}", DisplayY1, DisplayY2);
 
         Window.SetVerticalRange(DisplayY1, DisplayY2);
     }
@@ -1491,7 +1490,7 @@ public partial class GPU
         if (LastHr == horizontalRes && LastVr == verticalRes && Last24 == DisplayMode.Is24BitDepth)
             return;
         
-        Logger.Debug(
+        Logger?.Debug(
             "GP1_08_DisplayMode: H = {HRes}, VRes = {VRes}, 24Bit = {24Bit}", horizontalRes, verticalRes, DisplayMode.Is24BitDepth);
 
         Window.SetDisplayMode(horizontalRes, verticalRes, DisplayMode.Is24BitDepth);
@@ -1531,7 +1530,7 @@ public partial class GPU
                 GPUREAD = 0;
                 break;
             default:
-                Logger.Fatal("GP1 Unhandled GetInfo: {Info}", $"0x{info:X8}");
+                Logger?.Fatal("GP1 Unhandled GetInfo: {Info}", $"0x{info:X8}");
                 break;
         }
     }
