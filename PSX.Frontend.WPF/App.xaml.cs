@@ -22,6 +22,8 @@ public partial class App
         var services = new ServiceCollection();
 
         services.AddSingleton<IFilePickerService, FilePickerServiceWindows>();
+        
+        services.AddSingleton<IApplication, IApplicationWpf>();
 
         services.AddTransient<MainModel>();
 

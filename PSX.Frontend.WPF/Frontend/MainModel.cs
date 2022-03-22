@@ -175,7 +175,8 @@ internal sealed class MainModel : ObservableRecipient
 
     private void ApplicationShutdownExecute()
     {
-        App.Current.Shutdown(); // TODO as a service
+        var service = App.Current.Services.GetService<IApplication>() ?? throw new InvalidOperationException();
+        service.Shutdown();
     }
 
     #endregion
