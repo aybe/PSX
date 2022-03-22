@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -132,15 +133,54 @@ internal sealed partial class MainWindow :
 
     #endregion
 
+    #region Console stuff
+
+    private IntPtr ConsoleHandle;
+
+    private IntPtr ConsoleKeyboardHookProcHandle;
+
+    private LowLevelKeyboardProc ConsoleKeyboardHookProcRef; // prevent garbage collection
+
+    [SuppressMessage("ReSharper", "InvertIf")]
+    private int ConsoleKeyboardHookProc(int nCode, uint wParam, ref KBDLLHOOKSTRUCT lParam)
+        // prevent Alt-F4 on console
+    {
+        if (nCode is NativeConstants.HC_ACTION && NativeMethods.GetForegroundWindow() == ConsoleHandle)
+        {
+            switch (wParam)
+            {
+                case NativeConstants.WM_KEYDOWN:
+                case NativeConstants.WM_KEYUP:
+                case NativeConstants.WM_SYSKEYDOWN:
+                case NativeConstants.WM_SYSKEYUP:
+
+                    if (lParam.vkCode == NativeConstants.VK_F4 && lParam.flags == NativeConstants.LLKHF_ALTDOWN)
+                    {
+                        return 1;
+                    }
+
+                    break;
+            }
+        }
+
+        return NativeMethods.CallNextHookEx(IntPtr.Zero, nCode, wParam, ref lParam);
+    }
+
+    #endregion
+
     #region Initialization/cleanup
 
     private void InitializeConsole()
     {
+        // allocate a console and set its title
+
         if (!NativeMethods.AllocConsole())
             throw new Win32Exception();
 
         if (!NativeMethods.SetConsoleTitle("PSX Debug Console"))
             throw new Win32Exception();
+
+        // set console position to top/left
 
         // https://stackoverflow.com/questions/42905649/cant-center-my-console-window-by-using-the-following-code
 
@@ -148,18 +188,52 @@ internal sealed partial class MainWindow :
         if (handle is NativeConstants.INVALID_HANDLE_VALUE)
             throw new Win32Exception();
 
-        var window = NativeMethods.GetConsoleWindow();
-        if (window == IntPtr.Zero)
+        ConsoleHandle = NativeMethods.GetConsoleWindow();
+
+        if (ConsoleHandle == IntPtr.Zero)
             throw new InvalidOperationException();
 
         var after = new WindowInteropHelper(this).Handle;
 
-        if (!NativeMethods.SetWindowPos(window, after, 0, 0, 0, 0, NativeConstants.SWP_NOSIZE))
+        if (!NativeMethods.SetWindowPos(ConsoleHandle, after, 0, 0, 0, 0, NativeConstants.SWP_NOSIZE))
             throw new Win32Exception();
+
+        // remove the close button
+
+        // https://stackoverflow.com/questions/11959643/why-does-closing-a-console-that-was-started-with-allocconsole-cause-my-whole-app
+
+        if (!NativeMethods.SetConsoleCtrlHandler(null, true))
+            throw new Win32Exception();
+
+        var systemMenu = NativeMethods.GetSystemMenu(ConsoleHandle, false);
+        if (systemMenu == IntPtr.Zero)
+            throw new InvalidOperationException();
+
+        if (!NativeMethods.DeleteMenu(systemMenu, NativeConstants.SC_CLOSE, NativeConstants.MF_BYCOMMAND))
+            throw new Win32Exception();
+
+        // setup a hook to intercept and prevent Alt-F4
+
+        // https://tpiros.dev/blog/c-disable-ctrl-alt-del-alt-tab-alt-f4-start-menu-and-so-on/
+
+        ConsoleKeyboardHookProcRef = ConsoleKeyboardHookProc;
+
+        ConsoleKeyboardHookProcHandle = NativeMethods.SetWindowsHookEx(NativeConstants.WH_KEYBOARD_LL, ConsoleKeyboardHookProcRef, IntPtr.Zero, 0);
+
+        if (ConsoleKeyboardHookProcHandle == IntPtr.Zero)
+        {
+            throw new Win32Exception();
+        }
     }
 
-    private static void CleanupConsole()
+    private void CleanupConsole()
     {
+        if (!NativeMethods.UnhookWindowsHookEx(ConsoleKeyboardHookProcHandle))
+            throw new Win32Exception();
+
+        if (!NativeMethods.SetConsoleCtrlHandler(null, false))
+            throw new Win32Exception();
+
         if (!NativeMethods.FreeConsole())
             throw new Win32Exception();
     }
