@@ -52,7 +52,7 @@ internal static partial class NativeMethods
     [DllImport("user32.dll")]
     public static extern IntPtr GetSystemMenu(
         [In] IntPtr hWnd,
-        [MarshalAs(UnmanagedType.Bool)] bool bRevert
+        [In] [MarshalAs(UnmanagedType.Bool)] bool bRevert
     );
 
     /// <summary>
@@ -62,8 +62,8 @@ internal static partial class NativeMethods
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool DeleteMenu(
         [In] IntPtr hMenu,
-        uint uPosition,
-        uint uFlags
+        [In] uint uPosition,
+        [In] uint uFlags
     );
 
     /// <summary>
@@ -71,7 +71,7 @@ internal static partial class NativeMethods
     /// </summary>
     [DllImport("kernel32.dll", SetLastError = true)]
     public static extern IntPtr GetStdHandle(
-        uint nStdHandle
+        [In] uint nStdHandle
     );
 
     /// <summary>
@@ -80,8 +80,8 @@ internal static partial class NativeMethods
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool SetConsoleCtrlHandler(
-        PHANDLER_ROUTINE? HandlerRoutine,
-        [MarshalAs(UnmanagedType.Bool)] bool Add
+        [In] [Optional] PHANDLER_ROUTINE? HandlerRoutine,
+        [In] [MarshalAs(UnmanagedType.Bool)] bool Add
     );
 
     /// <summary>
@@ -98,10 +98,10 @@ internal static partial class NativeMethods
     /// </summary>
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     public static extern IntPtr SetWindowsHookEx(
-        int idHook,
-        LowLevelKeyboardProc lpfn,
-        IntPtr hmod,
-        uint dwThreadId
+        [In] int idHook,
+        [In] LowLevelKeyboardProc lpfn,
+        [In] IntPtr hmod,
+        [In] uint dwThreadId
     );
 
     /// <summary>
@@ -111,12 +111,12 @@ internal static partial class NativeMethods
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool SetWindowPos(
         [In] IntPtr hWnd,
-        [In] IntPtr hWndInsertAfter,
-        int X,
-        int Y,
-        int cx,
-        int cy,
-        uint uFlags
+        [In] [Optional] IntPtr hWndInsertAfter,
+        [In] int X,
+        [In] int Y,
+        [In] int cx,
+        [In] int cy,
+        [In] uint uFlags
     );
 
     /// <summary>
