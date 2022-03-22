@@ -17,7 +17,7 @@ public static class LoggingUtility
             new LoggerConfiguration()
                 .MinimumLevel
                 .Verbose()
-                .WriteTo.Console(outputTemplate: currentOutputTemplate, theme: SystemConsoleTheme.Colored);
+                .WriteTo.Async(s => s.Console(outputTemplate: currentOutputTemplate, theme: SystemConsoleTheme.Colored));
 
         if (includeCallerInformation)
         {
