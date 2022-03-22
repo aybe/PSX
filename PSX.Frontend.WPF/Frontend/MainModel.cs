@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,7 @@ internal sealed class MainModel : ObservableRecipient
         OpenContent         = new RelayCommand(OpenContentExecute,         () => true);
         EmulationStart      = new RelayCommand(EmulationStartExecute,      () => CanStart);
         EmulationPause      = new RelayCommand(EmulationPauseExecute,      () => CanPause);
+        EmulationFrame      = new RelayCommand(EmulationFrameExecute,      () => CanFrame);
         EmulationContinue   = new RelayCommand(EmulationContinueExecute,   () => CanContinue);
         EmulationTerminate  = new RelayCommand(EmulationTerminateExecute,  () => CanTerminate);
         ApplicationShutdown = new RelayCommand(ApplicationShutdownExecute, () => true);
@@ -33,9 +35,13 @@ internal sealed class MainModel : ObservableRecipient
 
     private string? EmulatorContent { get; set; }
 
+    private bool EmulatorFrame { get; set; }
+
     private bool EmulatorPaused { get; set; }
 
     private bool CanContinue => Emulator is not null && EmulatorPaused;
+
+    private bool CanFrame => Emulator is not null;
 
     private bool CanPause => Emulator is not null && EmulatorPaused is false;
 
@@ -43,6 +49,7 @@ internal sealed class MainModel : ObservableRecipient
 
     private bool CanTerminate => Emulator is not null;
 
+    [SuppressMessage("ReSharper", "InvertIf")]
     private void UpdateLoop(CancellationToken token)
     {
         var logger = Log.ForContext<MainModel>();
@@ -63,6 +70,11 @@ internal sealed class MainModel : ObservableRecipient
             }
             else
             {
+                if (EmulatorFrame) // BUG/TODO running frame by frame will constantly log that too long was spent during frame
+                {
+                    EmulatorPaused = true;
+                }
+
                 Emulator?.RunFrame();
 
                 var frame = stopwatch.Elapsed;
@@ -73,11 +85,11 @@ internal sealed class MainModel : ObservableRecipient
 
                 var sleep = span - frame;
 
-                if (sleep <= zero)
-                    continue;
-
-                Thread.Sleep(sleep);
-                logger?.Write(LogEventLevel.Debug, "Time spent SLEEP: {Time}", sleep);
+                if (sleep > zero)
+                {
+                    Thread.Sleep(sleep);
+                    logger?.Write(LogEventLevel.Debug, "Time spent SLEEP: {Time}", sleep);
+                }
             }
         }
     }
@@ -142,6 +154,18 @@ internal sealed class MainModel : ObservableRecipient
         EmulatorPaused = true;
     }
 
+    public RelayCommand EmulationFrame { get; }
+
+    private void EmulationFrameExecute()
+    {
+        EmulatorFrame = true;
+
+        if (EmulatorPaused)
+        {
+            EmulatorPaused = false;
+        }
+    }
+
     public RelayCommand EmulationContinue { get; }
 
     private void EmulationContinueExecute()
@@ -150,6 +174,11 @@ internal sealed class MainModel : ObservableRecipient
             throw new InvalidOperationException();
 
         EmulatorPaused = false;
+
+        if (EmulatorFrame)
+        {
+            EmulatorFrame = false;
+        }
     }
 
     public RelayCommand EmulationTerminate { get; }

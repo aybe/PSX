@@ -20,8 +20,9 @@
         <KeyBinding Command="{Binding ApplicationShutdown}" Key="Q" Modifiers="Control" />
         <KeyBinding Command="{Binding EmulationStart}" Key="F5" />
         <KeyBinding Command="{Binding EmulationPause}" Key="F6" />
-        <KeyBinding Command="{Binding EmulationContinue}" Key="F7" />
-        <KeyBinding Command="{Binding EmulationTerminate}" Key="F8" />
+        <KeyBinding Command="{Binding EmulationFrame}" Key="F7" />
+        <KeyBinding Command="{Binding EmulationContinue}" Key="F8" />
+        <KeyBinding Command="{Binding EmulationTerminate}" Key="F9" />
     </Window.InputBindings>
 
     <Grid>
@@ -37,8 +38,9 @@
             <MenuItem Header="_Emulation">
                 <MenuItem Header="_Start" InputGestureText="F5" Command="{Binding EmulationStart}" />
                 <MenuItem Header="_Pause" InputGestureText="F6" Command="{Binding EmulationPause}" />
-                <MenuItem Header="_Continue" InputGestureText="F7" Command="{Binding EmulationContinue}" />
-                <MenuItem Header="_Terminate" InputGestureText="F8" Command="{Binding EmulationTerminate}" />
+                <MenuItem Header="_Frame" InputGestureText="F7" Command="{Binding EmulationFrame}" />
+                <MenuItem Header="_Continue" InputGestureText="F8" Command="{Binding EmulationContinue}" />
+                <MenuItem Header="_Terminate" InputGestureText="F9" Command="{Binding EmulationTerminate}" />
             </MenuItem>
         </Menu>
         <Border Grid.Row="1"
