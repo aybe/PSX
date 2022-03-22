@@ -2,18 +2,18 @@
 
 public readonly struct IntSize
 {
-    public int X { get; }
+    public int Width { get; }
 
-    public int Y { get; }
+    public int Height { get; }
 
-    public IntSize(int x, int y)
+    public IntSize(int width, int height)
     {
-        X = x;
-        Y = y;
+        Width  = width;
+        Height = height;
     }
 
     public override string ToString()
     {
-        return $"{nameof(X)}: {X}, {nameof(Y)}: {Y}";
+        return $"{nameof(Width)}: {Width}, {nameof(Height)}: {Height}";
     }
 }

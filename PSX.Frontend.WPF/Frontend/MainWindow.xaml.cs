@@ -84,7 +84,7 @@ internal sealed partial class MainWindow :
                 {
                     for (var x = 0; x < context.Width; x++)
                     {
-                        var i = (message.Size.Y + y) * 1024 + (message.Size.X + x) * 1;
+                        var i = (message.Size.Height + y) * 1024 + (message.Size.Width + x) * 1;
                         var r = ((message.Buffer16[i] >> 00) & 0b11111) * 255 / 31;
                         var g = ((message.Buffer16[i] >> 05) & 0b11111) * 255 / 31;
                         var b = ((message.Buffer16[i] >> 10) & 0b11111) * 255 / 31;
@@ -100,13 +100,13 @@ internal sealed partial class MainWindow :
     {
         Dispatcher.BeginInvoke(() =>
         {
-            EmulatorBitmap = BitmapFactory.New(message.Size.X, message.Size.Y);
+            EmulatorBitmap = BitmapFactory.New(message.Size.Width, message.Size.Height);
 
             EmulatorBitmapIs24Bit = message.Is24Bit;
 
             Image1.Source = EmulatorBitmap;
 
-            Title = $"Width = {message.Size.X}, Height = {message.Size.Y}, 24-bit = {message.Is24Bit}";
+            Title = $"Width = {message.Size.Width}, Height = {message.Size.Height}, 24-bit = {message.Is24Bit}";
         });
     }
 
