@@ -6,6 +6,7 @@ using System.Windows.Media.Imaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Frontend.WPF.Frontend.Messages;
+using PSX.Frontend.WPF.Interop;
 using PSX.Frontend.WPF.Sound;
 using Un4seen.Bass;
 using Un4seen.Bass.AddOn.Mix;
@@ -134,7 +135,7 @@ internal sealed partial class MainWindow :
 
     private static void InitializeConsole()
     {
-        //NativeMethods.AllocConsole();
+        NativeMethods.AllocConsole();
     }
 
     private void InitializeSound()
@@ -164,7 +165,7 @@ internal sealed partial class MainWindow :
 
     private static void CleanupConsole()
     {
-        // NativeMethods.FreeConsole();
+        NativeMethods.FreeConsole();
     }
 
     private void CleanupSound()

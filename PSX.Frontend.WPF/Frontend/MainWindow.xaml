@@ -16,15 +16,12 @@
     Height="720"
     UseLayoutRounding="True" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor">
     <Window.InputBindings>
-        <KeyBinding Command="{Binding Commands.OpenExecutable}" Key="O" Modifiers="Control" />
-        <KeyBinding Command="{Binding Commands.Quit}" Key="Q" Modifiers="Control" />
-        <KeyBinding Command="{Binding Commands.EmulationStart}" Key="F5" />
-        <KeyBinding Command="{Binding Commands.EmulationPause}" Key="F6" />
-        <KeyBinding Command="{Binding Commands.EmulationContinue}" Key="F7" />
-        <KeyBinding Command="{Binding Commands.EmulationTerminate}" Key="F8" />
-        <KeyBinding Command="{Binding Commands.OpenVideoOutput}" Key="F1" />
-        <KeyBinding Command="{Binding Commands.OpenVideoMemory}" Key="F2" />
-        <KeyBinding Command="{Binding Commands.OpenConsole}" Key="F3" />
+        <KeyBinding Command="{Binding OpenContent}" Key="O" Modifiers="Control" />
+        <KeyBinding Command="{Binding ApplicationShutdown}" Key="Q" Modifiers="Control" />
+        <KeyBinding Command="{Binding EmulationStart}" Key="F5" />
+        <KeyBinding Command="{Binding EmulationPause}" Key="F6" />
+        <KeyBinding Command="{Binding EmulationContinue}" Key="F7" />
+        <KeyBinding Command="{Binding EmulationTerminate}" Key="F8" />
     </Window.InputBindings>
 
     <Grid>
@@ -32,21 +29,16 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Menu DataContext="{Binding Commands}">
+        <Menu DataContext="{Binding}">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open..." InputGestureText="Ctrl+O" Command="{Binding OpenExecutable}" />
-                <MenuItem Header="_Quit" InputGestureText="Ctrl+Q" Command="{Binding Quit}" />
+                <MenuItem Header="_Open..." InputGestureText="Ctrl+O" Command="{Binding OpenContent}" />
+                <MenuItem Header="_Quit" InputGestureText="Ctrl+Q" Command="{Binding ApplicationShutdown}" />
             </MenuItem>
             <MenuItem Header="_Emulation">
                 <MenuItem Header="_Start" InputGestureText="F5" Command="{Binding EmulationStart}" />
                 <MenuItem Header="_Pause" InputGestureText="F6" Command="{Binding EmulationPause}" />
                 <MenuItem Header="_Continue" InputGestureText="F7" Command="{Binding EmulationContinue}" />
                 <MenuItem Header="_Terminate" InputGestureText="F8" Command="{Binding EmulationTerminate}" />
-            </MenuItem>
-            <MenuItem Header="_Windows">
-                <MenuItem Header="Video _Output" InputGestureText="F1" Command="{Binding OpenVideoOutput}" />
-                <MenuItem Header="Video _Memory" InputGestureText="F2" Command="{Binding OpenVideoMemory}" />
-                <MenuItem Header="_Console" InputGestureText="F3" Command="{Binding OpenConsole}" />
             </MenuItem>
         </Menu>
         <Border Grid.Row="1"

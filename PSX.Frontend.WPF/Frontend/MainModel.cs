@@ -15,10 +15,13 @@ internal sealed class MainModel : ObservableRecipient
 {
     public MainModel()
     {
-        Commands = new MainModelCommands(this);
+        OpenContent         = new RelayCommand(OpenContentExecute,         () => true);
+        EmulationStart      = new RelayCommand(EmulationStartExecute,      () => CanStart);
+        EmulationPause      = new RelayCommand(EmulationPauseExecute,      () => CanPause);
+        EmulationContinue   = new RelayCommand(EmulationContinueExecute,   () => CanContinue);
+        EmulationTerminate  = new RelayCommand(EmulationTerminateExecute,  () => CanTerminate);
+        ApplicationShutdown = new RelayCommand(ApplicationShutdownExecute, () => true);
     }
-
-    public MainModelCommands Commands { get; }
 
     private Emulator? Emulator { get; set; }
 
@@ -28,17 +31,37 @@ internal sealed class MainModel : ObservableRecipient
 
     private bool EmulatorPaused { get; set; }
 
-    public bool CanContinue => Emulator is not null && EmulatorPaused;
+    private bool CanContinue => Emulator is not null && EmulatorPaused;
 
-    public bool CanOpen => true;
+    private bool CanPause => Emulator is not null && EmulatorPaused is false;
 
-    public bool CanPause => Emulator is not null && EmulatorPaused is false;
+    private bool CanStart => Emulator is null && EmulatorContent is not null;
 
-    public bool CanStart => Emulator is null && EmulatorContent is not null;
+    private bool CanTerminate => Emulator is not null;
 
-    public bool CanTerminate => Emulator is not null;
+    private void UpdateLoop(CancellationToken token)
+    {
+        while (true)
+        {
+            if (token.IsCancellationRequested)
+                break;
 
-    public void Open()
+            if (EmulatorPaused)
+            {
+                // TODO use some Thread.Suspend or whatever
+            }
+            else
+            {
+                Emulator?.RunFrame();
+            }
+        }
+    }
+
+    #region Commands
+
+    public RelayCommand OpenContent { get; }
+
+    private void OpenContentExecute()
     {
         var service = App.Current.Services.GetService<IFilePickerService>() ?? throw new InvalidOperationException();
 
@@ -52,7 +75,9 @@ internal sealed class MainModel : ObservableRecipient
         EmulatorContent = path;
     }
 
-    public void Start()
+    public RelayCommand EmulationStart { get; }
+
+    private void EmulationStartExecute()
     {
         if (Emulator is not null)
             throw new InvalidOperationException();
@@ -82,7 +107,9 @@ internal sealed class MainModel : ObservableRecipient
         Task.Factory.StartNew(() => UpdateLoop(token), token, TaskCreationOptions.LongRunning, TaskScheduler.Current);
     }
 
-    public void Pause()
+    public RelayCommand EmulationPause { get; }
+
+    private void EmulationPauseExecute()
     {
         if (Emulator is null)
             throw new InvalidOperationException();
@@ -90,7 +117,9 @@ internal sealed class MainModel : ObservableRecipient
         EmulatorPaused = true;
     }
 
-    public void Continue()
+    public RelayCommand EmulationContinue { get; }
+
+    private void EmulationContinueExecute()
     {
         if (Emulator is null)
             throw new InvalidOperationException();
@@ -98,7 +127,9 @@ internal sealed class MainModel : ObservableRecipient
         EmulatorPaused = false;
     }
 
-    public void Terminate()
+    public RelayCommand EmulationTerminate { get; }
+
+    private void EmulationTerminateExecute()
     {
         if (Emulator is null)
             throw new InvalidOperationException();
@@ -115,21 +146,12 @@ internal sealed class MainModel : ObservableRecipient
         Emulator = null;
     }
 
-    private void UpdateLoop(CancellationToken token)
-    {
-        while (true)
-        {
-            if (token.IsCancellationRequested)
-                break;
+    public RelayCommand ApplicationShutdown { get; }
 
-            if (EmulatorPaused)
-            {
-                // TODO use some Thread.Suspend or whatever
-            }
-            else
-            {
-                Emulator?.RunFrame();
-            }
-        }
+    private void ApplicationShutdownExecute()
+    {
+        App.Current.Shutdown(); // TODO as a service
     }
+
+    #endregion
 }
