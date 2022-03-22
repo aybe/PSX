@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -133,9 +134,31 @@ internal sealed partial class MainWindow :
 
     #region Initialization/cleanup
 
-    private static void InitializeConsole()
+    private void InitializeConsole()
     {
-        NativeMethods.AllocConsole();
+        if (!NativeMethods.AllocConsole())
+            throw new Win32Exception();
+
+        // https://stackoverflow.com/questions/42905649/cant-center-my-console-window-by-using-the-following-code
+
+        var handle = NativeMethods.GetStdHandle(NativeConstants.STD_OUTPUT_HANDLE);
+        if (handle is NativeConstants.INVALID_HANDLE_VALUE)
+            throw new Win32Exception();
+
+        var window = NativeMethods.GetConsoleWindow();
+        if (window == IntPtr.Zero)
+            throw new InvalidOperationException();
+
+        var after = new WindowInteropHelper(this).Handle;
+
+        if (!NativeMethods.SetWindowPos(window, after, 0, 0, 0, 0, NativeConstants.SWP_NOSIZE))
+            throw new Win32Exception();
+    }
+
+    private static void CleanupConsole()
+    {
+        if (!NativeMethods.FreeConsole())
+            throw new Win32Exception();
     }
 
     private void InitializeSound()
@@ -161,11 +184,6 @@ internal sealed partial class MainWindow :
             throw new BassException("Couldn't play mixer channel.");
 
         EmulatorSoundStream = push;
-    }
-
-    private static void CleanupConsole()
-    {
-        NativeMethods.FreeConsole();
     }
 
     private void CleanupSound()
