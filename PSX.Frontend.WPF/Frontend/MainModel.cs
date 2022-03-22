@@ -6,7 +6,7 @@ using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Core;
 using PSX.Frontend.WPF.Emulation;
-using PSX.Frontend.WPF.Frontend.Services;
+using PSX.Frontend.WPF.Frontend.Shared;
 using PSX.Frontend.WPF.Logging;
 
 namespace PSX.Frontend.WPF.Frontend;

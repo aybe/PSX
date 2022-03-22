@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
 
-namespace PSX.Frontend.WPF.Frontend.Services;
+namespace PSX.Frontend.WPF.Frontend.Shared;
 
 internal class FilePickerServiceWindows : IFilePickerService
 {

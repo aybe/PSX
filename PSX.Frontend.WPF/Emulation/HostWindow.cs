@@ -1,5 +1,5 @@
 ﻿using PSX.Core.Interfaces;
-using PSX.Frontend.WPF.Emulation.Messaging;
+using PSX.Frontend.WPF.Frontend.Messages;
 
 namespace PSX.Frontend.WPF.Emulation;
 

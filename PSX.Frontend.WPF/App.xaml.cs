@@ -2,7 +2,7 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using PSX.Frontend.WPF.Frontend;
-using PSX.Frontend.WPF.Frontend.Services;
+using PSX.Frontend.WPF.Frontend.Shared;
 
 namespace PSX.Frontend.WPF;
 
