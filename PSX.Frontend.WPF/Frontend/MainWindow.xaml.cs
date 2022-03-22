@@ -139,6 +139,9 @@ internal sealed partial class MainWindow :
         if (!NativeMethods.AllocConsole())
             throw new Win32Exception();
 
+        if (!NativeMethods.SetConsoleTitle("PSX Debug Console"))
+            throw new Win32Exception();
+
         // https://stackoverflow.com/questions/42905649/cant-center-my-console-window-by-using-the-following-code
 
         var handle = NativeMethods.GetStdHandle(NativeConstants.STD_OUTPUT_HANDLE);

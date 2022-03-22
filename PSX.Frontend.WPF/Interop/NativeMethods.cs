@@ -37,6 +37,15 @@ internal static partial class NativeMethods
     );
 
     /// <summary>
+    ///     https://docs.microsoft.com/en-us/windows/console/setconsoletitle
+    /// </summary>
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool SetConsoleTitle(
+        [In] [MarshalAs(UnmanagedType.LPWStr)] string lpConsoleTitle
+    );
+
+    /// <summary>
     ///     https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos
     /// </summary>
     [DllImport("user32.dll", SetLastError = true)]
