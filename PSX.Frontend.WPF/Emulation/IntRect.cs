@@ -2,24 +2,24 @@
 
 public readonly struct IntRect
 {
-    public int X1 { get; }
+    public int XMin { get; }
 
-    public int Y1 { get; }
+    public int YMin { get; }
 
-    public int X2 { get; }
+    public int XMax { get; }
 
-    public int Y2 { get; }
+    public int YMax { get; }
 
-    public IntRect(int x1, int y1, int x2, int y2)
+    public IntRect(int xMin, int yMin, int xMax, int yMax)
     {
-        X1 = x1;
-        Y1 = y1;
-        X2 = x2;
-        Y2 = y2;
+        XMin = xMin;
+        YMin = yMin;
+        XMax = xMax;
+        YMax = yMax;
     }
 
     public override string ToString()
     {
-        return $"{nameof(X1)}: {X1}, {nameof(Y1)}: {Y1}, {nameof(X2)}: {X2}, {nameof(Y2)}: {Y2}";
+        return $"{nameof(XMin)}: {XMin}, {nameof(YMin)}: {YMin}, {nameof(XMax)}: {XMax}, {nameof(YMax)}: {YMax}";
     }
 }
