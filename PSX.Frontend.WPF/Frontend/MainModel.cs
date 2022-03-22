@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,9 @@ using PSX.Core;
 using PSX.Frontend.WPF.Emulation;
 using PSX.Frontend.WPF.Frontend.Shared;
 using PSX.Frontend.WPF.Logging;
+using Serilog;
+using Serilog.Core;
+using Serilog.Events;
 
 namespace PSX.Frontend.WPF.Frontend;
 
@@ -41,6 +45,13 @@ internal sealed class MainModel : ObservableRecipient
 
     private void UpdateLoop(CancellationToken token)
     {
+        var logger = Log.ForContext<MainModel>();
+
+        var span = TimeSpan.FromSeconds(1.0d / 60.0d);
+        var zero = TimeSpan.Zero;
+
+        var stopwatch = new Stopwatch();
+
         while (true)
         {
             if (token.IsCancellationRequested)
@@ -48,11 +59,25 @@ internal sealed class MainModel : ObservableRecipient
 
             if (EmulatorPaused)
             {
-                // TODO use some Thread.Suspend or whatever
+                Thread.Sleep(span);
             }
             else
             {
                 Emulator?.RunFrame();
+
+                var frame = stopwatch.Elapsed;
+
+                logger?.Write(frame > span ? LogEventLevel.Error : LogEventLevel.Debug, "Time spent FRAME: {Time}", frame);
+
+                stopwatch.Restart();
+
+                var sleep = span - frame;
+
+                if (sleep <= zero)
+                    continue;
+
+                Thread.Sleep(sleep);
+                logger?.Write(LogEventLevel.Debug, "Time spent SLEEP: {Time}", sleep);
             }
         }
     }
