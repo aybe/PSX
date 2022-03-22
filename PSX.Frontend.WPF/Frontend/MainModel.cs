@@ -70,18 +70,18 @@ internal sealed class MainModel : ObservableRecipient
             }
             else
             {
-                if (EmulatorFrame) // BUG/TODO running frame by frame will constantly log that too long was spent during frame
+                if (EmulatorFrame)
                 {
                     EmulatorPaused = true;
                 }
+
+                stopwatch.Restart();
 
                 Emulator?.RunFrame();
 
                 var frame = stopwatch.Elapsed;
 
                 logger?.Write(frame > span ? LogEventLevel.Error : LogEventLevel.Debug, "Time spent FRAME: {Time}", frame);
-
-                stopwatch.Restart();
 
                 var sleep = span - frame;
 
