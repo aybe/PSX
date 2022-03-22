@@ -1,14 +1,19 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using PSX.Frontend.WPF.Frontend.Shared;
 using PSX.Frontend.WPF.Interop;
 
 namespace PSX.Frontend.WPF.Frontend;
 
 [UsedImplicitly]
-internal sealed class MainModelCommands : BaseModelCommands<MainModel>
+internal sealed class MainModelCommands 
 {
-    public MainModelCommands(MainModel model) : base(model)
+    private MainModel Model { get; }
+
+    public MainModelCommands(MainModel model) 
     {
+        Model              = model ?? throw new ArgumentNullException(nameof(model));
+
         OpenExecutable     = new RelayCommand(OpenExecutableExecute,     OpenExecutableCanExecute);
         OpenVideoOutput    = new RelayCommand(OpenVideoOutputExecute,    OpenVideoOutputCanExecute);
         OpenVideoMemory    = new RelayCommand(OpenVideoMemoryExecute,    OpenVideoMemoryCanExecute);
@@ -48,7 +53,6 @@ internal sealed class MainModelCommands : BaseModelCommands<MainModel>
 
     private void OpenVideoOutputExecute()
     {
-        new VideoOutputWindow().Show();
     }
 
     #endregion
@@ -64,7 +68,6 @@ internal sealed class MainModelCommands : BaseModelCommands<MainModel>
 
     private void OpenVideoMemoryExecute()
     {
-        new VideoMemoryWindow().Show();
     }
 
     #endregion

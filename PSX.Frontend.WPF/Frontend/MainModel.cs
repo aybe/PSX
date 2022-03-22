@@ -1,24 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Core;
 using PSX.Frontend.WPF.Emulation;
-using PSX.Frontend.WPF.Emulation.Messaging;
 using PSX.Frontend.WPF.Frontend.Services;
-using PSX.Frontend.WPF.Frontend.Shared;
 using PSX.Frontend.WPF.Logging;
 
 namespace PSX.Frontend.WPF.Frontend;
 
-internal sealed class MainModel :
-    BaseModel<MainModelCommands>,
-    IRecipient<BaseUpdateMessage<UpdateAudioDataMessageHandler>>,
-    IRecipient<BaseUpdateMessage<UpdateVideoDataMessageHandler>>,
-    IRecipient<BaseUpdateMessage<UpdateVideoSizeMessageHandler>>
+internal sealed class MainModel : ObservableRecipient
 {
+    public MainModel()
+    {
+        Commands = new MainModelCommands(this);
+    }
+
+    public MainModelCommands Commands { get; }
+
     private Emulator? Emulator { get; set; }
 
     private CancellationTokenSource? EmulatorTokenSource { get; set; }
@@ -61,9 +62,9 @@ internal sealed class MainModel :
 
         var window = new HostWindow
         {
-            UpdateAudioDataHandler = UpdateAudioData,
-            UpdateVideoDataHandler = UpdateVideoData,
-            UpdateVideoSizeHandler = UpdateVideoSize
+            UpdateAudioDataHandler = message => WeakReferenceMessenger.Default.Send(message),
+            UpdateVideoDataHandler = message => WeakReferenceMessenger.Default.Send(message),
+            UpdateVideoSizeHandler = message => WeakReferenceMessenger.Default.Send(message)
         };
 
         LoggingUtility.Initialize();
@@ -116,120 +117,19 @@ internal sealed class MainModel :
 
     private void UpdateLoop(CancellationToken token)
     {
-        try
+        while (true)
         {
-            while (true)
-            {
-                if (token.IsCancellationRequested)
-                    break;
+            if (token.IsCancellationRequested)
+                break;
 
-                if (EmulatorPaused)
-                {
-                    // TODO use some Thread.Suspend or whatever
-                }
-                else
-                {
-                    Emulator?.RunFrame();
-                }
+            if (EmulatorPaused)
+            {
+                // TODO use some Thread.Suspend or whatever
+            }
+            else
+            {
+                Emulator?.RunFrame();
             }
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e); // TODO better logging mechanism
-        }
     }
-
-    #region Update handlers
-
-    private UpdateAudioDataMessage? LastUpdateAudioDataMessage { get; set; }
-
-    private UpdateVideoDataMessage? LastUpdateVideoDataMessage { get; set; }
-
-    private UpdateVideoSizeMessage? LastUpdateVideoSizeMessage { get; set; }
-
-    private ISet<UpdateVideoSizeMessageHandler> UpdateVideoSizeHandlers { get; } = new HashSet<UpdateVideoSizeMessageHandler>();
-
-    private ISet<UpdateAudioDataMessageHandler> UpdateAudioDataHandlers { get; } = new HashSet<UpdateAudioDataMessageHandler>();
-
-    private ISet<UpdateVideoDataMessageHandler> UpdateVideoDataHandlers { get; } = new HashSet<UpdateVideoDataMessageHandler>();
-
-    void IRecipient<BaseUpdateMessage<UpdateAudioDataMessageHandler>>.Receive(BaseUpdateMessage<UpdateAudioDataMessageHandler> message)
-    {
-        switch (message.Type)
-        {
-            case BaseUpdateMessageType.Add:
-                UpdateAudioDataHandlers.Add(message.Handler);
-                break;
-            case BaseUpdateMessageType.Remove:
-                UpdateAudioDataHandlers.Remove(message.Handler);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-
-        if (message.Type is BaseUpdateMessageType.Add && LastUpdateAudioDataMessage != null)
-            UpdateAudioData(LastUpdateAudioDataMessage);
-    }
-
-    void IRecipient<BaseUpdateMessage<UpdateVideoDataMessageHandler>>.Receive(BaseUpdateMessage<UpdateVideoDataMessageHandler> message)
-    {
-        switch (message.Type)
-        {
-            case BaseUpdateMessageType.Add:
-                UpdateVideoDataHandlers.Add(message.Handler);
-                break;
-            case BaseUpdateMessageType.Remove:
-                UpdateVideoDataHandlers.Remove(message.Handler);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-
-        if (message.Type is BaseUpdateMessageType.Add && LastUpdateVideoDataMessage != null)
-            UpdateVideoData(LastUpdateVideoDataMessage);
-    }
-
-    void IRecipient<BaseUpdateMessage<UpdateVideoSizeMessageHandler>>.Receive(BaseUpdateMessage<UpdateVideoSizeMessageHandler> message)
-    {
-        switch (message.Type)
-        {
-            case BaseUpdateMessageType.Add:
-                UpdateVideoSizeHandlers.Add(message.Handler);
-                break;
-            case BaseUpdateMessageType.Remove:
-                UpdateVideoSizeHandlers.Remove(message.Handler);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-
-        if (message.Type is BaseUpdateMessageType.Add && LastUpdateVideoSizeMessage != null)
-            UpdateVideoSize(LastUpdateVideoSizeMessage);
-    }
-
-    private void UpdateAudioData(UpdateAudioDataMessage message)
-    {
-        LastUpdateAudioDataMessage = message;
-
-        foreach (var handler in UpdateAudioDataHandlers)
-            handler(message);
-    }
-
-    private void UpdateVideoData(UpdateVideoDataMessage message)
-    {
-        LastUpdateVideoDataMessage = message;
-
-        foreach (var handler in UpdateVideoDataHandlers)
-            handler(message);
-    }
-
-    private void UpdateVideoSize(UpdateVideoSizeMessage message)
-    {
-        LastUpdateVideoSizeMessage = message;
-
-        foreach (var handler in UpdateVideoSizeHandlers)
-            handler(message);
-    }
-
-    #endregion
 }

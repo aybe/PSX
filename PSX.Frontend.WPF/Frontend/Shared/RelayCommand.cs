@@ -4,7 +4,7 @@ using System.Windows.Input;
 namespace PSX.Frontend.WPF.Frontend.Shared;
 
 internal sealed class RelayCommand : ICommand
-    // because their implementation totally sucks https://github.com/CommunityToolkit/MVVM-Samples/issues/41
+    // TODO currently this queries all because of https://github.com/CommunityToolkit/MVVM-Samples/issues/41
 {
     public RelayCommand(Action execute, Func<bool>? canExecute = null)
     {

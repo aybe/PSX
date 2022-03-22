@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
-using PSX.Core;
-using PSX.Frontend.WPF.Emulation;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Frontend.WPF.Emulation.Messaging;
 using PSX.Frontend.WPF.Sound;
 using Un4seen.Bass;
@@ -14,41 +12,118 @@ using Un4seen.Bass.AddOn.Mix;
 
 namespace PSX.Frontend.WPF.Frontend;
 
-internal sealed partial class MainWindow
+internal sealed partial class MainWindow :
+    IRecipient<UpdateAudioDataMessage>,
+    IRecipient<UpdateVideoDataMessage>,
+    IRecipient<UpdateVideoSizeMessage>
 {
     public MainWindow()
     {
         InitializeComponent();
+
+        DataContext = Model = App.Current.Services.GetService<MainModel>() ?? throw new InvalidOperationException();
+
+        Loaded += MainWindow_Loaded;
+        Closed += MainWindow_Closed;
+
+        WeakReferenceMessenger.Default.RegisterAll(this);
     }
 
-    private string? EmulatorExecutable { get; set; }
+    private MainModel Model { get; }
 
     private WriteableBitmap? EmulatorBitmap { get; set; }
 
     private bool EmulatorBitmapIs24Bit { get; set; }
 
-    private Emulator? Emulator { get; set; }
-
     private int EmulatorSoundStream { get; set; }
 
-    private CancellationTokenSource? EmulatorTokenSource { get; set; }
+    void IRecipient<UpdateAudioDataMessage>.Receive(UpdateAudioDataMessage message)
+    {
+        if (EmulatorSoundStream is 0)
+            return;
+
+        var data = Bass.BASS_StreamPutData(EmulatorSoundStream, message.Buffer, message.Buffer.Length);
+
+        if (data is not -1)
+            return;
+
+        var exception = new BassException("Couldn't put data in push stream.");
+
+        if (exception.Error is not BASSError.BASS_ERROR_HANDLE)
+        {
+            throw exception;
+        }
+    }
+
+    unsafe void IRecipient<UpdateVideoDataMessage>.Receive(UpdateVideoDataMessage message)
+    {
+        Dispatcher.BeginInvoke(() =>
+        {
+            using var context = EmulatorBitmap.GetBitmapContext(ReadWriteMode.ReadWrite);
+
+            if (EmulatorBitmapIs24Bit)
+            {
+                var span = MemoryMarshal.Cast<ushort, byte>(message.Buffer16);
+
+                for (var y = 0; y < context.Height; y++)
+                {
+                    for (var x = 0; x < context.Width; x++)
+                    {
+                        var i = y * 2048 + x * 3;
+                        var r = span[i + 0];
+                        var g = span[i + 1];
+                        var b = span[i + 2];
+                        var j = context.Pixels + (y * context.Width + x);
+                        *j = (255 << 24) | (r << 16) | (g << 8) | b;
+                    }
+                }
+            }
+            else
+            {
+                for (var y = 0; y < context.Height; y++)
+                {
+                    for (var x = 0; x < context.Width; x++)
+                    {
+                        var i = (message.Size.Y + y) * 1024 + (message.Size.X + x) * 1;
+                        var r = ((message.Buffer16[i] >> 00) & 0b11111) * 255 / 31;
+                        var g = ((message.Buffer16[i] >> 05) & 0b11111) * 255 / 31;
+                        var b = ((message.Buffer16[i] >> 10) & 0b11111) * 255 / 31;
+                        var j = context.Pixels + (y * context.Width + x);
+                        *j = (255 << 24) | (r << 16) | (g << 8) | b;
+                    }
+                }
+            }
+        });
+    }
+
+    void IRecipient<UpdateVideoSizeMessage>.Receive(UpdateVideoSizeMessage message)
+    {
+        Dispatcher.BeginInvoke(() =>
+        {
+            EmulatorBitmap = BitmapFactory.New(message.Size.X, message.Size.Y);
+
+            EmulatorBitmapIs24Bit = message.Is24Bit;
+
+            Image1.Source = EmulatorBitmap;
+
+            Title = $"Width = {message.Size.X}, Height = {message.Size.Y}, 24-bit = {message.Is24Bit}";
+        });
+    }
 
     #region Window events
 
-    protected override void OnLoaded(object sender, RoutedEventArgs e)
+    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
-        base.OnLoaded(sender, e);
+        Model.IsActive = true;
 
         InitializeConsole();
         InitializeSound();
-        InitializeEmulator();
     }
 
-    protected override void OnClosed(object? sender, EventArgs e)
+    private void MainWindow_Closed(object? sender, EventArgs e)
     {
-        base.OnClosed(sender, e);
+        Model.IsActive = false;
 
-        CleanupEmulator();
         CleanupSound();
         CleanupConsole();
     }
@@ -60,11 +135,6 @@ internal sealed partial class MainWindow
     private static void InitializeConsole()
     {
         //NativeMethods.AllocConsole();
-    }
-
-    private static void CleanupConsole()
-    {
-        // NativeMethods.FreeConsole();
     }
 
     private void InitializeSound()
@@ -92,154 +162,17 @@ internal sealed partial class MainWindow
         EmulatorSoundStream = push;
     }
 
+    private static void CleanupConsole()
+    {
+        // NativeMethods.FreeConsole();
+    }
+
     private void CleanupSound()
     {
         if (!Bass.BASS_Free())
             throw new BassException("Couldn't free BASS.");
 
         EmulatorSoundStream = 0;
-    }
-
-    private void InitializeEmulator()
-    {
-        if (EmulatorExecutable is null)
-            return;
-        return;
-        var window = new HostWindow
-        {
-            UpdateVideoSizeHandler = UpdateBitmapSize,
-            UpdateVideoDataHandler = UpdateBitmapData,
-            UpdateAudioDataHandler = UpdateSampleData
-        };
-
-        Emulator = new Emulator(window, EmulatorExecutable);
-
-        EmulatorTokenSource = new CancellationTokenSource();
-
-        var token = EmulatorTokenSource.Token;
-
-        Task.Factory.StartNew(() => Update(token), token, TaskCreationOptions.LongRunning, TaskScheduler.Current);
-    }
-
-    private void CleanupEmulator()
-    {
-        EmulatorTokenSource?.Cancel();
-
-        Emulator?.Dispose();
-    }
-
-    #endregion
-
-    #region Update callbacks
-
-    private void Update(CancellationToken token)
-    {
-        try
-        {
-            while (true)
-            {
-                if (token.IsCancellationRequested)
-                    break;
-
-                Emulator?.RunFrame();
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-    }
-
-    private void UpdateBitmapData(UpdateVideoDataMessage message)
-    {
-        throw new NotImplementedException();
-    }
-
-    private void UpdateBitmapData(IntSize size, IntRect rect, int[] buffer24, ushort[] buffer16)
-    {
-        Dispatcher.BeginInvoke(UpdateBitmapDataProc, size, rect, buffer24, buffer16);
-    }
-
-    private unsafe void UpdateBitmapDataProc(IntSize size, IntRect rect, int[] buffer24, ushort[] buffer16)
-    {
-        using var context = EmulatorBitmap.GetBitmapContext(ReadWriteMode.ReadWrite);
-
-        if (EmulatorBitmapIs24Bit)
-        {
-            var span = MemoryMarshal.Cast<ushort, byte>(buffer16);
-
-            for (var y = 0; y < context.Height; y++)
-            {
-                for (var x = 0; x < context.Width; x++)
-                {
-                    var i = y * 2048 + x * 3;
-                    var r = span[i + 0];
-                    var g = span[i + 1];
-                    var b = span[i + 2];
-                    var j = context.Pixels + (y * context.Width + x);
-                    *j = (255 << 24) | (r << 16) | (g << 8) | b;
-                }
-            }
-        }
-        else
-        {
-            for (var y = 0; y < context.Height; y++)
-            {
-                for (var x = 0; x < context.Width; x++)
-                {
-                    var i = (size.Y + y) * 1024 + (size.X + x) * 1;
-                    var r = ((buffer16[i] >> 00) & 0b11111) * 255 / 31;
-                    var g = ((buffer16[i] >> 05) & 0b11111) * 255 / 31;
-                    var b = ((buffer16[i] >> 10) & 0b11111) * 255 / 31;
-                    var j = context.Pixels + (y * context.Width + x);
-                    *j = (255 << 24) | (r << 16) | (g << 8) | b;
-                }
-            }
-        }
-    }
-
-    private void UpdateBitmapSize(UpdateVideoSizeMessage message)
-    {
-        throw new NotImplementedException();
-    }
-
-    private void UpdateBitmapSize(IntSize size, bool is24Bit)
-    {
-        Dispatcher.BeginInvoke(UpdateBitmapSizeProc, size, is24Bit);
-    }
-
-    private void UpdateBitmapSizeProc(IntSize size, bool is24Bit)
-    {
-        EmulatorBitmap = BitmapFactory.New(size.X, size.Y);
-
-        EmulatorBitmapIs24Bit = is24Bit;
-
-        Image1.Source = EmulatorBitmap;
-
-        Title = $"Width = {size.X}, Height = {size.Y}, 24-bit = {is24Bit}";
-    }
-
-    private void UpdateSampleData(UpdateAudioDataMessage message)
-    {
-        throw new NotImplementedException();
-    }
-
-    private void UpdateSampleData(byte[] buffer)
-    {
-        if (EmulatorSoundStream is 0)
-            return;
-
-        var data = Bass.BASS_StreamPutData(EmulatorSoundStream, buffer, buffer.Length);
-
-        if (data is not -1)
-            return;
-
-        var exception = new BassException("Couldn't put data in push stream.");
-
-        if (exception.Error is not BASSError.BASS_ERROR_HANDLE)
-        {
-            throw exception;
-        }
     }
 
     #endregion

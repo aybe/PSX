@@ -1,4 +1,4 @@
-﻿<frontend:MainWindowShim
+﻿<Window
     x:Class="PSX.Frontend.WPF.Frontend.MainWindow"
     x:ClassModifier="internal"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -13,7 +13,8 @@
     d:DesignHeight="480"
     WindowStartupLocation="{StaticResource DefaultWindowStartupLocation}"
     Width="1280"
-    Height="720">
+    Height="720"
+    UseLayoutRounding="True" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor">
     <Window.InputBindings>
         <KeyBinding Command="{Binding Commands.OpenExecutable}" Key="O" Modifiers="Control" />
         <KeyBinding Command="{Binding Commands.Quit}" Key="Q" Modifiers="Control" />
@@ -26,7 +27,7 @@
         <KeyBinding Command="{Binding Commands.OpenConsole}" Key="F3" />
     </Window.InputBindings>
 
-    <Grid Background="Gray">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -47,10 +48,12 @@
                 <MenuItem Header="Video _Memory" InputGestureText="F2" Command="{Binding OpenVideoMemory}" />
                 <MenuItem Header="_Console" InputGestureText="F3" Command="{Binding OpenConsole}" />
             </MenuItem>
-            <MenuItem Header="_Help">
-                <MenuItem Header="_About" Command="{Binding About}" />
-            </MenuItem>
         </Menu>
-        <Image x:Name="Image1" Grid.Row="1" />
+        <Border Grid.Row="1"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                BorderBrush="Black" BorderThickness="1"
+                Padding="1">
+            <Image x:Name="Image1" />
+        </Border>
     </Grid>
-</frontend:MainWindowShim>
+</Window>

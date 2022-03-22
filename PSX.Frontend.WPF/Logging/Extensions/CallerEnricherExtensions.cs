@@ -54,10 +54,10 @@ internal static class CallerEnricherExtensions
                 if (type.Assembly == SerilogAssembly)
                     continue;
 
-                var methodName = type.FullName;
+                var methodName   = type.FullName;
                 var methodParams = string.Join(", ", method.GetParameters().Select(s => s.ParameterType.FullName));
-                var methodFile = frame.GetFileName();
-                var methodLine = frame.GetFileLineNumber();
+                var methodFile   = frame.GetFileName();
+                var methodLine   = frame.GetFileLineNumber();
 
                 return $"at {methodName}.{method.Name}({methodParams}) in {methodFile}:line {methodLine}";
             }

@@ -25,10 +25,6 @@ public partial class App
 
         services.AddTransient<MainModel>();
 
-        services.AddTransient<VideoOutputModel>();
-
-        services.AddTransient<VideoMemoryModel>();
-
         var provider = services.BuildServiceProvider();
 
         return provider;
