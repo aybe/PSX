@@ -11,6 +11,7 @@ using PSX.Frontend.WPF.Frontend.Messages;
 using PSX.Frontend.WPF.Interop;
 using PSX.Frontend.WPF.Logging;
 using PSX.Frontend.WPF.Sound;
+using Serilog.Events;
 using Un4seen.Bass;
 using Un4seen.Bass.AddOn.Mix;
 
@@ -174,7 +175,9 @@ internal sealed partial class MainWindow :
 
     private static void InitializeLogging()
     {
-        LoggingUtility.Initialize();
+        LoggingFactory.Initialize();
+
+        LoggingFactory.LevelSwitch.MinimumLevel = LogEventLevel.Verbose;
     }
 
     private void InitializeConsole()
