@@ -28,6 +28,8 @@ internal sealed partial class MainWindow :
 
         DataContext = Model = App.Current.Services.GetService<MainModel>() ?? throw new InvalidOperationException();
 
+        ConsoleKeyboardHookProcRef = ConsoleKeyboardHookProc; // prevent garbage collection
+
         Loaded += MainWindow_Loaded;
         Closed += MainWindow_Closed;
 
@@ -142,7 +144,7 @@ internal sealed partial class MainWindow :
 
     private IntPtr ConsoleKeyboardHookProcHandle;
 
-    private LowLevelKeyboardProc ConsoleKeyboardHookProcRef; // prevent garbage collection
+    private readonly LowLevelKeyboardProc ConsoleKeyboardHookProcRef;
 
     [SuppressMessage("ReSharper", "InvertIf")]
     private int ConsoleKeyboardHookProc(int nCode, uint wParam, ref KBDLLHOOKSTRUCT lParam)
@@ -225,8 +227,6 @@ internal sealed partial class MainWindow :
         // setup a hook to intercept and prevent Alt-F4
 
         // https://tpiros.dev/blog/c-disable-ctrl-alt-del-alt-tab-alt-f4-start-menu-and-so-on/
-
-        ConsoleKeyboardHookProcRef = ConsoleKeyboardHookProc;
 
         ConsoleKeyboardHookProcHandle = NativeMethods.SetWindowsHookEx(NativeConstants.WH_KEYBOARD_LL, ConsoleKeyboardHookProcRef, IntPtr.Zero, 0);
 
