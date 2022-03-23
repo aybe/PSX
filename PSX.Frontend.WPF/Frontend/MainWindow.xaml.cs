@@ -123,8 +123,8 @@ internal sealed partial class MainWindow :
     {
         Model.IsActive = true;
 
-        InitializeLogging();
         InitializeConsole();
+        InitializeLogging();
         InitializeSound();
 
         Activate(); // don't let console steal focus
