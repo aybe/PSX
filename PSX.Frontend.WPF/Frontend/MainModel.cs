@@ -129,8 +129,6 @@ internal sealed class MainModel : ObservableRecipient
             UpdateVideoSizeHandler = message => WeakReferenceMessenger.Default.Send(message)
         };
 
-        LoggingUtility.Initialize();
-
         Emulator = new Emulator(window, EmulatorContent);
 
         EmulatorPaused = false;
