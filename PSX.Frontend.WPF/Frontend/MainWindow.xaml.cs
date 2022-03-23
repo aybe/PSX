@@ -126,6 +126,8 @@ internal sealed partial class MainWindow :
         InitializeLogging();
         InitializeConsole();
         InitializeSound();
+
+        Activate(); // don't let console steal focus
     }
 
     private void MainWindow_Closed(object? sender, EventArgs e)
