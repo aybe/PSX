@@ -1,14 +1,12 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
 using Serilog;
 using Serilog.Configuration;
 using Serilog.Core;
 using Serilog.Events;
 
-namespace PSX.Frontend.WPF.Logging.Extensions;
+namespace PSX.Logging.Extensions;
 
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 internal static class CallerEnricherExtensions

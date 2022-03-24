@@ -1,7 +1,6 @@
-﻿using System;
-using Serilog.Expressions;
+﻿using Serilog.Expressions;
 
-namespace PSX.Frontend.WPF.Logging;
+namespace PSX.Logging;
 
 public sealed class LoggingFilterString : LoggingFilter
     // https://github.com/serilog/serilog-expressions#language-reference

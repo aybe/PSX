@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using Serilog.Expressions;
 
-namespace PSX.Frontend.WPF.Logging;
+namespace PSX.Logging;
 
 public abstract class LoggingFilter
     // https://nblumhardt.com/2017/10/logging-filter-switch/

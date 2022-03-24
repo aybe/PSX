@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Expressions;
 
-namespace PSX.Frontend.WPF.Logging;
+namespace PSX.Logging;
 
 public sealed class LoggingFilterCollection : LoggingFilterSwitch, ILogEventFilter, IEnumerable<LoggingFilter>
 {

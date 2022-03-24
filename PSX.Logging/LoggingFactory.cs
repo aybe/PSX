@@ -1,9 +1,9 @@
-﻿using PSX.Frontend.WPF.Logging.Extensions;
+﻿using PSX.Logging.Extensions;
 using Serilog;
 using Serilog.Core;
 using Serilog.Sinks.SystemConsole.Themes;
 
-namespace PSX.Frontend.WPF.Logging;
+namespace PSX.Logging;
 
 public static class LoggingFactory
 {

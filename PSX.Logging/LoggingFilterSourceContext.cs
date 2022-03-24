@@ -1,7 +1,7 @@
 ﻿using Serilog.Core;
 using Serilog.Expressions;
 
-namespace PSX.Frontend.WPF.Logging;
+namespace PSX.Logging;
 
 public sealed class LoggingFilterSourceContext<T> : LoggingFilter
 {

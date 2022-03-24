@@ -9,9 +9,7 @@ using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Core;
 using PSX.Frontend.WPF.Emulation;
 using PSX.Frontend.WPF.Frontend.Shared;
-using PSX.Frontend.WPF.Logging;
 using Serilog;
-using Serilog.Core;
 using Serilog.Events;
 
 namespace PSX.Frontend.WPF.Frontend;
