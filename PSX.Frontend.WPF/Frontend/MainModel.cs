@@ -15,7 +15,7 @@ using Serilog.Events;
 
 namespace PSX.Frontend.WPF.Frontend;
 
-internal sealed class MainModel : ObservableRecipient
+internal sealed class MainModel : ObservableRecipient, IMainViewModel
 {
     public MainModel()
     {

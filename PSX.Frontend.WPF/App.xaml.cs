@@ -47,10 +47,10 @@ public partial class App
                         // older ones
                         .AddSingleton<IFilePickerService, FilePickerServiceWindows>()
                         .AddSingleton<IApplication, IApplicationWpf>()
-                        .AddTransient<MainModel>()
+                        .AddTransient<MainModel>() // TODO this should be the one in Core and updated with existing stuff
                         // newer ones
                         .AddSingleton<MainWindow>() // TODO do the same as for log view
-                        .AddTransient<MainViewModel>() // TODO this should be the one in Core and updated with existing stuff
+                        .AddTransient<MainViewModel>()
                         .AddSingleton<ILogView, LogView>()
                         .AddSingleton<ILogViewModel, LogViewModel>()
                         ;
