@@ -17,5 +17,5 @@ public sealed class ViewModelLog : ObservableRecipient, IObservableLog
         Entries = log.Entries;
     }
 
-    public ObservableCollection<LogEntry> Entries { get; }
+    public ObservableCollection<LogEntry>? Entries { get; }
 }

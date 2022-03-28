@@ -4,5 +4,5 @@ namespace PSX.Logging;
 
 public interface IObservableLog
 {
-    ObservableCollection<LogEntry> Entries { get; }
+    ObservableCollection<LogEntry>? Entries { get; }
 }

@@ -7,7 +7,7 @@ public sealed class ObservableLoggerProvider : ILoggerProvider, IObservableLog
 {
     public ObservableLoggerProvider()
     {
-        Entries = new ObservableCollection<LogEntry>();
+        Entries = new ObservableLoggerCollection<LogEntry>();
     }
 
     public void Dispose()
@@ -16,8 +16,8 @@ public sealed class ObservableLoggerProvider : ILoggerProvider, IObservableLog
 
     public ILogger CreateLogger(string categoryName)
     {
-        return new ObservableLogger(categoryName, Entries);
+        return new ObservableLogger(categoryName, (Entries as ObservableLoggerCollection<LogEntry>)!);
     }
 
-    public ObservableCollection<LogEntry> Entries { get; }
+    public ObservableCollection<LogEntry>? Entries { get; }
 }

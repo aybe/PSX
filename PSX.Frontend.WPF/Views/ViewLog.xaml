@@ -7,8 +7,10 @@
         xmlns:modules="clr-namespace:PSX.Frontend.Core.Modules;assembly=PSX.Frontend.Core"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance modules:ViewModelLog}"
-        Title="LogView" Height="450" Width="800">
+        Title="PSX Log" Left="0" Top="0" WindowStartupLocation="Manual">
     <Grid>
-        <ListBox ItemsSource="{Binding Entries}" d:ItemsSource="{d:SampleData}" />
+        <ListBox ItemsSource="{Binding Entries}"
+                 VirtualizingStackPanel.VirtualizationMode="Recycling"
+                 d:ItemsSource="{d:SampleData}" />
     </Grid>
 </Window>

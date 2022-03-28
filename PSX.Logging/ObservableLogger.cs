@@ -1,20 +1,27 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace PSX.Logging;
 
 internal sealed class ObservableLogger : ILogger
 {
-    public ObservableLogger(string categoryName, ObservableCollection<LogEntry> collection)
+    public ObservableLogger(string categoryName, ObservableLoggerCollection<LogEntry> collection)
     {
         CategoryName = categoryName;
-
-        Entries = collection;
+        Entries      = collection ?? throw new ArgumentNullException(nameof(collection));
     }
 
-    public ObservableCollection<LogEntry> Entries { get; }
-
     private string CategoryName { get; }
+
+    private SynchronizationContext? Context { get; } = SynchronizationContext.Current;
+
+    private List<LogEntry> EntriesPrivate { get; } = new();
+
+    private ObservableLoggerCollection<LogEntry> Entries { get; }
+
+    private Stopwatch Stopwatch { get; } = new();
+
+    private TimeSpan Duration { get; } = TimeSpan.FromSeconds(1.0d); // TODO this should be configurable from outside
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
@@ -45,10 +52,40 @@ internal sealed class ObservableLogger : ILogger
             eventId,
             pairs,
             exception,
-            Formatter // TODO how does that perform in practice?
+            Formatter // TODO how does that perform in practice? // TODO BUG profiling sucks on that one
         );
 
-        Entries.Add(entry);
+        EntriesPrivate.Add(entry);
+
+        if (Stopwatch.IsRunning)
+        {
+            if (Stopwatch.Elapsed >= Duration)
+            {
+                if (SynchronizationContext.Current == Context)
+                {
+                    SendOrPostCallback(EntriesPrivate);
+                }
+                else
+                {
+                    Context?.Send(SendOrPostCallback, EntriesPrivate);
+                }
+
+                Stopwatch.Restart();
+            }
+        }
+        else
+        {
+            Stopwatch.Restart();
+        }
+
+        void SendOrPostCallback(object? o)
+        {
+            if (o is not IEnumerable<LogEntry> entries)
+                throw new InvalidOperationException();
+
+            Entries.AddRange(entries);
+            EntriesPrivate.Clear();
+        }
     }
 
     public bool IsEnabled(LogLevel logLevel)
@@ -61,7 +98,7 @@ internal sealed class ObservableLogger : ILogger
         return new NullScope();
     }
 
-    private class NullScope : IDisposable
+    private readonly struct NullScope : IDisposable
     {
         public void Dispose()
         {
