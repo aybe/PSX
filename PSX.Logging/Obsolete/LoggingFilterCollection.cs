@@ -5,7 +5,7 @@ using Serilog.Core;
 using Serilog.Events;
 using Serilog.Expressions;
 
-namespace PSX.Logging;
+namespace PSX.Logging.Obsolete;
 
 public sealed class LoggingFilterCollection : LoggingFilterSwitch, ILogEventFilter, IEnumerable<LoggingFilter>
 {

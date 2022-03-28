@@ -1,9 +1,9 @@
-﻿using PSX.Logging.Extensions;
+﻿using PSX.Logging.Obsolete.Extensions;
 using Serilog;
 using Serilog.Core;
 using Serilog.Sinks.SystemConsole.Themes;
 
-namespace PSX.Logging;
+namespace PSX.Logging.Obsolete;
 
 public static class LoggingFactory
 {

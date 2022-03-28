@@ -10,7 +10,7 @@ using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Frontend.WPF.Frontend.Messages;
 using PSX.Frontend.WPF.Interop;
 using PSX.Frontend.WPF.Sound;
-using PSX.Logging;
+using PSX.Logging.Obsolete;
 using Serilog.Events;
 using Un4seen.Bass;
 using Un4seen.Bass.AddOn.Mix;

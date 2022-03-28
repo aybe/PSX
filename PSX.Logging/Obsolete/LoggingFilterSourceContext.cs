@@ -1,7 +1,7 @@
 ﻿using Serilog.Core;
 using Serilog.Expressions;
 
-namespace PSX.Logging;
+namespace PSX.Logging.Obsolete;
 
 public sealed class LoggingFilterSourceContext<T> : LoggingFilter
 {

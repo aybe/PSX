@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Frontend.WinForms", "PS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Frontend.WPF", "PSX.Frontend.WPF\PSX.Frontend.WPF.csproj", "{B3050D06-2B44-43AF-8919-70273DA69E3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSX.Logging", "PSX.Logging\PSX.Logging.csproj", "{DBC88997-2447-4BD0-95FD-D4B2EF64F553}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Logging", "PSX.Logging\PSX.Logging.csproj", "{DBC88997-2447-4BD0-95FD-D4B2EF64F553}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

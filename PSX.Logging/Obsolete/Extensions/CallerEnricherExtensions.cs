@@ -6,7 +6,7 @@ using Serilog.Configuration;
 using Serilog.Core;
 using Serilog.Events;
 
-namespace PSX.Logging.Extensions;
+namespace PSX.Logging.Obsolete.Extensions;
 
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 internal static class CallerEnricherExtensions

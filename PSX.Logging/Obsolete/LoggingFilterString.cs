@@ -1,6 +1,6 @@
 ﻿using Serilog.Expressions;
 
-namespace PSX.Logging;
+namespace PSX.Logging.Obsolete;
 
 public sealed class LoggingFilterString : LoggingFilter
     // https://github.com/serilog/serilog-expressions#language-reference
