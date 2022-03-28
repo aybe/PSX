@@ -17,13 +17,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
-    <PackageReference Include="Serilog" Version="2.10.0" />
-    <PackageReference Include="Serilog.Expressions" Version="3.3.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\PSX.Core.Graphics\PSX.Core.Graphics.csproj" />
     <ProjectReference Include="..\PSX.Core.Processor\PSX.Core.Processor.csproj" />
     <ProjectReference Include="..\PSX.Core.Sound\PSX.Core.Sound.csproj" />
