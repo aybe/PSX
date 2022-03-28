@@ -42,6 +42,9 @@
                 <MenuItem Header="_Continue" InputGestureText="F8" Command="{Binding EmulationContinue}" />
                 <MenuItem Header="_Terminate" InputGestureText="F9" Command="{Binding EmulationTerminate}" />
             </MenuItem>
+            <MenuItem Header="_Windows">
+                <MenuItem Header="_Log" Command="{Binding OpenLog}" />
+            </MenuItem>
         </Menu>
         <Border Grid.Row="1"
                 HorizontalAlignment="Center" VerticalAlignment="Center"

@@ -4,7 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PSX.Frontend.Core;
-using PSX.Frontend.Core.ViewModels;
+using PSX.Frontend.Core.Interfaces;
+using PSX.Frontend.Core.Services;
 using PSX.Frontend.WPF.Frontend;
 using PSX.Frontend.WPF.Frontend.Shared;
 using PSX.Frontend.WPF.Frontend.Views;
@@ -19,65 +20,53 @@ public partial class App
         InitializeComponent();
     }
 
-    public new static App Current => (App)Application.Current;
-
-    private IHost Host { get; set; } = null!;
-
-    public IServiceProvider Services => Host.Services;
+    private AppStartup AppStartup { get; set; } = null!;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
-        var hostBuilder = new HostBuilder()
-                .ConfigureHostConfiguration(builder =>
+        AppStartup = new AppStartup(ConfigureHost);
+
+        void ConfigureHost(IHostBuilder hostBuilder)
+        {
+            hostBuilder
+                .ConfigureAppConfiguration(builder =>
                 {
+                    builder.AddCommandLine(e.Args);
                 })
-                .ConfigureAppConfiguration((context, builder) =>
+                .ConfigureServices((_, services) =>
                 {
-                    builder
-                        .SetBasePath(context.HostingEnvironment.ContentRootPath)
-                        .AddJsonFile("AppSettings.json", false)
-                        .AddCommandLine(e.Args);
-                })
-                .ConfigureServices((context, collection) =>
-                {
-                    collection
-                        .Configure<AppSettings>(context.Configuration.GetSection(nameof(AppSettings)))
-                        // older ones
+                    services
+                        .AddTransient<MainModel>() // TODO move content of it to core module
                         .AddSingleton<IFilePickerService, FilePickerServiceWindows>()
                         .AddSingleton<IApplication, IApplicationWpf>()
-                        .AddTransient<MainModel>() // TODO this should be the one in Core and updated with existing stuff
-                        // newer ones
-                        .AddSingleton<MainWindow>() // TODO do the same as for log view
-                        .AddTransient<MainViewModel>()
+                        .AddSingleton<IMainView, MainWindow>()
                         .AddSingleton<ILogView, LogView>()
-                        .AddSingleton<ILogViewModel, LogViewModel>()
                         ;
                 })
-                .ConfigureLogging((context, builder) =>
+                .ConfigureLogging((_, builder) =>
                 {
                     builder.AddObservable();
-                })
-            ;
+                });
+        }
 
-        Host = hostBuilder.Build();
+        await AppStartup.Host.StartAsync();
 
-        await Host.StartAsync();
+        var shell = AppStartup.Host.Services.GetRequiredService<IMainView>();
 
-        var window = Host.Services.GetRequiredService<MainWindow>(); // TODO update this
-
-        window.Show();
+        shell.Show();
     }
 
     protected override void OnExit(ExitEventArgs e)
     {
         base.OnExit(e);
 
-        using (Host)
+        using (AppStartup.Host)
         {
-            Host.StopAsync(TimeSpan.FromSeconds(5.0d));
-            // BUG System.IO.IOException: 'The parameter is incorrect.' -> remove console https://github.com/dotnet/runtime/issues/62192
+            AppStartup.Host.StopAsync(TimeSpan.FromSeconds(5.0d));
         }
+
+        // BUG it will crash here because of console -> System.IO.IOException: 'The parameter is incorrect.' -> https://github.com/dotnet/runtime/issues/62192
     }
 }

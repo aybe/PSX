@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using PSX.Frontend.WPF.Frontend.Messages;
+using PSX.Frontend.Core.Emulation;
+using PSX.Frontend.Core.Interfaces;
 using PSX.Frontend.WPF.Interop;
 using PSX.Frontend.WPF.Sound;
 using PSX.Logging.Obsolete;
@@ -18,15 +18,16 @@ using Un4seen.Bass.AddOn.Mix;
 namespace PSX.Frontend.WPF.Frontend;
 
 internal sealed partial class MainWindow :
+    IMainView,
     IRecipient<UpdateAudioDataMessage>,
     IRecipient<UpdateVideoDataMessage>,
     IRecipient<UpdateVideoSizeMessage>
 {
-    public MainWindow()
+    public MainWindow(MainModel model)
     {
         InitializeComponent();
 
-        DataContext = Model = App.Current.Services.GetService<MainModel>() ?? throw new InvalidOperationException();
+        DataContext = Model = model;
 
         ConsoleKeyboardHookProcRef = ConsoleKeyboardHookProc; // prevent garbage collection
 

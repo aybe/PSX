@@ -1,3 +1,3 @@
-﻿namespace PSX.Frontend.WPF.Frontend.Messages;
+﻿namespace PSX.Frontend.Core.Emulation;
 
 public delegate void UpdateAudioDataMessageHandler(UpdateAudioDataMessage message);

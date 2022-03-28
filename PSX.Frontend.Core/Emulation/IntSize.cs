@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PSX.Frontend.WPF.Emulation;
+﻿namespace PSX.Frontend.Core.Emulation;
 
 public readonly struct IntSize : IEquatable<IntSize>
 {

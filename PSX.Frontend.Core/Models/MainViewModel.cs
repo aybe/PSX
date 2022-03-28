@@ -1,29 +1,45 @@
-﻿using System;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Globalization;
+using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Core;
-using PSX.Frontend.Core;
 using PSX.Frontend.Core.Emulation;
 using PSX.Frontend.Core.Interfaces;
 using PSX.Frontend.Core.Services;
-using PSX.Frontend.WPF.Frontend.Shared;
-using PSX.Frontend.WPF.Frontend.Views;
+using PSX.Logging;
 using Serilog;
 using Serilog.Events;
 
-namespace PSX.Frontend.WPF.Frontend;
+namespace PSX.Frontend.Core.Models;
 
-internal sealed class MainModel : ObservableRecipient
+public sealed class MainViewModel : ObservableRecipient, IObservableLog
 {
-    public MainModel()
+    public MainViewModel(IOptions<AppSettings> options, ILogger<MainViewModel> logger, IServiceProvider serviceProvider)
     {
+        Options = options;
+        Logger  = logger;
+
+        var service = serviceProvider.GetService<ILoggerProvider>();
+
+        if (service is IObservableLog log)
+        {
+            Entries = log.Entries;
+        }
+
+        LogSomething = new RelayCommand(() =>
+        {
+            Logger.LogInformation("From MainViewModel: {Time}", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+        });
+
         OpenContent         = new RelayCommand(OpenContentExecute,         () => true);
-        OpenLog             = new RelayCommand(OpenLogExecute,             ()=>true);
+        OpenLog             = new RelayCommand(OpenLogExecute,             () => true);
         EmulationStart      = new RelayCommand(EmulationStartExecute,      () => CanStart);
         EmulationPause      = new RelayCommand(EmulationPauseExecute,      () => CanPause);
         EmulationFrame      = new RelayCommand(EmulationFrameExecute,      () => CanFrame);
@@ -31,6 +47,14 @@ internal sealed class MainModel : ObservableRecipient
         EmulationTerminate  = new RelayCommand(EmulationTerminateExecute,  () => CanTerminate);
         ApplicationShutdown = new RelayCommand(ApplicationShutdownExecute, () => true);
     }
+
+    public ICommand LogSomething { get; }
+
+    public IOptions<AppSettings> Options { get; }
+
+    public ILogger<MainViewModel> Logger { get; }
+
+    public string SomethingFromAppSettings => $"{Options.Value.Executable} from VM";
 
     private Emulator? Emulator { get; set; }
 
@@ -52,10 +76,12 @@ internal sealed class MainModel : ObservableRecipient
 
     private bool CanTerminate => Emulator is not null;
 
+    public ObservableCollection<LogEntry>? Entries { get; }
+
     [SuppressMessage("ReSharper", "InvertIf")]
     private void UpdateLoop(CancellationToken token)
     {
-        var logger = Log.ForContext<MainModel>();
+        var logger = Log.ForContext<MainViewModel>();
 
         var span = TimeSpan.FromSeconds(1.0d / 60.0d);
         var zero = TimeSpan.Zero;
@@ -212,7 +238,7 @@ internal sealed class MainModel : ObservableRecipient
 
     private void ApplicationShutdownExecute()
     {
-        var service = AppStartup.Current.Host.Services.GetService<IApplication>() ?? throw new InvalidOperationException();
+        var service = AppStartup.Current.Services.GetService<IApplication>() ?? throw new InvalidOperationException();
         service.Shutdown();
     }
 

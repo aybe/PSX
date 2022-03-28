@@ -6,3 +6,27 @@ Emulator:
 - frame by frame / vsync
 - save state
 - timer
+- fix the damn silent behavior when there's no bios file
+
+Cosmetics:
+- console icon can be set with SetConsoleIcon https://stackoverflow.com/questions/2986853/is-there-a-way-to-change-the-console-icon-at-runtime
+
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+
+toolbar
+	emulation
+	logging
+
+save state
+
+integer scaling
+
+cmdargs
+
+https://stackoverflow.com/questions/7687000/fast-performing-and-thread-safe-observable-collection
+https://stackoverflow.com/questions/2337822/wpf-listbox-scroll-to-end-automatically
+https://stackoverflow.com/questions/2006729/how-can-i-have-a-listbox-auto-scroll-when-a-new-item-is-added/11530459
+https://stackoverflow.com/questions/16743804/implementing-a-log-viewer-with-wpf
+

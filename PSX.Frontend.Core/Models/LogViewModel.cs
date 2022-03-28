@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
+using PSX.Frontend.Core.Interfaces;
 using PSX.Logging;
 
-namespace PSX.Frontend.WPF.Frontend.Views;
+namespace PSX.Frontend.Core.Models;
 
-internal sealed class LogViewModel : ObservableRecipient, IObservableLog, ILogViewModel
+public sealed class LogViewModel : ObservableRecipient, IObservableLog//, ILogViewModel
 {
     public LogViewModel(IServiceProvider provider)
     {

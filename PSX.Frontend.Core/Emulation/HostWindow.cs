@@ -1,9 +1,8 @@
 ﻿using PSX.Core.Interfaces;
-using PSX.Frontend.WPF.Frontend.Messages;
 
-namespace PSX.Frontend.WPF.Emulation;
+namespace PSX.Frontend.Core.Emulation;
 
-internal sealed class HostWindow : IHostWindow
+public sealed class HostWindow : IHostWindow
 {
     private ushort DisplayVRamXStart { get; set; }
 
