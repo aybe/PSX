@@ -77,6 +77,22 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
 
     public ObservableCollection<LogEntry>? Entries { get; }
 
+    private void RefreshEmulatorCommands()
+    {
+        static void NotifyCanExecuteChanged(params RelayCommand[] commands)
+        {
+            if (commands is null)
+                throw new ArgumentNullException(nameof(commands));
+
+            foreach (var command in commands)
+            {
+                command.NotifyCanExecuteChanged();
+            }
+        }
+
+        NotifyCanExecuteChanged(EmulationStart, EmulationPause, EmulationContinue, EmulationFrame, EmulationTerminate);
+    }
+
     [SuppressMessage("ReSharper", "InvertIf")]
     private void UpdateLoop(CancellationToken token)
     {
@@ -138,6 +154,8 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
             return;
 
         EmulatorContent = path;
+
+        RefreshEmulatorCommands();
     }
 
     public RelayCommand OpenLog { get; }
@@ -175,6 +193,8 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
         var token = EmulatorTokenSource.Token;
 
         Task.Factory.StartNew(() => UpdateLoop(token), token, TaskCreationOptions.LongRunning, TaskScheduler.Current);
+
+        RefreshEmulatorCommands();
     }
 
     public RelayCommand EmulationPause { get; }
@@ -185,6 +205,8 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
             throw new InvalidOperationException();
 
         EmulatorPaused = true;
+
+        RefreshEmulatorCommands();
     }
 
     public RelayCommand EmulationFrame { get; }
@@ -197,6 +219,8 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
         {
             EmulatorPaused = false;
         }
+
+        RefreshEmulatorCommands();
     }
 
     public RelayCommand EmulationContinue { get; }
@@ -212,6 +236,8 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
         {
             EmulatorFrame = false;
         }
+
+        RefreshEmulatorCommands();
     }
 
     public RelayCommand EmulationTerminate { get; }
@@ -231,6 +257,8 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
         Emulator.Dispose();
 
         Emulator = null;
+
+        RefreshEmulatorCommands();
     }
 
     public RelayCommand ApplicationShutdown { get; }
