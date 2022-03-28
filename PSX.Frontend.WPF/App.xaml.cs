@@ -40,7 +40,7 @@ public partial class App
                         .AddSingleton<IOpenFileService, OpenFileService>()
                         .AddSingleton<IApplicationService, ApplicationService>()
                         .AddSingleton<IViewShell, ViewShell>()
-                        .AddSingleton<IViewLog, ViewLog>()
+                        .AddTransient<IViewLog, ViewLog>()
                         ;
                 })
                 .ConfigureLogging((_, builder) =>
