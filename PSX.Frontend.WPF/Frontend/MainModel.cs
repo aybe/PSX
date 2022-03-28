@@ -116,7 +116,7 @@ internal sealed class MainModel : ObservableRecipient
 
     private void OpenLogExecute()
     {
-        App.Current.ServiceProvider.GetRequiredService<ILogView>().Show();
+        App.Current.Services.GetRequiredService<ILogView>().Show();
     }
 
     public RelayCommand EmulationStart { get; }

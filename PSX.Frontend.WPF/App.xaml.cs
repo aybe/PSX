@@ -19,30 +19,11 @@ public partial class App
         InitializeComponent();
     }
 
-    [Obsolete]
-    public IServiceProvider Services { get; } = ConfigureServices();
-
     public new static App Current => (App)Application.Current;
 
     private IHost Host { get; set; } = null!;
 
-    public IServiceProvider ServiceProvider => Host.Services;
-
-    [Obsolete]
-    private static ServiceProvider ConfigureServices()
-    {
-        var services = new ServiceCollection();
-
-        services.AddSingleton<IFilePickerService, FilePickerServiceWindows>();
-
-        services.AddSingleton<IApplication, IApplicationWpf>();
-
-        services.AddTransient<MainModel>();
-
-        var provider = services.BuildServiceProvider();
-
-        return provider;
-    }
+    public IServiceProvider Services => Host.Services;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
@@ -63,7 +44,12 @@ public partial class App
                 {
                     collection
                         .Configure<AppSettings>(context.Configuration.GetSection(nameof(AppSettings)))
-                        .AddSingleton<MainWindow>()
+                        // older ones
+                        .AddSingleton<IFilePickerService, FilePickerServiceWindows>()
+                        .AddSingleton<IApplication, IApplicationWpf>()
+                        .AddTransient<MainModel>()
+                        // newer ones
+                        .AddSingleton<MainWindow>() // TODO do the same as for log view
                         .AddTransient<MainViewModel>() // TODO this should be the one in Core and updated with existing stuff
                         .AddSingleton<ILogView, LogView>()
                         .AddSingleton<ILogViewModel, LogViewModel>()
@@ -79,7 +65,7 @@ public partial class App
 
         await Host.StartAsync();
 
-        var window = Host.Services.GetRequiredService<MainWindow>();
+        var window = Host.Services.GetRequiredService<MainWindow>(); // TODO update this
 
         window.Show();
     }
