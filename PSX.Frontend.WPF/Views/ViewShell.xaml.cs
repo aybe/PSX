@@ -9,7 +9,6 @@ using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Frontend.Core.Emulation;
 using PSX.Frontend.Core.Modules;
 using PSX.Frontend.WPF.Interop;
-using PSX.Frontend.WPF.Sound;
 using PSX.Logging.Obsolete;
 using Serilog.Events;
 using Un4seen.Bass;
@@ -116,6 +115,20 @@ internal sealed partial class ViewShell :
 
             Title = $"Width = {message.Size.Width}, Height = {message.Size.Height}, 24-bit = {message.Is24Bit}";
         });
+    }
+
+    private sealed class BassException : Exception
+    {
+        public BassException(string? message = null)
+        {
+            Error = Bass.BASS_ErrorGetCode();
+
+            Message = message is null ? string.Empty : $"{message}: {Error}";
+        }
+
+        public BASSError Error { get; }
+
+        public override string Message { get; }
     }
 
     #region Window events
