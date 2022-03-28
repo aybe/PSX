@@ -2,7 +2,7 @@
 
 namespace PSX.Logging;
 
-public interface IObservableLogEntries // TODO rename
+public interface IObservableLog
 {
     ObservableCollection<LogEntry> Entries { get; }
 }

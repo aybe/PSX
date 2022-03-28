@@ -10,7 +10,7 @@ using PSX.Logging;
 
 namespace PSX.Frontend.Core.ViewModels;
 
-public sealed class MainViewModel : ObservableRecipient, IObservableLogEntries
+public sealed class MainViewModel : ObservableRecipient, IObservableLog
 {
     public MainViewModel(IOptions<AppSettings> options, ILogger<MainViewModel> logger, IServiceProvider serviceProvider)
     {
@@ -19,9 +19,9 @@ public sealed class MainViewModel : ObservableRecipient, IObservableLogEntries
 
         var service = serviceProvider.GetService<ILoggerProvider>();
 
-        if (service is IObservableLogEntries entries)
+        if (service is IObservableLog log)
         {
-            Entries = entries.Entries;
+            Entries = log.Entries;
         }
 
         LogSomething = new RelayCommand(() => { Logger.LogInformation("From MainViewModel: {Time}", DateTime.Now.ToString(CultureInfo.InvariantCulture)); });

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace PSX.Logging;
 
-public sealed class ObservableLoggerProvider : ILoggerProvider, IObservableLogEntries
+public sealed class ObservableLoggerProvider : ILoggerProvider, IObservableLog
 {
     public ObservableLoggerProvider()
     {
