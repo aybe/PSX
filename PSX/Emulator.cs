@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using PSX.Core;
 using PSX.Core.Graphics;
 using PSX.Core.Interfaces;
 using PSX.Core.Processor;
@@ -8,7 +9,7 @@ using PSX.Devices.Input;
 using PSX.Devices.Optical;
 using PSX.Devices.Storage;
 
-namespace PSX.Core;
+namespace PSX;
 
 public sealed class Emulator : IDisposable
 {
