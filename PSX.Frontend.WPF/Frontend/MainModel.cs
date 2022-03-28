@@ -9,6 +9,7 @@ using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Core;
 using PSX.Frontend.WPF.Emulation;
 using PSX.Frontend.WPF.Frontend.Shared;
+using PSX.Frontend.WPF.Frontend.Views;
 using Serilog;
 using Serilog.Events;
 
@@ -19,6 +20,7 @@ internal sealed class MainModel : ObservableRecipient
     public MainModel()
     {
         OpenContent         = new RelayCommand(OpenContentExecute,         () => true);
+        OpenLog             = new RelayCommand(OpenLogExecute,             ()=>true);
         EmulationStart      = new RelayCommand(EmulationStartExecute,      () => CanStart);
         EmulationPause      = new RelayCommand(EmulationPauseExecute,      () => CanPause);
         EmulationFrame      = new RelayCommand(EmulationFrameExecute,      () => CanFrame);
@@ -108,6 +110,13 @@ internal sealed class MainModel : ObservableRecipient
             return;
 
         EmulatorContent = path;
+    }
+
+    public RelayCommand OpenLog { get; }
+
+    private void OpenLogExecute()
+    {
+        App.Current.ServiceProvider.GetRequiredService<ILogView>().Show();
     }
 
     public RelayCommand EmulationStart { get; }

@@ -7,6 +7,7 @@ using PSX.Frontend.Core;
 using PSX.Frontend.Core.ViewModels;
 using PSX.Frontend.WPF.Frontend;
 using PSX.Frontend.WPF.Frontend.Shared;
+using PSX.Frontend.WPF.Frontend.Views;
 using PSX.Logging;
 
 namespace PSX.Frontend.WPF;
@@ -18,12 +19,16 @@ public partial class App
         InitializeComponent();
     }
 
+    [Obsolete]
     public IServiceProvider Services { get; } = ConfigureServices();
 
     public new static App Current => (App)Application.Current;
 
     private IHost Host { get; set; } = null!;
 
+    public IServiceProvider ServiceProvider => Host.Services;
+
+    [Obsolete]
     private static ServiceProvider ConfigureServices()
     {
         var services = new ServiceCollection();
@@ -59,8 +64,10 @@ public partial class App
                     collection
                         .Configure<AppSettings>(context.Configuration.GetSection(nameof(AppSettings)))
                         .AddSingleton<MainWindow>()
-                        // TODO this should the one in Core and updated with existing stuff
-                        .AddTransient<MainViewModel>();
+                        .AddTransient<MainViewModel>() // TODO this should be the one in Core and updated with existing stuff
+                        .AddSingleton<ILogView, LogView>()
+                        .AddSingleton<ILogViewModel, LogViewModel>()
+                        ;
                 })
                 .ConfigureLogging((context, builder) =>
                 {
