@@ -136,7 +136,7 @@ internal sealed partial class ViewShell :
     {
         Model.IsActive = true;
 
-        InitializeConsole();
+        // InitializeConsole();
         InitializeLogging();
         InitializeSound();
 
@@ -148,7 +148,7 @@ internal sealed partial class ViewShell :
         Model.IsActive = false;
 
         CleanupSound();
-        CleanupConsole();
+        // CleanupConsole();
     }
 
     #endregion
@@ -197,6 +197,7 @@ internal sealed partial class ViewShell :
         LoggingFactory.LevelSwitch.MinimumLevel = LogEventLevel.Verbose;
     }
 
+    [SuppressMessage("ReSharper", "UnusedMember.Local")]
     private void InitializeConsole()
     {
         // allocate a console and set its title
@@ -251,6 +252,7 @@ internal sealed partial class ViewShell :
         }
     }
 
+    [SuppressMessage("ReSharper", "UnusedMember.Local")]
     private void CleanupConsole()
     {
         if (!NativeMethods.UnhookWindowsHookEx(ConsoleKeyboardHookProcHandle))
