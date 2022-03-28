@@ -34,3 +34,6 @@ https://stackoverflow.com/questions/16743804/implementing-a-log-viewer-with-wpf
 	<PropertyGroup>
 		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 	</PropertyGroup>
+
+
+	RelayCommand ->    // TODO currently this queries all because of https://github.com/CommunityToolkit/MVVM-Samples/issues/41
