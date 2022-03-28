@@ -270,3 +270,5 @@ __pycache__/
 launchSettings.json
 *.cd
 *[Tt][Ee][Mm][Pp]*
+.vscode/launch.json
+.vscode/tasks.json
