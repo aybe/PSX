@@ -39,6 +39,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Frontend.WPF", "PSX.Fro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Logging", "PSX.Logging\PSX.Logging.csproj", "{DBC88997-2447-4BD0-95FD-D4B2EF64F553}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSX.Logging.Generators", "PSX.Logging.Generators\PSX.Logging.Generators.csproj", "{287AE236-0E02-4BFE-8BF4-94D2709365C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSX.Frontend.Core", "PSX.Frontend.Core\PSX.Frontend.Core.csproj", "{D75941F8-AB7C-4E8B-8978-B49430768CDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,6 +122,12 @@ Global
 		{DBC88997-2447-4BD0-95FD-D4B2EF64F553}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DBC88997-2447-4BD0-95FD-D4B2EF64F553}.UI|Any CPU.ActiveCfg = Debug|Any CPU
 		{DBC88997-2447-4BD0-95FD-D4B2EF64F553}.UI|Any CPU.Build.0 = Debug|Any CPU
+		{D75941F8-AB7C-4E8B-8978-B49430768CDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D75941F8-AB7C-4E8B-8978-B49430768CDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D75941F8-AB7C-4E8B-8978-B49430768CDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D75941F8-AB7C-4E8B-8978-B49430768CDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D75941F8-AB7C-4E8B-8978-B49430768CDF}.UI|Any CPU.ActiveCfg = Debug|Any CPU
+		{D75941F8-AB7C-4E8B-8978-B49430768CDF}.UI|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
