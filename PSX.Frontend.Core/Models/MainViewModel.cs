@@ -238,7 +238,8 @@ public sealed class MainViewModel : ObservableRecipient, IObservableLog
 
     private void ApplicationShutdownExecute()
     {
-        var service = AppStartup.Current.Services.GetService<IApplication>() ?? throw new InvalidOperationException();
+        AppStartup tempQualifier = AppStartup.Current;
+        var        service       = tempQualifier.Host.Services.GetService<IApplication>() ?? throw new InvalidOperationException();
         service.Shutdown();
     }
 

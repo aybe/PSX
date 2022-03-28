@@ -27,9 +27,6 @@ public sealed class AppStartup
 
     public IHost Host { get; }
 
-    [Obsolete("inline it!?")]
-    public IServiceProvider Services => Host.Services;
-
     private static void ConfigureAppConfiguration(HostBuilderContext context, IConfigurationBuilder builder)
     {
         builder
