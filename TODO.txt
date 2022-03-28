@@ -30,3 +30,7 @@ https://stackoverflow.com/questions/2337822/wpf-listbox-scroll-to-end-automatica
 https://stackoverflow.com/questions/2006729/how-can-i-have-a-listbox-auto-scroll-when-a-new-item-is-added/11530459
 https://stackoverflow.com/questions/16743804/implementing-a-log-viewer-with-wpf
 
+
+	<PropertyGroup>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+	</PropertyGroup>
