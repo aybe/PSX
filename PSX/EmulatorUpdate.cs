@@ -1,8 +1,8 @@
 ﻿using PSX.Core.Interfaces;
 
-namespace PSX.Frontend.Core.Emulation;
+namespace PSX;
 
-public sealed class HostWindow : IHostWindow
+public class EmulatorUpdate : IHostWindow
 {
     private ushort DisplayVRamXStart { get; set; }
 
@@ -16,18 +16,18 @@ public sealed class HostWindow : IHostWindow
 
     private ushort DisplayY1 { get; set; }
 
-    public UpdateAudioDataMessageHandler? UpdateAudioDataHandler { get; init; }
+    public EmulatorUpdateAudioDataMessageHandler? UpdateAudioDataHandler { get; set; }
 
-    public UpdateVideoDataMessageHandler? UpdateVideoDataHandler { get; init; }
+    public EmulatorUpdateVideoDataMessageHandler? UpdateVideoDataHandler { get; set; }
 
-    public UpdateVideoSizeMessageHandler? UpdateVideoSizeHandler { get; init; }
+    public EmulatorUpdateVideoSizeMessageHandler? UpdateVideoSizeHandler { get; set; }
 
     public void Play(byte[] samples)
     {
         if (UpdateAudioDataHandler is null)
             return;
 
-        UpdateAudioDataHandler(new UpdateAudioDataMessage(samples));
+        UpdateAudioDataHandler(new EmulatorUpdateAudioDataMessage(samples));
     }
 
     public void Render(int[] buffer24, ushort[] buffer16)
@@ -38,7 +38,7 @@ public sealed class HostWindow : IHostWindow
         var size = new IntSize(DisplayVRamXStart, DisplayVRamYStart);
         var rect = new IntRect(DisplayX1, DisplayY1, DisplayX2, DisplayY2);
 
-        UpdateVideoDataHandler(new UpdateVideoDataMessage(size, rect, buffer24, buffer16));
+        UpdateVideoDataHandler(new EmulatorUpdateVideoDataMessage(size, rect, buffer24, buffer16));
     }
 
     public void SetDisplayMode(int horizontalRes, int verticalRes, bool is24BitDepth)
@@ -46,7 +46,7 @@ public sealed class HostWindow : IHostWindow
         if (UpdateVideoSizeHandler is null)
             return;
 
-        UpdateVideoSizeHandler(new UpdateVideoSizeMessage(new IntSize(horizontalRes, verticalRes), is24BitDepth));
+        UpdateVideoSizeHandler(new EmulatorUpdateVideoSizeMessage(new IntSize(horizontalRes, verticalRes), is24BitDepth));
     }
 
     public void SetHorizontalRange(ushort displayX1, ushort displayX2)

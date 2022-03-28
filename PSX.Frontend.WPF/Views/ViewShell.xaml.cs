@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using PSX.Frontend.Core.Emulation;
 using PSX.Frontend.Core.Modules;
 using PSX.Frontend.WPF.Interop;
 using PSX.Logging.Obsolete;
@@ -18,9 +17,9 @@ namespace PSX.Frontend.WPF.Views;
 
 internal sealed partial class ViewShell :
     IViewShell,
-    IRecipient<UpdateAudioDataMessage>,
-    IRecipient<UpdateVideoDataMessage>,
-    IRecipient<UpdateVideoSizeMessage>
+    IRecipient<EmulatorUpdateAudioDataMessage>,
+    IRecipient<EmulatorUpdateVideoDataMessage>,
+    IRecipient<EmulatorUpdateVideoSizeMessage>
 {
     public ViewShell(ViewModelShell model)
     {
@@ -44,7 +43,7 @@ internal sealed partial class ViewShell :
 
     private int EmulatorSoundStream { get; set; }
 
-    void IRecipient<UpdateAudioDataMessage>.Receive(UpdateAudioDataMessage message)
+    void IRecipient<EmulatorUpdateAudioDataMessage>.Receive(EmulatorUpdateAudioDataMessage message)
     {
         if (EmulatorSoundStream is 0)
             return;
@@ -62,7 +61,7 @@ internal sealed partial class ViewShell :
         }
     }
 
-    unsafe void IRecipient<UpdateVideoDataMessage>.Receive(UpdateVideoDataMessage message)
+    unsafe void IRecipient<EmulatorUpdateVideoDataMessage>.Receive(EmulatorUpdateVideoDataMessage message)
     {
         Dispatcher.BeginInvoke(() =>
         {
@@ -103,7 +102,7 @@ internal sealed partial class ViewShell :
         });
     }
 
-    void IRecipient<UpdateVideoSizeMessage>.Receive(UpdateVideoSizeMessage message)
+    void IRecipient<EmulatorUpdateVideoSizeMessage>.Receive(EmulatorUpdateVideoSizeMessage message)
     {
         Dispatcher.BeginInvoke(() =>
         {

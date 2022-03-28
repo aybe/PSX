@@ -1,4 +1,6 @@
-﻿namespace PSX.Frontend.Core.Emulation;
+﻿using System;
+
+namespace PSX;
 
 public readonly struct IntRect : IEquatable<IntRect>
 {

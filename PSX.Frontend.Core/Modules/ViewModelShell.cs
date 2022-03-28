@@ -10,7 +10,6 @@ using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Core;
-using PSX.Frontend.Core.Emulation;
 using PSX.Frontend.Core.Services;
 using PSX.Logging;
 using Serilog;
@@ -20,10 +19,11 @@ namespace PSX.Frontend.Core.Modules;
 
 public sealed class ViewModelShell : ObservableRecipient, IObservableLog
 {
-    public ViewModelShell(IOptions<AppSettings> options, ILogger<ViewModelShell> logger, IServiceProvider serviceProvider)
+    public ViewModelShell(IOptions<AppSettings> options, ILogger<ViewModelShell> logger, IServiceProvider serviceProvider, EmulatorUpdate update)
     {
-        Options = options;
-        Logger  = logger;
+        Options        = options;
+        Logger         = logger;
+        EmulatorUpdate = update ?? throw new ArgumentNullException(nameof(update));
 
         var service = serviceProvider.GetService<ILoggerProvider>();
 
@@ -52,6 +52,8 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
     public IOptions<AppSettings> Options { get; }
 
     public ILogger<ViewModelShell> Logger { get; }
+
+    public EmulatorUpdate EmulatorUpdate { get; }
 
     public string SomethingFromAppSettings => $"{Options.Value.Executable} from VM";
 
@@ -175,14 +177,11 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
         if (EmulatorContent is null)
             throw new InvalidOperationException();
 
-        var window = new HostWindow
-        {
-            UpdateAudioDataHandler = message => WeakReferenceMessenger.Default.Send(message),
-            UpdateVideoDataHandler = message => WeakReferenceMessenger.Default.Send(message),
-            UpdateVideoSizeHandler = message => WeakReferenceMessenger.Default.Send(message)
-        };
+        EmulatorUpdate.UpdateAudioDataHandler = message => WeakReferenceMessenger.Default.Send(message);
+        EmulatorUpdate.UpdateVideoDataHandler = message => WeakReferenceMessenger.Default.Send(message);
+        EmulatorUpdate.UpdateVideoSizeHandler = message => WeakReferenceMessenger.Default.Send(message);
 
-        Emulator = new Emulator(window, EmulatorContent);
+        Emulator = new Emulator(EmulatorUpdate, EmulatorContent);
 
         EmulatorPaused = false;
 

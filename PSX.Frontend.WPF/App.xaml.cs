@@ -3,6 +3,7 @@ using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PSX.Core.Interfaces;
 using PSX.Frontend.Core;
 using PSX.Frontend.Core.Modules;
 using PSX.Frontend.Core.Services;
@@ -39,6 +40,7 @@ public partial class App
                     services
                         .AddSingleton<IOpenFileService, OpenFileService>()
                         .AddSingleton<IApplicationService, ApplicationService>()
+                        .AddSingleton<EmulatorUpdate>()
                         .AddSingleton<IViewShell, ViewShell>()
                         .AddTransient<IViewLog, ViewLog>()
                         ;
