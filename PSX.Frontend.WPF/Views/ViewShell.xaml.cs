@@ -8,7 +8,6 @@ using System.Windows.Media.Imaging;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Frontend.Core.Emulation;
 using PSX.Frontend.Core.Modules;
-using PSX.Frontend.WPF.Frontend;
 using PSX.Frontend.WPF.Interop;
 using PSX.Frontend.WPF.Sound;
 using PSX.Logging.Obsolete;
@@ -24,7 +23,7 @@ internal sealed partial class ViewShell :
     IRecipient<UpdateVideoDataMessage>,
     IRecipient<UpdateVideoSizeMessage>
 {
-    public ViewShell(MainModel model)
+    public ViewShell(ViewModelShell model)
     {
         InitializeComponent();
 
@@ -38,7 +37,7 @@ internal sealed partial class ViewShell :
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
 
-    private MainModel Model { get; }
+    private ViewModelShell Model { get; }
 
     private WriteableBitmap? EmulatorBitmap { get; set; }
 

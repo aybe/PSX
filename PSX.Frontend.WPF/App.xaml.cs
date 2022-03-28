@@ -6,8 +6,6 @@ using Microsoft.Extensions.Hosting;
 using PSX.Frontend.Core;
 using PSX.Frontend.Core.Modules;
 using PSX.Frontend.Core.Services;
-using PSX.Frontend.WPF.Frontend;
-using PSX.Frontend.WPF.Frontend.Shared;
 using PSX.Frontend.WPF.Services;
 using PSX.Frontend.WPF.Views;
 using PSX.Logging;
@@ -39,7 +37,6 @@ public partial class App
                 .ConfigureServices((_, services) =>
                 {
                     services
-                        .AddTransient<MainModel>() // TODO move content of it to core module
                         .AddSingleton<IOpenFileService, OpenFileService>()
                         .AddSingleton<IApplicationService, ApplicationService>()
                         .AddSingleton<IViewShell, ViewShell>()
