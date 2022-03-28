@@ -7,7 +7,8 @@ using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Frontend.Core.Emulation;
-using PSX.Frontend.Core.Interfaces;
+using PSX.Frontend.Core.Modules;
+using PSX.Frontend.WPF.Frontend;
 using PSX.Frontend.WPF.Interop;
 using PSX.Frontend.WPF.Sound;
 using PSX.Logging.Obsolete;
@@ -15,15 +16,15 @@ using Serilog.Events;
 using Un4seen.Bass;
 using Un4seen.Bass.AddOn.Mix;
 
-namespace PSX.Frontend.WPF.Frontend;
+namespace PSX.Frontend.WPF.Views;
 
-internal sealed partial class MainWindow :
-    IMainView,
+internal sealed partial class ViewShell :
+    IViewShell,
     IRecipient<UpdateAudioDataMessage>,
     IRecipient<UpdateVideoDataMessage>,
     IRecipient<UpdateVideoSizeMessage>
 {
-    public MainWindow(MainModel model)
+    public ViewShell(MainModel model)
     {
         InitializeComponent();
 

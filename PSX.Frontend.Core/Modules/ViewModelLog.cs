@@ -2,14 +2,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
-using PSX.Frontend.Core.Interfaces;
 using PSX.Logging;
 
-namespace PSX.Frontend.Core.Models;
+namespace PSX.Frontend.Core.Modules;
 
-public sealed class LogViewModel : ObservableRecipient, IObservableLog//, ILogViewModel
+public sealed class ViewModelLog : ObservableRecipient, IObservableLog
 {
-    public LogViewModel(IServiceProvider provider)
+    public ViewModelLog(IServiceProvider provider)
     {
         var service = provider.GetRequiredService<ILoggerProvider>();
 

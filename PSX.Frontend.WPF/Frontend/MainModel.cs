@@ -9,10 +9,9 @@ using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Core;
 using PSX.Frontend.Core;
 using PSX.Frontend.Core.Emulation;
-using PSX.Frontend.Core.Interfaces;
+using PSX.Frontend.Core.Modules;
 using PSX.Frontend.Core.Services;
 using PSX.Frontend.WPF.Frontend.Shared;
-using PSX.Frontend.WPF.Frontend.Views;
 using Serilog;
 using Serilog.Events;
 
@@ -119,7 +118,7 @@ internal sealed class MainModel : ObservableRecipient
 
     private void OpenLogExecute()
     {
-        AppStartup.Current.Host.Services.GetRequiredService<ILogView>().Show();
+        AppStartup.Current.Host.Services.GetRequiredService<IViewLog>().Show();
     }
 
     public RelayCommand EmulationStart { get; }

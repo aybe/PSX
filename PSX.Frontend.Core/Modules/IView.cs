@@ -1,4 +1,4 @@
-﻿namespace PSX.Frontend.Core.Interfaces;
+﻿namespace PSX.Frontend.Core.Modules;
 
 public interface IView
 {

@@ -1,13 +1,12 @@
-﻿<Window x:Class="PSX.Frontend.WPF.Frontend.Views.LogView"
+﻿<Window x:Class="PSX.Frontend.WPF.Views.ViewLog"
         x:ClassModifier="internal"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views1="clr-namespace:PSX.Frontend.WPF.Frontend.Views;assembly=PSX.Frontend.Core"
-        xmlns:models="clr-namespace:PSX.Frontend.Core.Models;assembly=PSX.Frontend.Core"
+        xmlns:modules="clr-namespace:PSX.Frontend.Core.Modules;assembly=PSX.Frontend.Core"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance models:LogViewModel}"
+        d:DataContext="{d:DesignInstance modules:ViewModelLog}"
         Title="LogView" Height="450" Width="800">
     <Grid>
         <ListBox ItemsSource="{Binding Entries}" d:ItemsSource="{d:SampleData}" />

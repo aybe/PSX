@@ -11,17 +11,16 @@ using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Core;
 using PSX.Frontend.Core.Emulation;
-using PSX.Frontend.Core.Interfaces;
 using PSX.Frontend.Core.Services;
 using PSX.Logging;
 using Serilog;
 using Serilog.Events;
 
-namespace PSX.Frontend.Core.Models;
+namespace PSX.Frontend.Core.Modules;
 
-public sealed class MainViewModel : ObservableRecipient, IObservableLog
+public sealed class ViewModelShell : ObservableRecipient, IObservableLog
 {
-    public MainViewModel(IOptions<AppSettings> options, ILogger<MainViewModel> logger, IServiceProvider serviceProvider)
+    public ViewModelShell(IOptions<AppSettings> options, ILogger<ViewModelShell> logger, IServiceProvider serviceProvider)
     {
         Options = options;
         Logger  = logger;
@@ -52,7 +51,7 @@ public sealed class MainViewModel : ObservableRecipient, IObservableLog
 
     public IOptions<AppSettings> Options { get; }
 
-    public ILogger<MainViewModel> Logger { get; }
+    public ILogger<ViewModelShell> Logger { get; }
 
     public string SomethingFromAppSettings => $"{Options.Value.Executable} from VM";
 
@@ -81,7 +80,7 @@ public sealed class MainViewModel : ObservableRecipient, IObservableLog
     [SuppressMessage("ReSharper", "InvertIf")]
     private void UpdateLoop(CancellationToken token)
     {
-        var logger = Log.ForContext<MainViewModel>();
+        var logger = Log.ForContext<ViewModelShell>();
 
         var span = TimeSpan.FromSeconds(1.0d / 60.0d);
         var zero = TimeSpan.Zero;
@@ -145,7 +144,7 @@ public sealed class MainViewModel : ObservableRecipient, IObservableLog
 
     private void OpenLogExecute()
     {
-        AppStartup.Current.Host.Services.GetRequiredService<ILogView>().Show();
+        AppStartup.Current.Host.Services.GetRequiredService<IViewLog>().Show();
     }
 
     public RelayCommand EmulationStart { get; }
@@ -238,9 +237,7 @@ public sealed class MainViewModel : ObservableRecipient, IObservableLog
 
     private void ApplicationShutdownExecute()
     {
-        AppStartup tempQualifier = AppStartup.Current;
-        var        service       = tempQualifier.Host.Services.GetService<IApplicationService>() ?? throw new InvalidOperationException();
-        service.Shutdown();
+        AppStartup.Current.Host.Services.GetRequiredService<IApplicationService>().Shutdown();
     }
 
     #endregion
