@@ -25,3 +25,5 @@ resharper_place_accessorholder_attribute_on_same_line = false
 resharper_place_field_attribute_on_same_line = false
 resharper_place_simple_case_statement_on_same_line = if_owner_is_single_line
 resharper_place_simple_embedded_statement_on_same_line = false
+resharper_blank_lines_after_control_transfer_statements = 1
+resharper_place_simple_anonymousmethod_on_single_line = false
