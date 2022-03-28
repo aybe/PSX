@@ -9,6 +9,7 @@ using PSX.Frontend.Core.Services;
 using PSX.Frontend.WPF.Frontend;
 using PSX.Frontend.WPF.Frontend.Shared;
 using PSX.Frontend.WPF.Frontend.Views;
+using PSX.Frontend.WPF.Services;
 using PSX.Logging;
 
 namespace PSX.Frontend.WPF;
@@ -39,8 +40,8 @@ public partial class App
                 {
                     services
                         .AddTransient<MainModel>() // TODO move content of it to core module
-                        .AddSingleton<IFilePickerService, FilePickerServiceWindows>()
-                        .AddSingleton<IApplication, IApplicationWpf>()
+                        .AddSingleton<IOpenFileService, OpenFileService>()
+                        .AddSingleton<IApplicationService, ApplicationService>()
                         .AddSingleton<IMainView, MainWindow>()
                         .AddSingleton<ILogView, LogView>()
                         ;

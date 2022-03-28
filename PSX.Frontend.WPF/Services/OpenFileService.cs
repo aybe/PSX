@@ -1,9 +1,9 @@
 ﻿using Microsoft.Win32;
 using PSX.Frontend.Core.Services;
 
-namespace PSX.Frontend.WPF.Frontend.Shared;
+namespace PSX.Frontend.WPF.Services;
 
-internal class FilePickerServiceWindows : IFilePickerService
+internal sealed class OpenFileService : IOpenFileService
 {
     public string? OpenFile(string? initialDirectory = null, string? filter = null)
     {

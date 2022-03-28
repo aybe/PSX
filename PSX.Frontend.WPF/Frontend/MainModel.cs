@@ -103,7 +103,7 @@ internal sealed class MainModel : ObservableRecipient
 
     private void OpenContentExecute()
     {
-        var service = AppStartup.Current.Host.Services.GetRequiredService<IFilePickerService>() ?? throw new InvalidOperationException();
+        var service = AppStartup.Current.Host.Services.GetRequiredService<IOpenFileService>() ?? throw new InvalidOperationException();
 
         const string filter = "Everything|*.exe;*.psx;*.bin;*.cue|Application|*.exe;*.psx|Image|*.bin;*.cue";
 
@@ -212,7 +212,7 @@ internal sealed class MainModel : ObservableRecipient
 
     private void ApplicationShutdownExecute()
     {
-        var service = AppStartup.Current.Host.Services.GetService<IApplication>() ?? throw new InvalidOperationException();
+        var service = AppStartup.Current.Host.Services.GetService<IApplicationService>() ?? throw new InvalidOperationException();
         service.Shutdown();
     }
 
