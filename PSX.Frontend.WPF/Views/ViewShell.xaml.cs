@@ -7,6 +7,7 @@ using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Frontend.Core.Modules;
+using PSX.Frontend.Core.Navigation;
 using PSX.Frontend.WPF.Interop;
 using PSX.Logging.Obsolete;
 using Serilog.Events;
@@ -17,6 +18,7 @@ namespace PSX.Frontend.WPF.Views;
 
 internal sealed partial class ViewShell :
     IViewShell,
+    INavigationTarget,
     IRecipient<EmulatorUpdateAudioDataMessage>,
     IRecipient<EmulatorUpdateVideoDataMessage>,
     IRecipient<EmulatorUpdateVideoSizeMessage>

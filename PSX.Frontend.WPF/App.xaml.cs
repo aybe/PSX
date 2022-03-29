@@ -3,9 +3,9 @@ using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PSX.Core.Interfaces;
 using PSX.Frontend.Core;
 using PSX.Frontend.Core.Modules;
+using PSX.Frontend.Core.Navigation;
 using PSX.Frontend.Core.Services;
 using PSX.Frontend.WPF.Services;
 using PSX.Frontend.WPF.Views;
@@ -53,9 +53,9 @@ public partial class App
 
         await AppStartup.Host.StartAsync();
 
-        var shell = AppStartup.Host.Services.GetRequiredService<IViewShell>();
+        var navigationService = AppStartup.Host.Services.GetRequiredService<INavigationService>();
 
-        shell.Show();
+        navigationService.Navigate<IViewShell>();
     }
 
     protected override void OnExit(ExitEventArgs e)

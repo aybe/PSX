@@ -10,6 +10,7 @@ using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Core;
+using PSX.Frontend.Core.Navigation;
 using PSX.Frontend.Core.Services;
 using PSX.Logging;
 using Serilog;
@@ -19,11 +20,12 @@ namespace PSX.Frontend.Core.Modules;
 
 public sealed class ViewModelShell : ObservableRecipient, IObservableLog
 {
-    public ViewModelShell(IOptions<AppSettings> options, ILogger<ViewModelShell> logger, IServiceProvider serviceProvider, EmulatorUpdate update)
+    public ViewModelShell(IOptions<AppSettings> options, ILogger<ViewModelShell> logger, IServiceProvider serviceProvider, EmulatorUpdate update, INavigationService navigationService)
     {
-        Options        = options;
-        Logger         = logger;
-        EmulatorUpdate = update ?? throw new ArgumentNullException(nameof(update));
+        Options           = options;
+        Logger            = logger;
+        EmulatorUpdate    = update ?? throw new ArgumentNullException(nameof(update));
+        NavigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
 
         var service = serviceProvider.GetService<ILoggerProvider>();
 
@@ -54,6 +56,8 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
     public ILogger<ViewModelShell> Logger { get; }
 
     public EmulatorUpdate EmulatorUpdate { get; }
+
+    public INavigationService NavigationService { get; }
 
     public string SomethingFromAppSettings => $"{Options.Value.Executable} from VM";
 
@@ -164,7 +168,7 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
 
     private void OpenLogExecute()
     {
-        AppStartup.Current.Host.Services.GetRequiredService<IViewLog>().Show();
+        NavigationService.Navigate<IViewLog>();
     }
 
     public RelayCommand EmulationStart { get; }
