@@ -9,7 +9,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using PSX.Core;
+using Microsoft.Toolkit.Mvvm.Messaging.Messages;
+using PSX.Frontend.Core.Messages;
 using PSX.Frontend.Core.Navigation;
 using PSX.Frontend.Core.Services;
 using PSX.Logging;
@@ -47,6 +48,14 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
         EmulationContinue   = new RelayCommand(EmulationContinueExecute,   () => CanContinue);
         EmulationTerminate  = new RelayCommand(EmulationTerminateExecute,  () => CanTerminate);
         ApplicationShutdown = new RelayCommand(ApplicationShutdownExecute, () => true);
+
+        WeakReferenceMessenger.Default.Register<ViewVisibilityMessage, string>(this, Tokens.LogShell, (recipient, message) =>
+        {
+            // command behavior will change depending log is visible or not, see OpenLogExecute for the full story
+            var instance = recipient as ViewModelShell ?? throw new ArgumentOutOfRangeException(nameof(recipient));
+            instance.OpenLogHasInstance = message.Visibility is ViewVisibility.Visible;
+            instance.OpenLog.NotifyCanExecuteChanged();
+        });
     }
 
     public ICommand LogSomething { get; }
@@ -166,9 +175,20 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
 
     public RelayCommand OpenLog { get; }
 
+    private bool OpenLogHasInstance { get; set; }
+
     private void OpenLogExecute()
     {
-        NavigationService.Navigate<IViewLog>();
+        // this whole mess is because we want regular behavior, i.e. if log is open then activate its window
+        
+        if (OpenLogHasInstance)
+        {
+            WeakReferenceMessenger.Default.Send<ViewActivationMessage>();
+        }
+        else
+        {
+            NavigationService.Navigate<IViewLog>();
+        }
     }
 
     public RelayCommand EmulationStart { get; }
