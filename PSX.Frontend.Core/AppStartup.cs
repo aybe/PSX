@@ -12,7 +12,7 @@ public sealed class AppStartup
 
     public AppStartup(Action<IHostBuilder>? action = null)
     {
-        _current = _current is null ? this : throw new InvalidOperationException("Only a single instance can be created.");
+        _current = _current is null ? this : throw new InvalidOperationException("Only a single instance can be registered.");
 
         var builder =
             new HostBuilder()
