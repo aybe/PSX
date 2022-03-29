@@ -93,7 +93,14 @@ internal sealed class NavigationService : INavigationService
             target.DataContext = viewModel;
         }
 
-        target.Show();
+        if (target.IsVisible)
+        {
+            target.Activate();
+        }
+        else
+        {
+            target.Show();
+        }
 
         OnNavigated(new NavigationEventArgs(target));
     }
