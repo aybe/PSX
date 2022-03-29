@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PSX.Frontend.Core.Modules;
+using PSX.Frontend.Core.Models;
 using PSX.Frontend.Core.Navigation;
 
 namespace PSX.Frontend.Core;
@@ -40,8 +40,8 @@ public sealed class AppStartup
         services
             .Configure<AppSettings>(context.Configuration.GetSection(nameof(AppSettings)))
             .AddScoped<INavigationService, NavigationService>()
-            .AddSingleton<ViewModelShell>()
-            .AddSingleton<ViewModelLog>()
+            .AddSingleton<ShellViewModel>()
+            .AddSingleton<LogViewModel>()
             ;
     }
 }

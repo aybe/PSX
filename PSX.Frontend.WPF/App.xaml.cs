@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PSX.Frontend.Core;
-using PSX.Frontend.Core.Modules;
+using PSX.Frontend.Core.Models;
 using PSX.Frontend.Core.Navigation;
 using PSX.Frontend.Core.Services;
 using PSX.Frontend.WPF.Services;
@@ -41,8 +41,8 @@ public partial class App
                         .AddSingleton<IOpenFileService, OpenFileService>()
                         .AddSingleton<IApplicationService, ApplicationService>()
                         .AddSingleton<EmulatorUpdate>()
-                        .AddSingleton<IViewShell, ViewShell>()
-                        .AddTransient<IViewLog, ViewLog>()
+                        .AddSingleton<IShellView, ShellView>()
+                        .AddTransient<ILogView, LogView>()
                         ;
                 })
                 .ConfigureLogging((_, builder) =>
@@ -55,7 +55,7 @@ public partial class App
 
         var navigationService = AppStartup.Host.Services.GetRequiredService<INavigationService>();
 
-        navigationService.Navigate<IViewShell>();
+        navigationService.Navigate<IShellView>();
     }
 
     protected override void OnExit(ExitEventArgs e)

@@ -6,11 +6,11 @@ using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Frontend.Core.Messages;
 using PSX.Logging;
 
-namespace PSX.Frontend.Core.Modules;
+namespace PSX.Frontend.Core.Models;
 
-public sealed class ViewModelLog : ObservableRecipient, IObservableLog
+public sealed class LogViewModel : ObservableRecipient, IObservableLog
 {
-    public ViewModelLog(IServiceProvider provider)
+    public LogViewModel(IServiceProvider provider)
     {
         var service = provider.GetRequiredService<ILoggerProvider>();
 

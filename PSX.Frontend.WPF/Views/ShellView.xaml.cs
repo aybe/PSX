@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using PSX.Frontend.Core.Modules;
+using PSX.Frontend.Core.Models;
 using PSX.Frontend.WPF.Interop;
 using PSX.Logging.Obsolete;
 using Serilog.Events;
@@ -15,13 +15,13 @@ using Un4seen.Bass.AddOn.Mix;
 
 namespace PSX.Frontend.WPF.Views;
 
-internal sealed partial class ViewShell :
-    IViewShell,
+internal sealed partial class ShellView :
+    IShellView,
     IRecipient<EmulatorUpdateAudioDataMessage>,
     IRecipient<EmulatorUpdateVideoDataMessage>,
     IRecipient<EmulatorUpdateVideoSizeMessage>
 {
-    public ViewShell(ViewModelShell model)
+    public ShellView(ShellViewModel model)
     {
         InitializeComponent();
 
@@ -35,7 +35,7 @@ internal sealed partial class ViewShell :
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
 
-    private ViewModelShell Model { get; }
+    private ShellViewModel Model { get; }
 
     private WriteableBitmap? EmulatorBitmap { get; set; }
 

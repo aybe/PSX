@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using Microsoft.Toolkit.Mvvm.Messaging.Messages;
 using PSX.Frontend.Core.Messages;
 using PSX.Frontend.Core.Navigation;
 using PSX.Frontend.Core.Services;
@@ -17,11 +16,11 @@ using PSX.Logging;
 using Serilog;
 using Serilog.Events;
 
-namespace PSX.Frontend.Core.Modules;
+namespace PSX.Frontend.Core.Models;
 
-public sealed class ViewModelShell : ObservableRecipient, IObservableLog
+public sealed class ShellViewModel : ObservableRecipient, IObservableLog
 {
-    public ViewModelShell(IOptions<AppSettings> options, ILogger<ViewModelShell> logger, IServiceProvider serviceProvider, EmulatorUpdate update, INavigationService navigationService)
+    public ShellViewModel(IOptions<AppSettings> options, ILogger<ShellViewModel> logger, IServiceProvider serviceProvider, EmulatorUpdate update, INavigationService navigationService)
     {
         Options           = options;
         Logger            = logger;
@@ -52,7 +51,7 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
         WeakReferenceMessenger.Default.Register<ViewVisibilityMessage, string>(this, Tokens.LogShell, (recipient, message) =>
         {
             // command behavior will change depending log is visible or not, see OpenLogExecute for the full story
-            var instance = recipient as ViewModelShell ?? throw new ArgumentOutOfRangeException(nameof(recipient));
+            var instance = recipient as ShellViewModel ?? throw new ArgumentOutOfRangeException(nameof(recipient));
             instance.OpenLogHasInstance = message.Visibility is ViewVisibility.Visible;
             instance.OpenLog.NotifyCanExecuteChanged();
         });
@@ -62,7 +61,7 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
 
     public IOptions<AppSettings> Options { get; }
 
-    public ILogger<ViewModelShell> Logger { get; }
+    public ILogger<ShellViewModel> Logger { get; }
 
     public EmulatorUpdate EmulatorUpdate { get; }
 
@@ -111,7 +110,7 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
     [SuppressMessage("ReSharper", "InvertIf")]
     private void UpdateLoop(CancellationToken token)
     {
-        var logger = Log.ForContext<ViewModelShell>();
+        var logger = Log.ForContext<ShellViewModel>();
 
         var span = TimeSpan.FromSeconds(1.0d / 60.0d);
         var zero = TimeSpan.Zero;
@@ -187,7 +186,7 @@ public sealed class ViewModelShell : ObservableRecipient, IObservableLog
         }
         else
         {
-            NavigationService.Navigate<IViewLog>();
+            NavigationService.Navigate<ILogView>();
         }
     }
 

@@ -1,13 +1,13 @@
 ﻿using System;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Frontend.Core.Messages;
-using PSX.Frontend.Core.Modules;
+using PSX.Frontend.Core.Models;
 
 namespace PSX.Frontend.WPF.Views;
 
-internal sealed partial class ViewLog : IViewLog
+internal sealed partial class LogView : ILogView
 {
-    public ViewLog(ViewModelLog model)
+    public LogView(LogViewModel model)
     {
         InitializeComponent();
 
@@ -25,8 +25,8 @@ internal sealed partial class ViewLog : IViewLog
 
         WeakReferenceMessenger.Default.Register<ViewActivationMessage>(this, (recipient, _) =>
         {
-            // activate ourselves when asked to do so, see ViewModelShell.OpenLogExecute for the full story
-            var instance = recipient as ViewLog ?? throw new ArgumentOutOfRangeException(nameof(recipient));
+            // activate ourselves when asked to do so, see ShellViewModel.OpenLogExecute for the full story
+            var instance = recipient as LogView ?? throw new ArgumentOutOfRangeException(nameof(recipient));
             instance.Activate();
         });
     }
