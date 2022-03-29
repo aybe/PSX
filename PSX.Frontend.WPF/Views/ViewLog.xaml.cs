@@ -1,10 +1,9 @@
 ﻿using System;
 using PSX.Frontend.Core.Modules;
-using PSX.Frontend.Core.Navigation;
 
 namespace PSX.Frontend.WPF.Views;
 
-internal sealed partial class ViewLog : IViewLog, INavigationTarget
+internal sealed partial class ViewLog : IViewLog
 {
     public ViewLog(ViewModelLog model)
     {

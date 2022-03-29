@@ -1,5 +1,7 @@
-﻿namespace PSX.Frontend.Core.Modules;
+﻿using PSX.Frontend.Core.Navigation;
 
-public interface IViewLog : IView
+namespace PSX.Frontend.Core.Modules;
+
+public interface IViewLog : INavigationTarget
 {
 }
