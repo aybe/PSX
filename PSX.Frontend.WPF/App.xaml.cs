@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,11 +63,16 @@ public partial class App
     {
         base.OnExit(e);
 
-        using (AppStartup.Host)
+        try
         {
-            AppStartup.Host.StopAsync(TimeSpan.FromSeconds(5.0d));
+            using (AppStartup.Host)
+            {
+                AppStartup.Host.StopAsync(TimeSpan.FromSeconds(5.0d));
+            }
         }
-
-        // BUG it will crash here because of console -> System.IO.IOException: 'The parameter is incorrect.' -> https://github.com/dotnet/runtime/issues/62192
+        catch (IOException)
+        {
+            // BUG it will crash here because of console -> System.IO.IOException: 'The parameter is incorrect.' -> https://github.com/dotnet/runtime/issues/62192
+        }
     }
 }

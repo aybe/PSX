@@ -136,7 +136,7 @@ internal sealed partial class ShellView :
     {
         Model.IsActive = true;
 
-        // InitializeConsole();
+        InitializeConsole();
         InitializeLogging();
         InitializeSound();
 
@@ -148,7 +148,7 @@ internal sealed partial class ShellView :
         Model.IsActive = false;
 
         CleanupSound();
-        // CleanupConsole();
+        CleanupConsole();
     }
 
     #endregion

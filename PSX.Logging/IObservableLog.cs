@@ -1,8 +1,6 @@
-﻿using System.Collections.ObjectModel;
-
-namespace PSX.Logging;
+﻿namespace PSX.Logging;
 
 public interface IObservableLog
 {
-    ObservableCollection<LogEntry>? Entries { get; }
+    ObservableQueue<string> Entries { get; }
 }

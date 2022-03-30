@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Messaging;
@@ -19,7 +18,7 @@ public sealed class LogViewModel : ObservableRecipient, IObservableLog
         Entries = log.Entries;
     }
 
-    public ObservableCollection<LogEntry>? Entries { get; }
+    public ObservableQueue<string> Entries { get; }
 
     protected override void OnActivated()
     {
