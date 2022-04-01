@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PSX.Frontend.Core;
+using PSX.Frontend.Core.Navigation;
 using PSX.Frontend.Core.Services;
 using PSX.Frontend.Services;
 using PSX.Frontend.Windows;
@@ -40,9 +41,9 @@ public partial class App
 
         // since we use DI at this point, we can't use StartupUri
 
-        var window = AppStartup.Host.Services.GetRequiredService<MainWindow>();
+        var navigationService = AppStartup.Host.Services.GetRequiredService<INavigationService>();
 
-        window.Show(); // TODO use navigation service instead
+        navigationService.Navigate<MainWindow>();
     }
 
     protected override void OnExit(ExitEventArgs e)

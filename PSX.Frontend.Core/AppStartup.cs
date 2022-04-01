@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PSX.Frontend.Core.Models;
+using PSX.Frontend.Core.Navigation;
 using PSX.Frontend.Core.ViewModels;
 
 namespace PSX.Frontend.Core;
@@ -39,6 +40,7 @@ public sealed class AppStartup
     {
         services
             .Configure<AppSettings>(context.Configuration.GetSection(nameof(AppSettings)))
+            .AddSingleton<INavigationService, NavigationService>()
             .AddSingleton<MainModel>()
             .AddSingleton<MainViewModel>();
     }
