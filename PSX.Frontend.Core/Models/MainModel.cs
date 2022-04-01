@@ -4,15 +4,15 @@ namespace PSX.Frontend.Core.Models;
 
 public sealed class MainModel
 {
-    public MainModel(IFileDialogService fileDialogService, IShutdownService shutdownService)
+    public MainModel(IFileDialogService fileDialogService, IApplicationService applicationService)
     {
-        FileDialogService = fileDialogService ?? throw new ArgumentNullException(nameof(fileDialogService));
-        ShutdownService   = shutdownService ?? throw new ArgumentNullException(nameof(shutdownService));
+        FileDialogService  = fileDialogService ?? throw new ArgumentNullException(nameof(fileDialogService));
+        ApplicationService = applicationService ?? throw new ArgumentNullException(nameof(applicationService));
     }
 
     private IFileDialogService FileDialogService { get; }
 
-    private IShutdownService ShutdownService { get; }
+    private IApplicationService ApplicationService { get; }
 
     public void OpenFile()
     {
@@ -28,6 +28,6 @@ public sealed class MainModel
 
     public void Shutdown()
     {
-        ShutdownService.Shutdown();
+        ApplicationService.Shutdown();
     }
 }

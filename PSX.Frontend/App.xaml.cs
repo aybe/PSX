@@ -39,12 +39,11 @@ public partial class App : IApplicationService
                 .ConfigureServices((_, collection) =>
                 {
                     collection
-                        .AddSingleton<IFileDialogService, FileDialogService>()
-                        .AddSingleton<IShutdownService, ShutdownService>()
+                        .AddSingleton<IApplicationService>(this)
+                        .AddSingleton<IStorageService, StorageService>()
                         .AddTransient<IMainView, MainWindow>()
                         .AddTransient<ILoggingView, LoggingWindow>()
                         .AddTransient<IOutputView, OutputWindow>()
-                        .AddSingleton<IApplicationService>(this)
                         ;
                 });
         }
