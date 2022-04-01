@@ -41,6 +41,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Logging", "PSX.Logging\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Frontend.Core", "PSX.Frontend.Core\PSX.Frontend.Core.csproj", "{D75941F8-AB7C-4E8B-8978-B49430768CDF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSX.Frontend", "PSX.Frontend\PSX.Frontend.csproj", "{15B99426-16BC-4300-B9AC-24A9F6EDFA06}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -126,6 +128,12 @@ Global
 		{D75941F8-AB7C-4E8B-8978-B49430768CDF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D75941F8-AB7C-4E8B-8978-B49430768CDF}.UI|Any CPU.ActiveCfg = Debug|Any CPU
 		{D75941F8-AB7C-4E8B-8978-B49430768CDF}.UI|Any CPU.Build.0 = Debug|Any CPU
+		{15B99426-16BC-4300-B9AC-24A9F6EDFA06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15B99426-16BC-4300-B9AC-24A9F6EDFA06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15B99426-16BC-4300-B9AC-24A9F6EDFA06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15B99426-16BC-4300-B9AC-24A9F6EDFA06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15B99426-16BC-4300-B9AC-24A9F6EDFA06}.UI|Any CPU.ActiveCfg = Debug|Any CPU
+		{15B99426-16BC-4300-B9AC-24A9F6EDFA06}.UI|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
