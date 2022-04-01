@@ -4,13 +4,13 @@ namespace PSX.Frontend.Core.Models;
 
 public sealed class MainModel
 {
-    public MainModel(IFileDialogService fileDialogService, IApplicationService applicationService)
+    public MainModel(IStorageService storageService, IApplicationService applicationService)
     {
-        FileDialogService  = fileDialogService ?? throw new ArgumentNullException(nameof(fileDialogService));
+        StorageService     = storageService ?? throw new ArgumentNullException(nameof(storageService));
         ApplicationService = applicationService ?? throw new ArgumentNullException(nameof(applicationService));
     }
 
-    private IFileDialogService FileDialogService { get; }
+    private IStorageService StorageService { get; }
 
     private IApplicationService ApplicationService { get; }
 
@@ -18,7 +18,7 @@ public sealed class MainModel
     {
         const string filter = "Everything|*.exe;*.psx;*.bin;*.cue|Application|*.exe;*.psx|Image|*.bin;*.cue";
 
-        var path = FileDialogService.OpenFile(filter);
+        var path = StorageService.OpenFile(filter);
 
         if (path is null)
             return;

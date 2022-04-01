@@ -4,7 +4,7 @@ using PSX.Frontend.Core.Services;
 
 namespace PSX.Frontend.Services;
 
-internal sealed class FileDialogService : IFileDialogService
+internal sealed class StorageService : IStorageService
 {
     public string? OpenFile(string filter)
     {
