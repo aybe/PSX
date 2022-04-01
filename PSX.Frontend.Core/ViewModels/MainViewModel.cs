@@ -35,7 +35,7 @@ public sealed class MainViewModel : ObservableRecipient
     [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
     private bool OpenOutputCanExecute()
     {
-        return true; // TODO this should either open or focus
+        return true;
     }
 
     private void OpenOutputExecute()
@@ -52,7 +52,7 @@ public sealed class MainViewModel : ObservableRecipient
     [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
     private bool OpenLoggingCanExecute()
     {
-        return true; // TODO this should either open or focus
+        return true;
     }
 
     private void OpenLoggingExecute()
