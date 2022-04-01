@@ -1,16 +1,20 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
+using PSX.Frontend.Core.Services;
 
 namespace PSX.Frontend.Core.Navigation;
 
 internal sealed class NavigationService : INavigationService
 {
-    public NavigationService(IServiceProvider services)
+    public NavigationService(IServiceProvider services, IApplicationService applicationService)
     {
-        Services = services ?? throw new ArgumentNullException(nameof(services));
+        Services           = services ?? throw new ArgumentNullException(nameof(services));
+        ApplicationService = applicationService;
     }
 
     private IServiceProvider Services { get; }
+
+    private IApplicationService ApplicationService { get; }
 
     public void Navigate<TView>() where TView : class
     {
@@ -28,6 +32,11 @@ internal sealed class NavigationService : INavigationService
         Navigate<TView>(viewModel);
     }
 
+    public bool TryGetView<TView>([MaybeNullWhen(false)] out TView result) where TView : class
+    {
+        return ApplicationService.TryGetView(out result);
+    }
+
     public event NavigationEventHandler? Navigated;
 
     public event NavigationCancelEventHandler? Navigating;
@@ -36,7 +45,12 @@ internal sealed class NavigationService : INavigationService
 
     private void Navigate<TView>(object? viewModel) where TView : class
     {
-        if (Services.GetService<TView>() is not { } view)
+        if (TryGetView<TView>(out var view) is false)
+        {
+            view = Services.GetService<TView>();
+        }
+
+        if (view is null)
         {
             OnNavigationFailed(new NavigationFailedEventArgs($"The view could not be found: {typeof(TView)}."));
             return;
@@ -64,7 +78,7 @@ internal sealed class NavigationService : INavigationService
 
         if (target.IsVisible)
         {
-            target.Activate(); // currently, this is never the case
+            target.Activate();
         }
         else
         {

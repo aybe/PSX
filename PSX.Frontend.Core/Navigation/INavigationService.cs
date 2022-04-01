@@ -9,6 +9,8 @@ public interface INavigationService
         where TView : class
         where TViewModel : class;
 
+    bool TryGetView<TView>(out TView? result) where TView : class;
+
     event NavigationEventHandler? Navigated;
 
     event NavigationCancelEventHandler? Navigating;
