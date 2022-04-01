@@ -13,12 +13,18 @@ internal sealed class NavigationService : INavigationService
 
     public void Navigate<TView>()
     {
-        TryNavigateImpl<TView>();
+        Navigate<TView>(default);
     }
 
     public void Navigate<TView, TViewModel>()
     {
-        TryNavigateImpl<TView, TViewModel>();
+        if (Services.GetService<TViewModel>() is not { } viewModel)
+        {
+            OnNavigationFailed(new NavigationFailedEventArgs($"The view model could not be found: {typeof(TViewModel)}."));
+            return;
+        }
+
+        Navigate<TView>(viewModel);
     }
 
     public event NavigationEventHandler? Navigated;
@@ -27,23 +33,7 @@ internal sealed class NavigationService : INavigationService
 
     public event NavigationFailedEventHandler? NavigationFailed;
 
-    private void TryNavigateImpl<TView>()
-    {
-        TryNavigateImpl<TView>(default);
-    }
-
-    private void TryNavigateImpl<TView, TViewModel>()
-    {
-        if (Services.GetService<TViewModel>() is not { } viewModel)
-        {
-            OnNavigationFailed(new NavigationFailedEventArgs($"The view model could not be found: {typeof(TViewModel)}."));
-            return;
-        }
-
-        TryNavigateImpl<TView>(viewModel);
-    }
-
-    private void TryNavigateImpl<TView>(object? viewModel)
+    private void Navigate<TView>(object? viewModel)
     {
         if (Services.GetService<TView>() is not { } view)
         {
