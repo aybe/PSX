@@ -1,19 +1,24 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Toolkit.Mvvm.DependencyInjection;
-using PSX.Frontend.Core.Services;
+﻿using PSX.Frontend.Core.Services;
 
 namespace PSX.Frontend.Core.Models;
 
-internal sealed class MainModel
+public sealed class MainModel
 {
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
+    public MainModel(IFileDialogService fileDialogService, IShutdownService shutdownService)
+    {
+        FileDialogService = fileDialogService ?? throw new ArgumentNullException(nameof(fileDialogService));
+        ShutdownService   = shutdownService ?? throw new ArgumentNullException(nameof(shutdownService));
+    }
+
+    private IFileDialogService FileDialogService { get; }
+
+    private IShutdownService ShutdownService { get; }
+
     public void OpenFile()
     {
         const string filter = "Everything|*.exe;*.psx;*.bin;*.cue|Application|*.exe;*.psx|Image|*.bin;*.cue";
 
-        var service = Ioc.Default.GetRequiredService<IFileDialogService>();
-
-        var path = service.OpenFile(filter);
+        var path = FileDialogService.OpenFile(filter);
 
         if (path is null)
             return;
@@ -21,11 +26,8 @@ internal sealed class MainModel
         path.ToString();
     }
 
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
     public void Shutdown()
     {
-        var service = Ioc.Default.GetRequiredService<IShutdownService>();
-
-        service.Shutdown();
+        ShutdownService.Shutdown();
     }
 }

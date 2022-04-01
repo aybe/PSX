@@ -1,14 +1,13 @@
-﻿using Microsoft.Toolkit.Mvvm.DependencyInjection;
-using PSX.Frontend.Core.ViewModels;
+﻿using PSX.Frontend.Core.ViewModels;
 
 namespace PSX.Frontend.Windows;
 
 public partial class MainWindow
 {
-    public MainWindow()
+    public MainWindow(MainViewModel model)
     {
         InitializeComponent();
 
-        DataContext = Ioc.Default.GetRequiredService<MainViewModel>();
+        DataContext = model;
     }
 }
