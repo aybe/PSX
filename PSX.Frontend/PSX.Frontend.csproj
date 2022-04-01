@@ -5,10 +5,15 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>PlayStation.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="PlayStation.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="PlayStation.ico" />
   </ItemGroup>
 
   <ItemGroup>
