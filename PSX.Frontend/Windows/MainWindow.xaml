@@ -3,14 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:PSX.Frontend.Core.ViewModels;assembly=PSX.Frontend.Core"
         mc:Ignorable="d"
         Title="PSX" Width="640" Height="480" MinWidth="640" MinHeight="480"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        d:DataContext="{d:DesignInstance viewModels:MainViewModel}">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open" InputGestureText="Ctrl+O" />
-                <MenuItem Header="_Close" InputGestureText="Alt+F4" />
+                <MenuItem Header="_Open" InputGestureText="Ctrl+O" Command="{Binding OpenFile}" />
+                <MenuItem Header="_Close" InputGestureText="Alt+F4" Command="{Binding Shutdown}" />
             </MenuItem>
             <MenuItem Header="_Windows">
                 <MenuItem Header="_Output" InputGestureText="F1" />
