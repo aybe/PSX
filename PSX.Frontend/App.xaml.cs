@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using PSX.Frontend.Core;
 using PSX.Frontend.Core.Navigation;
 using PSX.Frontend.Core.Services;
+using PSX.Frontend.Core.Views;
 using PSX.Frontend.Services;
 using PSX.Frontend.Windows;
 
@@ -33,7 +34,10 @@ public partial class App
                     collection
                         .AddSingleton<IFileDialogService, FileDialogService>()
                         .AddSingleton<IShutdownService, ShutdownService>()
-                        .AddTransient<MainWindow>();
+                        .AddTransient<IMainView, MainWindow>()
+                        .AddTransient<ILoggingView, LoggingWindow>()
+                        .AddTransient<IOutputView, OutputWindow>()
+                        ;
                 });
         }
 
@@ -43,7 +47,7 @@ public partial class App
 
         var navigationService = AppStartup.Host.Services.GetRequiredService<INavigationService>();
 
-        navigationService.Navigate<MainWindow>();
+        navigationService.Navigate<IMainView>();
     }
 
     protected override void OnExit(ExitEventArgs e)

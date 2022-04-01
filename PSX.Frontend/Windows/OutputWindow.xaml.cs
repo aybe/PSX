@@ -1,6 +1,8 @@
-﻿namespace PSX.Frontend.Windows;
+﻿using PSX.Frontend.Core.Views;
 
-public partial class OutputWindow
+namespace PSX.Frontend.Windows;
+
+public partial class OutputWindow : IOutputView
 {
     public OutputWindow()
     {

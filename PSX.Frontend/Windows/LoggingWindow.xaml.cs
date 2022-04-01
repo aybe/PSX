@@ -1,6 +1,8 @@
-﻿namespace PSX.Frontend.Windows;
+﻿using PSX.Frontend.Core.Views;
 
-public partial class LoggingWindow
+namespace PSX.Frontend.Windows;
+
+public partial class LoggingWindow : ILoggingView
 {
     public LoggingWindow()
     {
