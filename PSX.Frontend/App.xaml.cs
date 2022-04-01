@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,9 +13,15 @@ using PSX.Frontend.Windows;
 
 namespace PSX.Frontend;
 
-public partial class App
+public partial class App : IApplicationService
 {
     private AppStartup AppStartup { get; set; } = null!;
+
+    bool IApplicationService.TryGetView<T>(out T? result) where T : class
+    {
+        result = Windows.OfType<T>().FirstOrDefault();
+        return result is not null;
+    }
 
     protected override async void OnStartup(StartupEventArgs e)
     {
@@ -37,6 +44,7 @@ public partial class App
                         .AddTransient<IMainView, MainWindow>()
                         .AddTransient<ILoggingView, LoggingWindow>()
                         .AddTransient<IOutputView, OutputWindow>()
+                        .AddSingleton<IApplicationService>(this)
                         ;
                 });
         }
