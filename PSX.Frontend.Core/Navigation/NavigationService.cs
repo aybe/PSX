@@ -6,13 +6,13 @@ namespace PSX.Frontend.Core.Navigation;
 
 internal sealed class NavigationService : INavigationService
 {
-    public NavigationService(IServiceProvider services, IApplicationService applicationService)
+    public NavigationService(IServiceProvider serviceProvider, IApplicationService applicationService)
     {
-        Services           = services ?? throw new ArgumentNullException(nameof(services));
+        ServiceProvider    = serviceProvider;
         ApplicationService = applicationService;
     }
 
-    private IServiceProvider Services { get; }
+    private IServiceProvider ServiceProvider { get; }
 
     private IApplicationService ApplicationService { get; }
 
@@ -23,7 +23,7 @@ internal sealed class NavigationService : INavigationService
 
     public void Navigate<TView, TViewModel>() where TView : class where TViewModel : class
     {
-        if (Services.GetService<TViewModel>() is not { } viewModel)
+        if (ServiceProvider.GetService<TViewModel>() is not { } viewModel)
         {
             OnNavigationFailed(new NavigationFailedEventArgs($"The view model could not be found: {typeof(TViewModel)}."));
             return;
@@ -47,7 +47,7 @@ internal sealed class NavigationService : INavigationService
     {
         if (TryGetView<TView>(out var view) is false)
         {
-            view = Services.GetService<TView>();
+            view = ServiceProvider.GetService<TView>();
         }
 
         if (view is null)
