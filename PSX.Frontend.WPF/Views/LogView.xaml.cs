@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using PSX.Frontend.Core.Messages;
-using PSX.Frontend.Core.Models;
+using PSX.Frontend.Core.Old.Messages;
+using PSX.Frontend.Core.Old.Models;
 
 namespace PSX.Frontend.WPF.Views;
 

@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using PSX.Frontend.Core.Models;
+using PSX.Frontend.Core.Old.Models;
 using PSX.Frontend.WPF.Interop;
 using PSX.Logging.Obsolete;
 using Serilog.Events;

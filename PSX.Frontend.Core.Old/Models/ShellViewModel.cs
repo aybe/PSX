@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Windows.Input;
@@ -9,14 +8,14 @@ using Microsoft.Extensions.Options;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using PSX.Frontend.Core.Messages;
-using PSX.Frontend.Core.Navigation;
-using PSX.Frontend.Core.Services;
+using PSX.Frontend.Core.Old.Messages;
+using PSX.Frontend.Core.Old.Navigation;
+using PSX.Frontend.Core.Old.Services;
 using PSX.Logging;
 using Serilog;
 using Serilog.Events;
 
-namespace PSX.Frontend.Core.Models;
+namespace PSX.Frontend.Core.Old.Models;
 
 public sealed class ShellViewModel : ObservableRecipient, IObservableLog
 {

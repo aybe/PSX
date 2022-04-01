@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PSX.Frontend.Core.Models;
-using PSX.Frontend.Core.Navigation;
+using PSX.Frontend.Core.Old.Models;
+using PSX.Frontend.Core.Old.Navigation;
 
-namespace PSX.Frontend.Core;
+namespace PSX.Frontend.Core.Old;
 
 public sealed class AppStartup
 {

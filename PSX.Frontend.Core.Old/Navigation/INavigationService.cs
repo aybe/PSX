@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace PSX.Frontend.Core.Navigation;
+namespace PSX.Frontend.Core.Old.Navigation;
 
 [PublicAPI]
 public interface INavigationService

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace PSX.Frontend.Core.Navigation;
+namespace PSX.Frontend.Core.Old.Navigation;
 
 internal sealed class NavigationService : INavigationService
 {

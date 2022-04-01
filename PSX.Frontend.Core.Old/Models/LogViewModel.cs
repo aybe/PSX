@@ -2,10 +2,10 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using PSX.Frontend.Core.Messages;
+using PSX.Frontend.Core.Old.Messages;
 using PSX.Logging;
 
-namespace PSX.Frontend.Core.Models;
+namespace PSX.Frontend.Core.Old.Models;
 
 public sealed class LogViewModel : ObservableRecipient, IObservableLog
 {

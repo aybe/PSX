@@ -1,14 +1,15 @@
-﻿namespace PSX.Frontend.Core.Navigation;
+﻿using System.ComponentModel;
 
-public sealed class NavigationEventArgs : EventArgs
+namespace PSX.Frontend.Core.Old.Navigation;
+
+public sealed class NavigationCancelEventArgs : CancelEventArgs
 {
-    public NavigationEventArgs(object target)
+    public NavigationCancelEventArgs(object target)
     {
         Target = target ?? throw new ArgumentNullException(nameof(target));
     }
 
     public object Target { get; }
-
 
     public override string ToString()
     {

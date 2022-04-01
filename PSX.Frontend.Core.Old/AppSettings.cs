@@ -1,4 +1,4 @@
-﻿namespace PSX.Frontend.Core;
+﻿namespace PSX.Frontend.Core.Old;
 
 public sealed class AppSettings
 {

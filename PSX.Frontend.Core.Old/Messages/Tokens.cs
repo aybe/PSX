@@ -1,4 +1,4 @@
-﻿namespace PSX.Frontend.Core.Messages;
+﻿namespace PSX.Frontend.Core.Old.Messages;
 
 public static class Tokens
 {
