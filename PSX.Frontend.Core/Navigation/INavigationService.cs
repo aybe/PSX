@@ -2,9 +2,12 @@
 
 public interface INavigationService
 {
-    void Navigate<TView>();
+    void Navigate<TView>()
+        where TView : class;
 
-    void Navigate<TView, TViewModel>();
+    void Navigate<TView, TViewModel>()
+        where TView : class
+        where TViewModel : class;
 
     event NavigationEventHandler? Navigated;
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PSX.Frontend.Core.Navigation;
 
@@ -11,12 +12,12 @@ internal sealed class NavigationService : INavigationService
 
     private IServiceProvider Services { get; }
 
-    public void Navigate<TView>()
+    public void Navigate<TView>() where TView : class
     {
         Navigate<TView>(default);
     }
 
-    public void Navigate<TView, TViewModel>()
+    public void Navigate<TView, TViewModel>() where TView : class where TViewModel : class
     {
         if (Services.GetService<TViewModel>() is not { } viewModel)
         {
@@ -33,7 +34,7 @@ internal sealed class NavigationService : INavigationService
 
     public event NavigationFailedEventHandler? NavigationFailed;
 
-    private void Navigate<TView>(object? viewModel)
+    private void Navigate<TView>(object? viewModel) where TView : class
     {
         if (Services.GetService<TView>() is not { } view)
         {
