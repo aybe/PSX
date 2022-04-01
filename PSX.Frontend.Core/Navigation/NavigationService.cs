@@ -13,12 +13,12 @@ internal sealed class NavigationService : INavigationService
 
     public void Navigate<TView>()
     {
-        TryNavigate(TryNavigateImpl<TView>);
+        TryNavigateImpl<TView>();
     }
 
     public void Navigate<TView, TViewModel>()
     {
-        TryNavigate(TryNavigateImpl<TView, TViewModel>);
+        TryNavigateImpl<TView, TViewModel>();
     }
 
     public event NavigationEventHandler? Navigated;
@@ -26,28 +26,6 @@ internal sealed class NavigationService : INavigationService
     public event NavigationCancelEventHandler? Navigating;
 
     public event NavigationFailedEventHandler? NavigationFailed;
-
-    private void TryNavigate(Action action)
-    {
-        if (action is null)
-            throw new ArgumentNullException(nameof(action));
-
-        var exception = default(Exception?);
-
-        try
-        {
-            action();
-        }
-        catch (Exception e)
-        {
-            exception = e;
-        }
-
-        if (exception is not null)
-        {
-            OnNavigationFailed(new NavigationFailedEventArgs("An exception has occurred while trying to navigate.", exception));
-        }
-    }
 
     private void TryNavigateImpl<TView>()
     {
@@ -112,7 +90,14 @@ internal sealed class NavigationService : INavigationService
 
     private void OnNavigationFailed(NavigationFailedEventArgs e)
     {
-        NavigationFailed?.Invoke(this, e);
+        if (NavigationFailed is not null)
+        {
+            NavigationFailed.Invoke(this, e);
+        }
+        else // throw in this case, that will prevent lots of headaches
+        {
+            throw new NavigationFailedException(e.Message, e.Exception);
+        }
     }
 
     private void OnNavigated(NavigationEventArgs e)
