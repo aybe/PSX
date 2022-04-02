@@ -15,18 +15,21 @@
         <KeyBinding Command="{Binding OpenVideoMemory}" Key="F2" />
         <KeyBinding Command="{Binding OpenLogging}" Key="F3" />
     </Window.InputBindings>
-    <DockPanel>
-        <Menu DockPanel.Dock="Top">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Menu>
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" InputGestureText="Ctrl+O" Command="{Binding OpenFile}" />
                 <MenuItem Header="_Close" InputGestureText="Alt+F4" Command="{Binding Shutdown}" />
             </MenuItem>
-            <MenuItem Header="Window">
+            <MenuItem Header="_Window">
                 <MenuItem Header="Video _Screen" InputGestureText="F1" Command="{Binding OpenVideoScreen}" />
                 <MenuItem Header="Video _Memory" InputGestureText="F2" Command="{Binding OpenVideoMemory}" />
                 <MenuItem Header="_Logging" InputGestureText="F3" Command="{Binding OpenLogging}" />
             </MenuItem>
         </Menu>
-        <Image Source="pack://application:,,,/PlayStation.png" StretchDirection="DownOnly" />
-    </DockPanel>
+    </Grid>
 </Window>

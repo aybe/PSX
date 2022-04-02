@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="PlayStation.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="PlayStation.ico" />
   </ItemGroup>
 
@@ -22,10 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PSX.Frontend.Core\PSX.Frontend.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="PlayStation.png" />
   </ItemGroup>
 
 </Project>
