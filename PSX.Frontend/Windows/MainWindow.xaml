@@ -13,7 +13,6 @@
         <KeyBinding Command="{Binding Shutdown}" Modifiers="Alt" Key="F4" />
         <KeyBinding Command="{Binding OpenVideoScreen}" Key="F1" />
         <KeyBinding Command="{Binding OpenVideoMemory}" Key="F2" />
-        <KeyBinding Command="{Binding OpenLogging}" Key="F3" />
     </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
@@ -28,7 +27,6 @@
             <MenuItem Header="_Window">
                 <MenuItem Header="Video _Screen" InputGestureText="F1" Command="{Binding OpenVideoScreen}" />
                 <MenuItem Header="Video _Memory" InputGestureText="F2" Command="{Binding OpenVideoMemory}" />
-                <MenuItem Header="_Logging" InputGestureText="F3" Command="{Binding OpenLogging}" />
             </MenuItem>
         </Menu>
     </Grid>

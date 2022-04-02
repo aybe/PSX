@@ -42,7 +42,6 @@ public partial class App : IApplicationService
                         .AddSingleton<IApplicationService>(this)
                         .AddSingleton<IStorageService, StorageService>()
                         .AddTransient<IMainView, MainWindow>()
-                        .AddTransient<ILoggingView, LoggingWindow>()
                         .AddTransient<IVideoScreenView, VideoScreenWindow>()
                         .AddTransient<IVideoMemoryView, VideoMemoryWindow>()
                         ;

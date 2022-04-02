@@ -19,8 +19,6 @@ public sealed class MainViewModel : ObservableRecipient
 
         Shutdown = new RelayCommand(ShutdownExecute, ShutdownCanExecute);
 
-        OpenLogging = new RelayCommand(OpenLoggingExecute, OpenLoggingCanExecute);
-
         OpenVideoScreen = new RelayCommand(OpenVideoScreenExecute, OpenVideoScreenCanExecute);
 
         OpenVideoMemory = new RelayCommand(OpenVideoMemoryExecute, OpenVideoMemoryCanExecute);
@@ -60,23 +58,6 @@ public sealed class MainViewModel : ObservableRecipient
     private void OpenVideoMemoryExecute()
     {
         NavigationService.Navigate<IVideoMemoryView>();
-    }
-
-    #endregion
-
-    #region OpenLogging
-
-    public RelayCommand OpenLogging { get; }
-
-    [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
-    private bool OpenLoggingCanExecute()
-    {
-        return true;
-    }
-
-    private void OpenLoggingExecute()
-    {
-        NavigationService.Navigate<ILoggingView>();
     }
 
     #endregion
