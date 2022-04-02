@@ -20,7 +20,7 @@
                 <MenuItem Header="_Open" InputGestureText="Ctrl+O" Command="{Binding OpenFile}" />
                 <MenuItem Header="_Close" InputGestureText="Alt+F4" Command="{Binding Shutdown}" />
             </MenuItem>
-            <MenuItem Header="_Windows">
+            <MenuItem Header="_View">
                 <MenuItem Header="_Output" InputGestureText="F1" Command="{Binding OpenOutput}" />
                 <MenuItem Header="_Logging" InputGestureText="F2" Command="{Binding OpenLogging}" />
             </MenuItem>
