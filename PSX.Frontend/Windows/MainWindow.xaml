@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:PSX.Frontend.Core.ViewModels;assembly=PSX.Frontend.Core"
         mc:Ignorable="d"
-        Title="PSX" Width="640" Height="480" MinWidth="640" MinHeight="480"
+        Title="PSX" Width="320" Height="240" MinWidth="320" MinHeight="240"
         WindowStartupLocation="CenterScreen"
         d:DataContext="{d:DesignInstance viewModels:MainViewModel}">
     <Window.InputBindings>
