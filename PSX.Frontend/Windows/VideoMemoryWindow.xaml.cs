@@ -2,9 +2,9 @@
 
 namespace PSX.Frontend.Windows;
 
-public partial class OutputWindow : IOutputView
+public partial class VideoMemoryWindow : IVideoMemoryView
 {
-    public OutputWindow()
+    public VideoMemoryWindow()
     {
         InitializeComponent();
     }

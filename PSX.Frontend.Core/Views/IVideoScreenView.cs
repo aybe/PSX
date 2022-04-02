@@ -2,6 +2,6 @@
 
 namespace PSX.Frontend.Core.Views;
 
-public interface IOutputView : INavigationTarget
+public interface IVideoScreenView : INavigationTarget
 {
 }
