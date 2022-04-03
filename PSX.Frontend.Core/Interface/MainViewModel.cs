@@ -2,14 +2,17 @@
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using PSX.Frontend.Core.Services;
+using PSX.Frontend.Core.Services.Emulator;
 
 namespace PSX.Frontend.Core.Interface;
 
 public sealed class MainViewModel : ObservableRecipient
 {
-    public MainViewModel(MainModel model, INavigationService navigationService)
+    public MainViewModel(MainModel model, IEmulatorService emulatorService, INavigationService navigationService)
     {
         Model = model;
+
+        EmulatorService = emulatorService;
 
         NavigationService = navigationService;
 
@@ -24,7 +27,28 @@ public sealed class MainViewModel : ObservableRecipient
 
     private MainModel Model { get; }
 
+    private IEmulatorService EmulatorService { get; }
+
     private INavigationService NavigationService { get; }
+
+    protected override void OnActivated()
+    {
+        base.OnActivated();
+
+        EmulatorService.UpdateAudioDataMessageHandlers.Add(UpdateAudioData);
+    }
+
+    protected override void OnDeactivated()
+    {
+        base.OnDeactivated();
+
+        EmulatorService.UpdateAudioDataMessageHandlers.Remove(UpdateAudioData);
+    }
+
+    private void UpdateAudioData(UpdateAudioDataMessage message)
+    {
+        throw new NotImplementedException();
+    }
 
     #region OpenVideoScreen
 
