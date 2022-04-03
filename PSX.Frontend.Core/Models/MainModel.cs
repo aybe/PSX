@@ -4,15 +4,15 @@ namespace PSX.Frontend.Core.Models;
 
 public sealed class MainModel
 {
-    public MainModel(IFileService fileService, IApplicationService applicationService)
+    public MainModel(IApplicationService applicationService, IFileService fileService)
     {
-        FileService     = fileService ?? throw new ArgumentNullException(nameof(fileService));
         ApplicationService = applicationService ?? throw new ArgumentNullException(nameof(applicationService));
+        FileService        = fileService ?? throw new ArgumentNullException(nameof(fileService));
     }
 
-    private IFileService FileService { get; }
-
     private IApplicationService ApplicationService { get; }
+
+    private IFileService FileService { get; }
 
     public void OpenFile()
     {
