@@ -9,7 +9,6 @@
 	<ItemGroup>
 		<PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
-		<ProjectReference Include="..\PSX.Logging\PSX.Logging.csproj" />
 	</ItemGroup>
 
 </Project>
