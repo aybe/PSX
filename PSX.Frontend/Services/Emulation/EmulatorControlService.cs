@@ -9,7 +9,7 @@ internal sealed class EmulatorControlService : IEmulatorControlService
         EmulatorDisplayService = emulatorDisplayService ?? throw new ArgumentNullException(nameof(emulatorDisplayService));
     }
 
-    private PSX.Emulator? Emulator { get; set; }
+    private Emulator? Emulator { get; set; }
 
     private IEmulatorDisplayService EmulatorDisplayService { get; }
 
@@ -96,7 +96,7 @@ internal sealed class EmulatorControlService : IEmulatorControlService
             Emulator = null;
         }
 
-        Emulator = new PSX.Emulator(EmulatorDisplayService, content);
+        Emulator = new Emulator(EmulatorDisplayService, content);
     }
 
     public void Start()

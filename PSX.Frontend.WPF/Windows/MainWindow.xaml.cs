@@ -13,7 +13,7 @@ public partial class MainWindow : IMainView
         InitializeComponent();
 
         DataContext = model;
-  
+
         Loaded += (_, _) =>
         {
             model.IsActive = true;

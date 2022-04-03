@@ -7,7 +7,7 @@ public sealed class VideoMemoryViewModel : ObservableRecipient
 {
     public VideoMemoryViewModel(VideoMemoryModel model, IEmulatorDisplayService emulatorDisplayService)
     {
-        Model           = model;
+        Model                  = model;
         EmulatorDisplayService = emulatorDisplayService;
     }
 
@@ -33,11 +33,11 @@ public sealed class VideoMemoryViewModel : ObservableRecipient
 
     private void UpdateVideoData(UpdateVideoDataMessage message)
     {
-        throw new NotImplementedException();
+        // TODO
     }
 
     private void UpdateVideoSize(UpdateVideoSizeMessage message)
     {
-        throw new NotImplementedException();
+        // TODO
     }
 }

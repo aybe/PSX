@@ -7,13 +7,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="AppSettings.json" />
+		<None Remove="AppSettings.json" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="AppSettings.json">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
+		<Content Include="AppSettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -22,8 +22,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\PSX.Core\PSX.Core.csproj" />
-	  <ProjectReference Include="..\PSX\PSX.csproj" />
+		<ProjectReference Include="..\PSX.Core\PSX.Core.csproj" />
+		<ProjectReference Include="..\PSX\PSX.csproj" />
 	</ItemGroup>
 
 </Project>
