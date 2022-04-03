@@ -3,6 +3,7 @@ using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using PSX.Frontend.Core.Services;
 using PSX.Frontend.Core.Services.Emulator;
+using PSX.Frontend.Core.Services.Navigation;
 
 namespace PSX.Frontend.Core.Interface;
 

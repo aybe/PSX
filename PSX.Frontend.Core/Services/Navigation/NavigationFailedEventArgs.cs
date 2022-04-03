@@ -1,4 +1,4 @@
-﻿namespace PSX.Frontend.Core.Services;
+﻿namespace PSX.Frontend.Core.Services.Navigation;
 
 public sealed class NavigationFailedEventArgs : EventArgs
 {

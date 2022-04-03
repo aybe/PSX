@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using PSX.Frontend.Core;
 using PSX.Frontend.Core.Interface;
 using PSX.Frontend.Core.Services;
+using PSX.Frontend.Core.Services.Navigation;
 using PSX.Frontend.Services;
 using PSX.Frontend.Windows;
 

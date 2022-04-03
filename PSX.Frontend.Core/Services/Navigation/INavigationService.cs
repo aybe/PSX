@@ -1,4 +1,4 @@
-﻿namespace PSX.Frontend.Core.Services;
+﻿namespace PSX.Frontend.Core.Services.Navigation;
 
 public interface INavigationService
 {

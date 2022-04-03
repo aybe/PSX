@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace PSX.Frontend.Core.Services;
+namespace PSX.Frontend.Core.Services.Navigation;
 
 internal sealed class NavigationService : INavigationService
 {

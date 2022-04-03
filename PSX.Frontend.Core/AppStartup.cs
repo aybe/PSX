@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using PSX.Frontend.Core.Interface;
 using PSX.Frontend.Core.Services;
 using PSX.Frontend.Core.Services.Emulator;
+using PSX.Frontend.Core.Services.Navigation;
 
 namespace PSX.Frontend.Core;
 
