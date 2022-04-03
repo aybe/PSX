@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PSX.Frontend.Core.Interface;
 using PSX.Frontend.Core.Services;
+using PSX.Frontend.Core.Services.Emulator;
 
 namespace PSX.Frontend.Core;
 
@@ -40,6 +41,7 @@ public sealed class AppStartup
         services
             .Configure<AppSettings>(context.Configuration.GetSection(nameof(AppSettings)))
             .AddSingleton<INavigationService, NavigationService>()
+            .AddSingleton<IEmulatorService, EmulatorService>()
             .AddSingleton<MainModel>()
             .AddSingleton<MainViewModel>()
             .AddSingleton<VideoMemoryModel>()
