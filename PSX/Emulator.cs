@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Microsoft.Extensions.Logging;
 using PSX.Core;
 using PSX.Core.Graphics;
 using PSX.Core.Interfaces;
@@ -14,23 +13,19 @@ namespace PSX;
 
 public sealed class Emulator : IDisposable
 {
-    public ILogger<Emulator> Logger { get; }
-
     private const int PSX_MHZ          = 33868800;
     private const int SYNC_CYCLES      = 100;
     private const int MIPS_UNDERCLOCK  = 3; // Testing: This compensates the absence of HALT instruction on MIPS Architecture, may broke some games.
     private const int CYCLES_PER_FRAME = PSX_MHZ / 60;
     private const int SYNC_LOOPS       = CYCLES_PER_FRAME / (SYNC_CYCLES * MIPS_UNDERCLOCK) + 1;
 
-    public Emulator(IHostWindow window, string path, ILogger<Emulator> logger)
+    public Emulator(IHostWindow window, string path)
     {
         if (window == null)
             throw new ArgumentNullException(nameof(window));
 
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(path));
-
-        Logger = logger;
 
         Controller = new DigitalController();
 
@@ -84,8 +79,6 @@ public sealed class Emulator : IDisposable
             Bus.tick(SYNC_CYCLES * MIPS_UNDERCLOCK);
 
             Cpu.handleInterrupts();
-
-            Logger.LogInformation(nameof(RunFrame));
         }
     }
 

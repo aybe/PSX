@@ -207,7 +207,7 @@ public sealed class ShellViewModel : ObservableRecipient, IObservableLog
         EmulatorUpdate.UpdateVideoDataHandler = message => WeakReferenceMessenger.Default.Send(message);
         EmulatorUpdate.UpdateVideoSizeHandler = message => WeakReferenceMessenger.Default.Send(message);
 
-        Emulator = new Emulator(EmulatorUpdate, EmulatorContent, LoggerEmulator);
+        Emulator = new Emulator(EmulatorUpdate, EmulatorContent);
 
         EmulatorPaused = false;
 
