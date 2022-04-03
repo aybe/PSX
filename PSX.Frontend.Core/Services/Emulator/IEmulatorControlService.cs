@@ -1,6 +1,6 @@
 ﻿namespace PSX.Frontend.Core.Services.Emulator;
 
-public interface IEmulatorServiceController
+public interface IEmulatorControlService
 {
     bool CanStart { get; }
 

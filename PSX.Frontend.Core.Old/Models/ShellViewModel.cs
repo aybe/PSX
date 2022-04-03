@@ -20,14 +20,14 @@ namespace PSX.Frontend.Core.Old.Models;
 
 public sealed class ShellViewModel : ObservableRecipient, IObservableLog
 {
-    public ShellViewModel(IOptions<AppSettings> options, ILogger<ShellViewModel> logger, IServiceProvider serviceProvider, EmulatorService emulatorService, INavigationService navigationService,
+    public ShellViewModel(IOptions<AppSettings> options, ILogger<ShellViewModel> logger, IServiceProvider serviceProvider, EmulatorDisplayService emulatorDisplayService, INavigationService navigationService,
         ILogger<Emulator> loggerEmulator)
     {
-        Options             = options;
-        Logger              = logger;
-        EmulatorService      = emulatorService ?? throw new ArgumentNullException(nameof(emulatorService));
-        NavigationService   = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
-        LoggerEmulator = loggerEmulator;
+        Options                = options;
+        Logger                 = logger;
+        EmulatorDisplayService = emulatorDisplayService ?? throw new ArgumentNullException(nameof(emulatorDisplayService));
+        NavigationService      = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
+        LoggerEmulator         = loggerEmulator;
 
         var service = serviceProvider.GetService<ILoggerProvider>();
 
@@ -65,7 +65,7 @@ public sealed class ShellViewModel : ObservableRecipient, IObservableLog
 
     public ILogger<ShellViewModel> Logger { get; }
 
-    public EmulatorService EmulatorService { get; }
+    public EmulatorDisplayService EmulatorDisplayService { get; }
 
     public INavigationService NavigationService { get; }
 
@@ -204,11 +204,11 @@ public sealed class ShellViewModel : ObservableRecipient, IObservableLog
         if (EmulatorContent is null)
             throw new InvalidOperationException();
 
-        EmulatorService.UpdateAudioDataMessageHandlers.Add(message => WeakReferenceMessenger.Default.Send(message));
-        EmulatorService.UpdateVideoDataMessageHandlers.Add(message => WeakReferenceMessenger.Default.Send(message));
-        EmulatorService.UpdateVideoSizeMessageHandlers.Add(message => WeakReferenceMessenger.Default.Send(message));
+        EmulatorDisplayService.UpdateAudioDataMessageHandlers.Add(message => WeakReferenceMessenger.Default.Send(message));
+        EmulatorDisplayService.UpdateVideoDataMessageHandlers.Add(message => WeakReferenceMessenger.Default.Send(message));
+        EmulatorDisplayService.UpdateVideoSizeMessageHandlers.Add(message => WeakReferenceMessenger.Default.Send(message));
 
-        Emulator = new Emulator(EmulatorService, EmulatorContent);
+        Emulator = new Emulator(EmulatorDisplayService, EmulatorContent);
 
         EmulatorPaused = false;
 

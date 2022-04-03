@@ -3,18 +3,23 @@ using PSX.Frontend.Core.Services.Emulator;
 
 namespace PSX.Frontend.Core.Interface;
 
-public sealed class MainModel : IEmulatorServiceController
+public sealed class MainModel
+    : IEmulatorControlService // for view model commands
 {
-    public MainModel(IApplicationService applicationService, IEmulatorService emulatorService, IFileService fileService)
+    public MainModel(
+        IApplicationService applicationService,
+        IEmulatorControlService emulatorControlService,
+        IFileService fileService
+    )
     {
-        ApplicationService = applicationService ?? throw new ArgumentNullException(nameof(applicationService));
-        EmulatorService    = emulatorService ?? throw new ArgumentNullException(nameof(emulatorService));
-        FileService        = fileService ?? throw new ArgumentNullException(nameof(fileService));
+        ApplicationService     = applicationService ?? throw new ArgumentNullException(nameof(applicationService));
+        EmulatorControlService = emulatorControlService ?? throw new ArgumentNullException(nameof(emulatorControlService));
+        FileService            = fileService ?? throw new ArgumentNullException(nameof(fileService));
     }
 
     private IApplicationService ApplicationService { get; }
 
-    private IEmulatorService EmulatorService { get; }
+    private IEmulatorControlService EmulatorControlService { get; }
 
     private IFileService FileService { get; }
 
@@ -27,7 +32,7 @@ public sealed class MainModel : IEmulatorServiceController
         if (path is null)
             return;
 
-        EmulatorService.Setup(path);
+        EmulatorControlService.Setup(path);
     }
 
     public void Shutdown()
@@ -35,46 +40,46 @@ public sealed class MainModel : IEmulatorServiceController
         ApplicationService.Shutdown();
     }
 
-    #region IEmulatorPlayer
+    #region IEmulatorControlService
 
-    public bool CanStart => EmulatorService.CanStart;
+    public bool CanStart => EmulatorControlService.CanStart;
 
-    public bool CanStop => EmulatorService.CanStop;
+    public bool CanStop => EmulatorControlService.CanStop;
 
-    public bool CanPause => EmulatorService.CanPause;
+    public bool CanPause => EmulatorControlService.CanPause;
 
-    public bool CanContinue => EmulatorService.CanContinue;
+    public bool CanContinue => EmulatorControlService.CanContinue;
 
-    public bool CanFrame => EmulatorService.CanFrame;
+    public bool CanFrame => EmulatorControlService.CanFrame;
 
     public void Setup(string content)
     {
-        EmulatorService.Setup(content);
+        EmulatorControlService.Setup(content);
     }
 
     public void Start()
     {
-        EmulatorService.Start();
+        EmulatorControlService.Start();
     }
 
     public void Stop()
     {
-        EmulatorService.Stop();
+        EmulatorControlService.Stop();
     }
 
     public void Pause()
     {
-        EmulatorService.Pause();
+        EmulatorControlService.Pause();
     }
 
     public void Continue()
     {
-        EmulatorService.Continue();
+        EmulatorControlService.Continue();
     }
 
     public void Frame()
     {
-        EmulatorService.Frame();
+        EmulatorControlService.Frame();
     }
 
     #endregion

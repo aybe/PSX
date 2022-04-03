@@ -8,11 +8,11 @@ namespace PSX.Frontend.Core.Interface;
 
 public sealed class MainViewModel : ObservableRecipient
 {
-    public MainViewModel(MainModel model, IEmulatorService emulatorService, INavigationService navigationService)
+    public MainViewModel(MainModel model, IEmulatorDisplayService emulatorDisplayService, INavigationService navigationService)
     {
         Model = model;
 
-        EmulatorService = emulatorService;
+        EmulatorDisplayService = emulatorDisplayService;
 
         NavigationService = navigationService;
 
@@ -33,7 +33,7 @@ public sealed class MainViewModel : ObservableRecipient
 
     private MainModel Model { get; }
 
-    private IEmulatorService EmulatorService { get; }
+    private IEmulatorDisplayService EmulatorDisplayService { get; }
 
     private INavigationService NavigationService { get; }
 
@@ -41,19 +41,19 @@ public sealed class MainViewModel : ObservableRecipient
     {
         base.OnActivated();
 
-        EmulatorService.UpdateAudioDataMessageHandlers.Add(UpdateAudioData);
+        EmulatorDisplayService.UpdateAudioDataMessageHandlers.Add(UpdateAudioData);
     }
 
     protected override void OnDeactivated()
     {
         base.OnDeactivated();
 
-        EmulatorService.UpdateAudioDataMessageHandlers.Remove(UpdateAudioData);
+        EmulatorDisplayService.UpdateAudioDataMessageHandlers.Remove(UpdateAudioData);
     }
 
     private void UpdateAudioData(UpdateAudioDataMessage message)
     {
-        throw new NotImplementedException();
+        // TODO
     }
 
     #region EmulationStart

@@ -42,7 +42,8 @@ public sealed class AppStartup
         services
             .Configure<AppSettings>(context.Configuration.GetSection(nameof(AppSettings)))
             .AddSingleton<INavigationService, NavigationService>()
-            .AddSingleton<IEmulatorService, EmulatorService>()
+            .AddSingleton<IEmulatorControlService, EmulatorControlService>()
+            .AddSingleton<IEmulatorDisplayService, EmulatorDisplayService>()
             .AddSingleton<MainModel>()
             .AddSingleton<MainViewModel>()
             .AddSingleton<VideoMemoryModel>()
