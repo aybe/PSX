@@ -1,4 +1,4 @@
-﻿using PSX.Frontend.Core.Interface;
+﻿using PSX.Frontend.Interface;
 
 namespace PSX.Frontend.WPF.Windows;
 

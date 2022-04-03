@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.Win32;
-using PSX.Frontend.Core.Services;
+using PSX.Frontend.Services;
 
 namespace PSX.Frontend.WPF.Services;
 

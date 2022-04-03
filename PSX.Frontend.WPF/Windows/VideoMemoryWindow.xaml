@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:interface="clr-namespace:PSX.Frontend.Core.Interface;assembly=PSX.Frontend.Core"
+        xmlns:interface="clr-namespace:PSX.Frontend.Interface;assembly=PSX.Frontend"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance interface:VideoMemoryViewModel}"
         MinWidth="1024" MinHeight="512" Width="1024" Height="512"

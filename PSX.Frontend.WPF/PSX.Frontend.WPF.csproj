@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PSX.Frontend.Core\PSX.Frontend.Core.csproj" />
+    <ProjectReference Include="..\PSX.Frontend\PSX.Frontend.csproj" />
   </ItemGroup>
 
 </Project>
