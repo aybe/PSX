@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Devices.Optical", "PSX.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Devices.Storage", "PSX.Devices.Storage\PSX.Devices.Storage.csproj", "{FC70723D-0950-4BCE-AA12-5FE3908F6A7B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Frontend", "PSX.Frontend\PSX.Frontend.csproj", "{15B99426-16BC-4300-B9AC-24A9F6EDFA06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Frontend.WPF", "PSX.Frontend.WPF\PSX.Frontend.WPF.csproj", "{15B99426-16BC-4300-B9AC-24A9F6EDFA06}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSX.Frontend.Core", "PSX.Frontend.Core\PSX.Frontend.Core.csproj", "{7F5F6949-1E5A-48B9-A4DE-3DF325BDA886}"
 EndProject

@@ -1,15 +1,15 @@
 ﻿using PSX.Frontend.Core.Interface;
 
-namespace PSX.Frontend.Windows;
+namespace PSX.Frontend.WPF.Windows;
 
-public partial class MainWindow : IMainView
+public partial class VideoMemoryWindow : IVideoMemoryView
 {
-    public MainWindow(MainViewModel model)
+    public VideoMemoryWindow(VideoMemoryViewModel model)
     {
         InitializeComponent();
 
         DataContext = model;
-  
+
         Loaded += (_, _) =>
         {
             model.IsActive = true;

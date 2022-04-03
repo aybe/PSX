@@ -1,6 +1,6 @@
 ﻿using PSX.Frontend.Core.Interface;
 
-namespace PSX.Frontend.Windows;
+namespace PSX.Frontend.WPF.Windows;
 
 public partial class VideoScreenWindow : IVideoScreenView
 {

@@ -8,10 +8,10 @@ using PSX.Frontend.Core;
 using PSX.Frontend.Core.Interface;
 using PSX.Frontend.Core.Services;
 using PSX.Frontend.Core.Services.Navigation;
-using PSX.Frontend.Services;
-using PSX.Frontend.Windows;
+using PSX.Frontend.WPF.Services;
+using PSX.Frontend.WPF.Windows;
 
-namespace PSX.Frontend;
+namespace PSX.Frontend.WPF;
 
 public partial class App : IApplicationService
 {

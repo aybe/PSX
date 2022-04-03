@@ -2,7 +2,7 @@
 using Microsoft.Win32;
 using PSX.Frontend.Core.Services;
 
-namespace PSX.Frontend.Services;
+namespace PSX.Frontend.WPF.Services;
 
 internal sealed class FileService : IFileService
 {
