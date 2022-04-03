@@ -11,6 +11,7 @@ using Microsoft.Toolkit.Mvvm.Messaging;
 using PSX.Frontend.Core.Old.Messages;
 using PSX.Frontend.Core.Old.Navigation;
 using PSX.Frontend.Core.Old.Services;
+using PSX.Frontend.Core.Services.Emulator;
 using PSX.Logging;
 using Serilog;
 using Serilog.Events;

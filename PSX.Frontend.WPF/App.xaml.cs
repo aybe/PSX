@@ -9,9 +9,11 @@ using PSX.Frontend.Core.Old;
 using PSX.Frontend.Core.Old.Models;
 using PSX.Frontend.Core.Old.Navigation;
 using PSX.Frontend.Core.Old.Services;
+using PSX.Frontend.Core.Services.Emulator;
 using PSX.Frontend.WPF.Services;
 using PSX.Frontend.WPF.Views;
 using PSX.Logging;
+using AppStartup = PSX.Frontend.Core.Old.AppStartup;
 
 namespace PSX.Frontend.WPF;
 

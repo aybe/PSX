@@ -21,4 +21,9 @@
 		<PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\PSX.Core\PSX.Core.csproj" />
+	  <ProjectReference Include="..\PSX\PSX.csproj" />
+	</ItemGroup>
+
 </Project>

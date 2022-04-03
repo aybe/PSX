@@ -21,6 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\PSX.Frontend.Core\PSX.Frontend.Core.csproj" />
 		<ProjectReference Include="..\PSX.Logging\PSX.Logging.csproj" />
 		<ProjectReference Include="..\PSX\PSX.csproj" />
 	</ItemGroup>
