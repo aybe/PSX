@@ -2,7 +2,7 @@
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using PSX.Frontend.Core.Models;
-using PSX.Frontend.Core.Navigation;
+using PSX.Frontend.Core.Services;
 using PSX.Frontend.Core.Views;
 
 namespace PSX.Frontend.Core.ViewModels;

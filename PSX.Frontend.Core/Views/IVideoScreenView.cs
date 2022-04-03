@@ -1,4 +1,4 @@
-﻿using PSX.Frontend.Core.Navigation;
+﻿using PSX.Frontend.Core.Services;
 
 namespace PSX.Frontend.Core.Views;
 

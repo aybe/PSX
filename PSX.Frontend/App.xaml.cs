@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PSX.Frontend.Core;
-using PSX.Frontend.Core.Navigation;
 using PSX.Frontend.Core.Services;
 using PSX.Frontend.Core.Views;
 using PSX.Frontend.Services;

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace PSX.Frontend.Core.Navigation;
+namespace PSX.Frontend.Core.Services;
 
 public sealed class NavigationCancelEventArgs : CancelEventArgs
 {
