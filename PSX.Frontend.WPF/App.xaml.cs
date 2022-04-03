@@ -44,7 +44,7 @@ public partial class App
                     services
                         .AddSingleton<IOpenFileService, OpenFileService>()
                         .AddSingleton<IApplicationService, ApplicationService>()
-                        .AddSingleton<EmulatorUpdate>()
+                        .AddSingleton<EmulatorService>()
                         .AddSingleton<IShellView, ShellView>()
                         .AddTransient<ILogView, LogView>()
                         ;

@@ -1,4 +1,4 @@
 ﻿namespace PSX.Frontend.Core.Services.Emulator;
 
 // BUG this should pass depth as well so we don't have to carry some state
-public record EmulatorUpdateVideoDataMessage(IntSize Size, IntRect Rect, int[] Buffer24, ushort[] Buffer16);
+public record UpdateVideoDataMessage(IntSize Size, IntRect Rect, int[] Buffer24, ushort[] Buffer16);

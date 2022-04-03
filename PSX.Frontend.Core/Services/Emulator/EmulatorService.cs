@@ -1,6 +1,6 @@
 ﻿namespace PSX.Frontend.Core.Services.Emulator;
 
-public sealed class EmulatorUpdate : IEmulatorUpdate
+public sealed class EmulatorService : IEmulatorService
 {
     private ushort DisplayVRamXStart { get; set; }
 
@@ -15,26 +15,26 @@ public sealed class EmulatorUpdate : IEmulatorUpdate
     private ushort DisplayY1 { get; set; }
 
     [Obsolete]
-    public EmulatorUpdateAudioDataMessageHandler? UpdateAudioDataHandler { get; set; }
+    public UpdateAudioDataMessageHandler? UpdateAudioDataHandler { get; set; }
 
     [Obsolete]
-    public EmulatorUpdateVideoDataMessageHandler? UpdateVideoDataHandler { get; set; }
+    public UpdateVideoDataMessageHandler? UpdateVideoDataHandler { get; set; }
 
     [Obsolete]
-    public EmulatorUpdateVideoSizeMessageHandler? UpdateVideoSizeHandler { get; set; }
+    public UpdateVideoSizeMessageHandler? UpdateVideoSizeHandler { get; set; }
 
-    public IList<EmulatorUpdateAudioDataMessageHandler> UpdateAudioDataMessageHandlers { get; } = new List<EmulatorUpdateAudioDataMessageHandler>();
+    public IList<UpdateAudioDataMessageHandler> UpdateAudioDataMessageHandlers { get; } = new List<UpdateAudioDataMessageHandler>();
 
-    public IList<EmulatorUpdateVideoDataMessageHandler> UpdateVideoDataMessageHandlers { get; } = new List<EmulatorUpdateVideoDataMessageHandler>();
+    public IList<UpdateVideoDataMessageHandler> UpdateVideoDataMessageHandlers { get; } = new List<UpdateVideoDataMessageHandler>();
 
-    public IList<EmulatorUpdateVideoSizeMessageHandler> UpdateVideoSizeMessageHandlers { get; } = new List<EmulatorUpdateVideoSizeMessageHandler>();
+    public IList<UpdateVideoSizeMessageHandler> UpdateVideoSizeMessageHandlers { get; } = new List<UpdateVideoSizeMessageHandler>();
 
     public void Play(byte[] samples)
     {
         if (UpdateAudioDataHandler is null)
             return;
 
-        var message = new EmulatorUpdateAudioDataMessage(samples);
+        var message = new UpdateAudioDataMessage(samples);
 
         UpdateAudioDataHandler(message);
 
@@ -52,7 +52,7 @@ public sealed class EmulatorUpdate : IEmulatorUpdate
         var size = new IntSize(DisplayVRamXStart, DisplayVRamYStart);
         var rect = new IntRect(DisplayX1, DisplayY1, DisplayX2, DisplayY2);
 
-        var message = new EmulatorUpdateVideoDataMessage(size, rect, buffer24, buffer16);
+        var message = new UpdateVideoDataMessage(size, rect, buffer24, buffer16);
 
         UpdateVideoDataHandler(message);
 
@@ -67,7 +67,7 @@ public sealed class EmulatorUpdate : IEmulatorUpdate
         if (UpdateVideoSizeHandler is null)
             return;
 
-        var message = new EmulatorUpdateVideoSizeMessage(new IntSize(horizontalRes, verticalRes), is24BitDepth);
+        var message = new UpdateVideoSizeMessage(new IntSize(horizontalRes, verticalRes), is24BitDepth);
 
         UpdateVideoSizeHandler(message);
 

@@ -18,9 +18,9 @@ namespace PSX.Frontend.WPF.Views;
 
 internal sealed partial class ShellView :
     IShellView,
-    IRecipient<EmulatorUpdateAudioDataMessage>,
-    IRecipient<EmulatorUpdateVideoDataMessage>,
-    IRecipient<EmulatorUpdateVideoSizeMessage>
+    IRecipient<UpdateAudioDataMessage>,
+    IRecipient<UpdateVideoDataMessage>,
+    IRecipient<UpdateVideoSizeMessage>
 {
     public ShellView(ShellViewModel model)
     {
@@ -44,7 +44,7 @@ internal sealed partial class ShellView :
 
     private int EmulatorSoundStream { get; set; }
 
-    void IRecipient<EmulatorUpdateAudioDataMessage>.Receive(EmulatorUpdateAudioDataMessage message)
+    void IRecipient<UpdateAudioDataMessage>.Receive(UpdateAudioDataMessage message)
     {
         if (EmulatorSoundStream is 0)
             return;
@@ -62,7 +62,7 @@ internal sealed partial class ShellView :
         }
     }
 
-    unsafe void IRecipient<EmulatorUpdateVideoDataMessage>.Receive(EmulatorUpdateVideoDataMessage message)
+    unsafe void IRecipient<UpdateVideoDataMessage>.Receive(UpdateVideoDataMessage message)
     {
         Dispatcher.BeginInvoke(() =>
         {
@@ -103,7 +103,7 @@ internal sealed partial class ShellView :
         });
     }
 
-    void IRecipient<EmulatorUpdateVideoSizeMessage>.Receive(EmulatorUpdateVideoSizeMessage message)
+    void IRecipient<UpdateVideoSizeMessage>.Receive(UpdateVideoSizeMessage message)
     {
         Dispatcher.BeginInvoke(() =>
         {
