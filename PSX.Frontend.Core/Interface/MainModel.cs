@@ -3,10 +3,8 @@ using PSX.Frontend.Core.Services.Emulator;
 
 namespace PSX.Frontend.Core.Interface;
 
-public sealed class MainModel : IEmulatorPlayer
+public sealed class MainModel : IEmulatorServiceController
 {
-    private readonly IEmulatorPlayer Player = new EmulatorPlayer(); // BUG use DI
-
     public MainModel(IApplicationService applicationService, IEmulatorService emulatorService, IFileService fileService)
     {
         ApplicationService = applicationService ?? throw new ArgumentNullException(nameof(applicationService));
@@ -29,7 +27,7 @@ public sealed class MainModel : IEmulatorPlayer
         if (path is null)
             return;
 
-        Player.Setup(EmulatorService, path);
+        EmulatorService.Setup(path);
     }
 
     public void Shutdown()
@@ -39,44 +37,44 @@ public sealed class MainModel : IEmulatorPlayer
 
     #region IEmulatorPlayer
 
-    public bool CanStart => Player.CanStart;
+    public bool CanStart => EmulatorService.CanStart;
 
-    public bool CanStop => Player.CanStop;
+    public bool CanStop => EmulatorService.CanStop;
 
-    public bool CanPause => Player.CanPause;
+    public bool CanPause => EmulatorService.CanPause;
 
-    public bool CanContinue => Player.CanContinue;
+    public bool CanContinue => EmulatorService.CanContinue;
 
-    public bool CanFrame => Player.CanFrame;
+    public bool CanFrame => EmulatorService.CanFrame;
 
-    public void Setup(IEmulatorService service, string content)
+    public void Setup(string content)
     {
-        Player.Setup(service, content);
+        EmulatorService.Setup(content);
     }
 
     public void Start()
     {
-        Player.Start();
+        EmulatorService.Start();
     }
 
     public void Stop()
     {
-        Player.Stop();
+        EmulatorService.Stop();
     }
 
     public void Pause()
     {
-        Player.Pause();
+        EmulatorService.Pause();
     }
 
     public void Continue()
     {
-        Player.Continue();
+        EmulatorService.Continue();
     }
 
     public void Frame()
     {
-        Player.Frame();
+        EmulatorService.Frame();
     }
 
     #endregion

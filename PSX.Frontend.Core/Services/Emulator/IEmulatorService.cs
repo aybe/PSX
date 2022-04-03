@@ -2,8 +2,8 @@
 
 namespace PSX.Frontend.Core.Services.Emulator;
 
-public interface IEmulatorService : IHostWindow
-// TODO rename all members and types
+public interface IEmulatorService : IHostWindow, IEmulatorServiceController
+    // TODO rename all members and types
 {
     IList<UpdateAudioDataMessageHandler> UpdateAudioDataMessageHandlers { get; }
 

@@ -1,6 +1,6 @@
 ﻿namespace PSX.Frontend.Core.Services.Emulator;
 
-public interface IEmulatorPlayer // TODO as a service?
+public interface IEmulatorServiceController
 {
     bool CanStart { get; }
 
@@ -12,7 +12,7 @@ public interface IEmulatorPlayer // TODO as a service?
 
     bool CanFrame { get; }
 
-    void Setup(IEmulatorService service, string content);
+    void Setup(string content);
 
     void Start();
 
