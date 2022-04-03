@@ -10,15 +10,6 @@ public sealed class EmulatorService : IEmulatorService
 
     private CancellationTokenSource EmulatorTokenSource { get; set; } = new();
 
-    [Obsolete] // TODO delete
-    public UpdateAudioDataMessageHandler? UpdateAudioDataHandler { get; set; }
-
-    [Obsolete] // TODO delete
-    public UpdateVideoDataMessageHandler? UpdateVideoDataHandler { get; set; }
-
-    [Obsolete] // TODO delete
-    public UpdateVideoSizeMessageHandler? UpdateVideoSizeHandler { get; set; }
-
     private void UpdateLoop(object? cts)
     {
         if (cts is not CancellationToken token)
@@ -173,12 +164,7 @@ public sealed class EmulatorService : IEmulatorService
 
     public void Play(byte[] samples)
     {
-        if (UpdateAudioDataHandler is null)
-            return;
-
         var message = new UpdateAudioDataMessage(samples);
-
-        UpdateAudioDataHandler(message);
 
         foreach (var handler in UpdateAudioDataMessageHandlers)
         {
@@ -188,15 +174,10 @@ public sealed class EmulatorService : IEmulatorService
 
     public void Render(int[] buffer24, ushort[] buffer16)
     {
-        if (UpdateVideoDataHandler is null)
-            return;
-
         var size = new IntSize(DisplayVRamXStart, DisplayVRamYStart);
         var rect = new IntRect(DisplayX1, DisplayY1, DisplayX2, DisplayY2);
 
         var message = new UpdateVideoDataMessage(size, rect, buffer24, buffer16);
-
-        UpdateVideoDataHandler(message);
 
         foreach (var handler in UpdateVideoDataMessageHandlers)
         {
@@ -206,12 +187,7 @@ public sealed class EmulatorService : IEmulatorService
 
     public void SetDisplayMode(int horizontalRes, int verticalRes, bool is24BitDepth)
     {
-        if (UpdateVideoSizeHandler is null)
-            return;
-
         var message = new UpdateVideoSizeMessage(new IntSize(horizontalRes, verticalRes), is24BitDepth);
-
-        UpdateVideoSizeHandler(message);
 
         foreach (var handler in UpdateVideoSizeMessageHandlers)
         {

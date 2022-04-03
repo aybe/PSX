@@ -204,9 +204,9 @@ public sealed class ShellViewModel : ObservableRecipient, IObservableLog
         if (EmulatorContent is null)
             throw new InvalidOperationException();
 
-        EmulatorService.UpdateAudioDataHandler = message => WeakReferenceMessenger.Default.Send(message);
-        EmulatorService.UpdateVideoDataHandler = message => WeakReferenceMessenger.Default.Send(message);
-        EmulatorService.UpdateVideoSizeHandler = message => WeakReferenceMessenger.Default.Send(message);
+        EmulatorService.UpdateAudioDataMessageHandlers.Add(message => WeakReferenceMessenger.Default.Send(message));
+        EmulatorService.UpdateVideoDataMessageHandlers.Add(message => WeakReferenceMessenger.Default.Send(message));
+        EmulatorService.UpdateVideoSizeMessageHandlers.Add(message => WeakReferenceMessenger.Default.Send(message));
 
         Emulator = new Emulator(EmulatorService, EmulatorContent);
 
