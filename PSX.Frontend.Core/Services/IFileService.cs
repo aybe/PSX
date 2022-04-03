@@ -1,6 +1,6 @@
 ﻿namespace PSX.Frontend.Core.Services;
 
-public interface IStorageService
+public interface IFileService
 {
     string? OpenFile(string filter);
 }

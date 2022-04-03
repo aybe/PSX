@@ -40,7 +40,7 @@ public partial class App : IApplicationService
                 {
                     collection
                         .AddSingleton<IApplicationService>(this)
-                        .AddSingleton<IStorageService, StorageService>()
+                        .AddSingleton<IFileService, FileService>()
                         .AddTransient<IMainView, MainWindow>()
                         .AddTransient<IVideoScreenView, VideoScreenWindow>()
                         .AddTransient<IVideoMemoryView, VideoMemoryWindow>()
