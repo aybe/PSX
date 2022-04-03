@@ -42,6 +42,11 @@ public sealed class AppStartup
             .Configure<AppSettings>(context.Configuration.GetSection(nameof(AppSettings)))
             .AddSingleton<INavigationService, NavigationService>()
             .AddSingleton<MainModel>()
-            .AddSingleton<MainViewModel>();
+            .AddSingleton<MainViewModel>()
+            .AddSingleton<ViewMemoryModel>()
+            .AddSingleton<ViewMemoryViewModel>()
+            .AddSingleton<ViewScreenModel>()
+            .AddSingleton<ViewScreenViewModel>()
+            ;
     }
 }
