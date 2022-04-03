@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PSX.Frontend.Core.Models;
+using PSX.Frontend.Core.Interface;
 using PSX.Frontend.Core.Services;
-using PSX.Frontend.Core.ViewModels;
 
 namespace PSX.Frontend.Core;
 

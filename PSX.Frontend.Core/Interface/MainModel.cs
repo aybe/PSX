@@ -1,6 +1,6 @@
 ﻿using PSX.Frontend.Core.Services;
 
-namespace PSX.Frontend.Core.Models;
+namespace PSX.Frontend.Core.Interface;
 
 public sealed class MainModel
 {

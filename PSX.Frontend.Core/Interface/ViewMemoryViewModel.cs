@@ -1,7 +1,6 @@
 ﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
-using PSX.Frontend.Core.Models;
 
-namespace PSX.Frontend.Core.ViewModels;
+namespace PSX.Frontend.Core.Interface;
 
 public sealed class ViewMemoryViewModel : ObservableRecipient
 {

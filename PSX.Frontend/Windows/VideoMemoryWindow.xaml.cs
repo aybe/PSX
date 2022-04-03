@@ -1,5 +1,4 @@
-﻿using PSX.Frontend.Core.ViewModels;
-using PSX.Frontend.Core.Views;
+﻿using PSX.Frontend.Core.Interface;
 
 namespace PSX.Frontend.Windows;
 
