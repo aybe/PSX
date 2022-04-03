@@ -11,6 +11,11 @@
     <Window.InputBindings>
         <KeyBinding Command="{Binding OpenFile}" Modifiers="Control" Key="O" />
         <KeyBinding Command="{Binding Shutdown}" Modifiers="Alt" Key="F4" />
+        <KeyBinding Command="{Binding EmulationStart}" Key="F5" />
+        <KeyBinding Command="{Binding EmulationStop}" Key="F6" />
+        <KeyBinding Command="{Binding EmulationPause}" Key="F7" />
+        <KeyBinding Command="{Binding EmulationFrame}" Key="F8" />
+        <KeyBinding Command="{Binding EmulationContinue}" Key="F9" />
         <KeyBinding Command="{Binding OpenVideoScreen}" Key="F1" />
         <KeyBinding Command="{Binding OpenVideoMemory}" Key="F2" />
     </Window.InputBindings>
@@ -23,6 +28,13 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" InputGestureText="Ctrl+O" Command="{Binding OpenFile}" />
                 <MenuItem Header="_Close" InputGestureText="Alt+F4" Command="{Binding Shutdown}" />
+            </MenuItem>
+            <MenuItem Header="_Emulator">
+                <MenuItem Header="_Start" InputGestureText="F5" Command="{Binding EmulationStart}" />
+                <MenuItem Header="_Stop" InputGestureText="F6" Command="{Binding EmulationStop}" />
+                <MenuItem Header="_Pause" InputGestureText="F7" Command="{Binding EmulationPause}" />
+                <MenuItem Header="_Frame" InputGestureText="F8" Command="{Binding EmulationFrame}" />
+                <MenuItem Header="_Continue" InputGestureText="F9" Command="{Binding EmulationContinue}" />
             </MenuItem>
             <MenuItem Header="_Window">
                 <MenuItem Header="Video _Screen" InputGestureText="F1" Command="{Binding OpenVideoScreen}" />

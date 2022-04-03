@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
-using PSX.Frontend.Core.Services;
 using PSX.Frontend.Core.Services.Emulator;
 using PSX.Frontend.Core.Services.Navigation;
 
@@ -24,6 +23,12 @@ public sealed class MainViewModel : ObservableRecipient
         OpenVideoScreen = new RelayCommand(OpenVideoScreenExecute, OpenVideoScreenCanExecute);
 
         OpenVideoMemory = new RelayCommand(OpenVideoMemoryExecute, OpenVideoMemoryCanExecute);
+
+        EmulationStart    = new RelayCommand(EmulationStartExecute,    EmulationStartCanExecute);
+        EmulationStop     = new RelayCommand(EmulationStopExecute,     EmulationStopCanExecute);
+        EmulationPause    = new RelayCommand(EmulationPauseExecute,    EmulationPauseCanExecute);
+        EmulationFrame    = new RelayCommand(EmulationFrameExecute,    EmulationFrameCanExecute);
+        EmulationContinue = new RelayCommand(EmulationContinueExecute, EmulationContinueCanExecute);
     }
 
     private MainModel Model { get; }
@@ -50,6 +55,107 @@ public sealed class MainViewModel : ObservableRecipient
     {
         throw new NotImplementedException();
     }
+
+    #region EmulationStart
+
+    public RelayCommand EmulationStart { get; }
+
+    private bool EmulationStartCanExecute()
+    {
+        return Model.CanStart;
+    }
+
+    private void EmulationStartExecute()
+    {
+        Model.Start();
+
+        EmulationStart.NotifyCanExecuteChanged();
+        EmulationStop.NotifyCanExecuteChanged();
+        EmulationPause.NotifyCanExecuteChanged();
+        EmulationContinue.NotifyCanExecuteChanged();
+        EmulationFrame.NotifyCanExecuteChanged();
+    }
+
+    #endregion
+
+    #region EmulationStop
+
+    public RelayCommand EmulationStop { get; }
+
+    private bool EmulationStopCanExecute()
+    {
+        return Model.CanStop;
+    }
+
+    private void EmulationStopExecute()
+    {
+        Model.Stop();
+
+        EmulationStart.NotifyCanExecuteChanged();
+        EmulationStop.NotifyCanExecuteChanged();
+    }
+
+    #endregion
+
+    #region EmulationPause
+
+    public RelayCommand EmulationPause { get; }
+
+    private bool EmulationPauseCanExecute()
+    {
+        return Model.CanPause;
+    }
+
+    private void EmulationPauseExecute()
+    {
+        Model.Pause();
+
+        EmulationPause.NotifyCanExecuteChanged();
+        EmulationFrame.NotifyCanExecuteChanged();
+        EmulationContinue.NotifyCanExecuteChanged();
+    }
+
+    #endregion
+
+    #region EmulationFrame
+
+    public RelayCommand EmulationFrame { get; }
+
+    private bool EmulationFrameCanExecute()
+    {
+        return Model.CanFrame;
+    }
+
+    private void EmulationFrameExecute()
+    {
+        Model.Frame();
+
+        EmulationPause.NotifyCanExecuteChanged();
+        EmulationFrame.NotifyCanExecuteChanged();
+        EmulationContinue.NotifyCanExecuteChanged();
+    }
+
+    #endregion
+
+    #region EmulationContinue
+
+    public RelayCommand EmulationContinue { get; }
+
+    private bool EmulationContinueCanExecute()
+    {
+        return Model.CanContinue;
+    }
+
+    private void EmulationContinueExecute()
+    {
+        Model.Continue();
+
+        EmulationPause.NotifyCanExecuteChanged();
+        EmulationFrame.NotifyCanExecuteChanged();
+        EmulationContinue.NotifyCanExecuteChanged();
+    }
+
+    #endregion
 
     #region OpenVideoScreen
 
@@ -98,6 +204,11 @@ public sealed class MainViewModel : ObservableRecipient
     private void OpenFileExecute()
     {
         Model.OpenFile();
+        EmulationStart.NotifyCanExecuteChanged();
+        EmulationStop.NotifyCanExecuteChanged();
+        EmulationPause.NotifyCanExecuteChanged();
+        EmulationFrame.NotifyCanExecuteChanged();
+        EmulationContinue.NotifyCanExecuteChanged();
     }
 
     #endregion
