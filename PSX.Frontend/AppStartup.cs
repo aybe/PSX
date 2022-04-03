@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PSX.Frontend.Interface;
-using PSX.Frontend.Services.Emulator;
+using PSX.Frontend.Services.Emulation;
 using PSX.Frontend.Services.Navigation;
 
 namespace PSX.Frontend;

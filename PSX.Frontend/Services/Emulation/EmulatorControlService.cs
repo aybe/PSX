@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace PSX.Frontend.Services.Emulator;
+namespace PSX.Frontend.Services.Emulation;
 
 internal sealed class EmulatorControlService : IEmulatorControlService
 {

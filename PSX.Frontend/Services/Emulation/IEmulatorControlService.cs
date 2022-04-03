@@ -1,4 +1,4 @@
-﻿namespace PSX.Frontend.Services.Emulator;
+﻿namespace PSX.Frontend.Services.Emulation;
 
 public interface IEmulatorControlService
 {

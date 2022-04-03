@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
-using PSX.Frontend.Services.Emulator;
+using PSX.Frontend.Services.Emulation;
 using PSX.Frontend.Services.Navigation;
 
 namespace PSX.Frontend.Interface;

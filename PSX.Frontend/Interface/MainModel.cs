@@ -1,5 +1,5 @@
 ﻿using PSX.Frontend.Services;
-using PSX.Frontend.Services.Emulator;
+using PSX.Frontend.Services.Emulation;
 
 namespace PSX.Frontend.Interface;
 

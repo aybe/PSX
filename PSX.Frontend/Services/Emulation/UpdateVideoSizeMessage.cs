@@ -1,3 +1,3 @@
-﻿namespace PSX.Frontend.Services.Emulator;
+﻿namespace PSX.Frontend.Services.Emulation;
 
 public record UpdateVideoSizeMessage(IntSize Size, bool Is24Bit);

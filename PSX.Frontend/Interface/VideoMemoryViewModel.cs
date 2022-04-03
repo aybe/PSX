@@ -1,5 +1,5 @@
 ﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
-using PSX.Frontend.Services.Emulator;
+using PSX.Frontend.Services.Emulation;
 
 namespace PSX.Frontend.Interface;
 
