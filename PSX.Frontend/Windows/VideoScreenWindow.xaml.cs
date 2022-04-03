@@ -4,7 +4,7 @@ namespace PSX.Frontend.Windows;
 
 public partial class VideoScreenWindow : IVideoScreenView
 {
-    public VideoScreenWindow(ViewScreenViewModel model)
+    public VideoScreenWindow(VideoScreenViewModel model)
     {
         InitializeComponent();
 

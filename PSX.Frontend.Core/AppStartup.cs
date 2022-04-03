@@ -42,10 +42,10 @@ public sealed class AppStartup
             .AddSingleton<INavigationService, NavigationService>()
             .AddSingleton<MainModel>()
             .AddSingleton<MainViewModel>()
-            .AddSingleton<ViewMemoryModel>()
-            .AddSingleton<ViewMemoryViewModel>()
-            .AddSingleton<ViewScreenModel>()
-            .AddSingleton<ViewScreenViewModel>()
+            .AddSingleton<VideoMemoryModel>()
+            .AddSingleton<VideoMemoryViewModel>()
+            .AddSingleton<VideoScreenModel>()
+            .AddSingleton<VideoScreenViewModel>()
             ;
     }
 }

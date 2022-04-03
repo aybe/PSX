@@ -1,5 +1,5 @@
 ﻿namespace PSX.Frontend.Core.Interface;
 
-public sealed class ViewScreenModel
+public sealed class VideoMemoryModel
 {
 }

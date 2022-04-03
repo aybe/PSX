@@ -4,7 +4,7 @@ namespace PSX.Frontend.Windows;
 
 public partial class VideoMemoryWindow : IVideoMemoryView
 {
-    public VideoMemoryWindow(ViewMemoryViewModel model)
+    public VideoMemoryWindow(VideoMemoryViewModel model)
     {
         InitializeComponent();
 

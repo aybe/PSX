@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:interface="clr-namespace:PSX.Frontend.Core.Interface;assembly=PSX.Frontend.Core"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance interface:ViewMemoryViewModel}"
+        d:DataContext="{d:DesignInstance interface:VideoMemoryViewModel}"
         MinWidth="1024" MinHeight="512" Width="1024" Height="512"
         Title="PSX Video Memory">
     <Grid />
