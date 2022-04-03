@@ -1,4 +1,5 @@
-﻿using PSX.Frontend.Interface;
+﻿using System;
+using PSX.Frontend.Interface;
 
 namespace PSX.Frontend.WPF.Windows;
 
@@ -6,6 +7,9 @@ public partial class VideoMemoryWindow : IVideoMemoryView
 {
     public VideoMemoryWindow(VideoMemoryViewModel model)
     {
+        if (model is null)
+            throw new ArgumentNullException(nameof(model));
+
         InitializeComponent();
 
         DataContext = model;
