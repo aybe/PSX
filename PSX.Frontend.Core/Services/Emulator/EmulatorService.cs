@@ -2,18 +2,6 @@
 
 public sealed class EmulatorService : IEmulatorService
 {
-    private ushort DisplayVRamXStart { get; set; }
-
-    private ushort DisplayVRamYStart { get; set; }
-
-    private ushort DisplayX1 { get; set; }
-
-    private ushort DisplayX2 { get; set; }
-
-    private ushort DisplayY2 { get; set; }
-
-    private ushort DisplayY1 { get; set; }
-
     [Obsolete]
     public UpdateAudioDataMessageHandler? UpdateAudioDataHandler { get; set; }
 
@@ -28,6 +16,20 @@ public sealed class EmulatorService : IEmulatorService
     public IList<UpdateVideoDataMessageHandler> UpdateVideoDataMessageHandlers { get; } = new List<UpdateVideoDataMessageHandler>();
 
     public IList<UpdateVideoSizeMessageHandler> UpdateVideoSizeMessageHandlers { get; } = new List<UpdateVideoSizeMessageHandler>();
+
+    #region IHostWindow
+
+    private ushort DisplayVRamXStart { get; set; }
+
+    private ushort DisplayVRamYStart { get; set; }
+
+    private ushort DisplayX1 { get; set; }
+
+    private ushort DisplayX2 { get; set; }
+
+    private ushort DisplayY2 { get; set; }
+
+    private ushort DisplayY1 { get; set; }
 
     public void Play(byte[] samples)
     {
@@ -94,4 +96,6 @@ public sealed class EmulatorService : IEmulatorService
         DisplayVRamXStart = displayVRamStartX;
         DisplayVRamYStart = displayVRamStartY;
     }
+
+    #endregion
 }
