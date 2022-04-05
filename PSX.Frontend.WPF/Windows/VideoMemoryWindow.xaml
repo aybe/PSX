@@ -4,9 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:interface="clr-namespace:PSX.Frontend.Interface;assembly=PSX.Frontend"
+        xmlns:controls="clr-namespace:PSX.Frontend.WPF.Controls"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance interface:VideoMemoryViewModel}"
         MinWidth="1024" MinHeight="512" Width="1024" Height="512"
         Title="PSX Video Memory">
-    <Grid />
+    <Grid>
+        <controls:VideoControl VideoControlType="Memory" />
+    </Grid>
 </Window>

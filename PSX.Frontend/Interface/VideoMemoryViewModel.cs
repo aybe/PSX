@@ -1,4 +1,6 @@
 ﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Messaging;
+using PSX.Frontend.Messages;
 using PSX.Frontend.Services.Emulation;
 
 namespace PSX.Frontend.Interface;
@@ -32,12 +34,31 @@ public sealed class VideoMemoryViewModel : ObservableRecipient
     }
 
     private void UpdateVideoData(UpdateVideoDataMessage message)
+        // TODO reuse
     {
-        // TODO
+        var msg = new UpdateBitmapMessage(
+            message.Size.Width,
+            message.Size.Height,
+            message.Rect.XMin,
+            message.Rect.XMax,
+            message.Rect.YMin,
+            message.Rect.YMax,
+            message.Buffer16,
+            message.Buffer24
+        );
+
+        WeakReferenceMessenger.Default.Send(msg);
     }
 
     private void UpdateVideoSize(UpdateVideoSizeMessage message)
+        // TODO reuse
     {
-        // TODO
+        var msg = new CreateBitmapMessage(
+            message.Size.Width,
+            message.Size.Height,
+            message.Is24Bit ? CreateBitmapFormat.Direct24 : CreateBitmapFormat.Direct15
+        );
+
+        WeakReferenceMessenger.Default.Send(msg);
     }
 }
