@@ -77,10 +77,6 @@ public partial class GPU
 
     private bool IsTextureDisabledAllowed;
 
-    private bool Last24;
-
-    private int LastHr, LastVr;
-
     //GP0
 
     private int MaskWhileDrawing;
@@ -1484,20 +1480,13 @@ public partial class GPU
         TimingHorizontal = DisplayMode.IsPAL ? 3406 : 3413;
         TimingVertical   = DisplayMode.IsPAL ? 314 : 263;
 
-        var horizontalRes = Resolutions[(DisplayMode.HorizontalResolution2 << 2) | DisplayMode.HorizontalResolution1];
-        var verticalRes = DisplayMode.IsVerticalResolution480 ? 480 : 240;
+        var hr = Resolutions[(DisplayMode.HorizontalResolution2 << 2) | DisplayMode.HorizontalResolution1];
+        var vr = DisplayMode.IsVerticalResolution480 ? 480 : 240;
 
-        if (LastHr == horizontalRes && LastVr == verticalRes && Last24 == DisplayMode.Is24BitDepth)
-            return;
-        
         Logger?.Debug(
-            "GP1_08_DisplayMode: H = {HRes}, VRes = {VRes}, 24Bit = {24Bit}", horizontalRes, verticalRes, DisplayMode.Is24BitDepth);
+            "GP1_08_DisplayMode: H = {HRes}, VRes = {VRes}, 24Bit = {24Bit}", hr, vr, DisplayMode.Is24BitDepth);
 
-        Window.SetDisplayMode(horizontalRes, verticalRes, DisplayMode.Is24BitDepth);
-
-        LastHr = horizontalRes;
-        LastVr = verticalRes;
-        Last24 = DisplayMode.Is24BitDepth;
+        Window.SetDisplayMode(hr, vr, DisplayMode.Is24BitDepth);
     }
 
     private void GP1_09_TextureDisable(uint value)
