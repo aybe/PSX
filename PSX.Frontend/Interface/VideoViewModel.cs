@@ -17,25 +17,25 @@ public sealed class VideoViewModel : ObservableRecipient
     {
         base.OnActivated();
 
-        EmulatorDisplayService.UpdateVideoDataMessageHandlers.Add(UpdateVideoData);
-        EmulatorDisplayService.UpdateVideoSizeMessageHandlers.Add(UpdateVideoSize);
+        EmulatorDisplayService.UpdateVideoDataHandlers.Add(UpdateVideoData);
+        EmulatorDisplayService.UpdateVideoSizeHandlers.Add(UpdateVideoSize);
     }
 
     protected override void OnDeactivated()
     {
         base.OnDeactivated();
 
-        EmulatorDisplayService.UpdateVideoDataMessageHandlers.Remove(UpdateVideoData);
-        EmulatorDisplayService.UpdateVideoSizeMessageHandlers.Remove(UpdateVideoSize);
+        EmulatorDisplayService.UpdateVideoDataHandlers.Remove(UpdateVideoData);
+        EmulatorDisplayService.UpdateVideoSizeHandlers.Remove(UpdateVideoSize);
     }
 
-    private static void UpdateVideoData(UpdateVideoDataMessage message)
+    private static void UpdateVideoData(UpdateVideoData data)
     {
-        WeakReferenceMessenger.Default.Send(message);
+        WeakReferenceMessenger.Default.Send(data);
     }
 
-    private static void UpdateVideoSize(UpdateVideoSizeMessage message)
+    private static void UpdateVideoSize(UpdateVideoSize size)
     {
-        WeakReferenceMessenger.Default.Send(message);
+        WeakReferenceMessenger.Default.Send(size);
     }
 }

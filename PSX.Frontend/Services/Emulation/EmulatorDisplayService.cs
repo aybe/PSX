@@ -24,15 +24,15 @@ public sealed class EmulatorDisplayService : IEmulatorDisplayService
 
     public void SetDisplayMode(int horizontalRes, int verticalRes, bool is24BitDepth)
     {
-        var message = new UpdateVideoSizeMessage(
+        var size = new UpdateVideoSize(
             horizontalRes,
             verticalRes,
             is24BitDepth ? UpdateVideoSizeFormat.Direct24 : UpdateVideoSizeFormat.Direct15
         );
 
-        foreach (var handler in UpdateVideoSizeMessageHandlers)
+        foreach (var handler in UpdateVideoSizeHandlers)
         {
-            handler(message);
+            handler(size);
         }
     }
 
@@ -50,7 +50,7 @@ public sealed class EmulatorDisplayService : IEmulatorDisplayService
 
     public void Render(int[] buffer24, ushort[] buffer16)
     {
-        var message = new UpdateVideoDataMessage(
+        var data = new UpdateVideoData(
             DisplayVRamXStart,
             DisplayVRamYStart,
             DisplayX1,
@@ -61,9 +61,9 @@ public sealed class EmulatorDisplayService : IEmulatorDisplayService
             buffer24
         );
 
-        foreach (var handler in UpdateVideoDataMessageHandlers)
+        foreach (var handler in UpdateVideoDataHandlers)
         {
-            handler(message);
+            handler(data);
         }
     }
 
@@ -71,7 +71,7 @@ public sealed class EmulatorDisplayService : IEmulatorDisplayService
     {
         var message = new UpdateAudioDataMessage(samples);
 
-        foreach (var handler in UpdateAudioDataMessageHandlers)
+        foreach (var handler in UpdateAudioDataHandlers)
         {
             handler(message);
         }
@@ -81,11 +81,11 @@ public sealed class EmulatorDisplayService : IEmulatorDisplayService
 
     #region IEmulatorDisplayService
 
-    public IList<UpdateAudioDataMessageHandler> UpdateAudioDataMessageHandlers { get; } = new List<UpdateAudioDataMessageHandler>();
+    public IList<UpdateAudioDataHandler> UpdateAudioDataHandlers { get; } = new List<UpdateAudioDataHandler>();
 
-    public IList<UpdateVideoDataMessageHandler> UpdateVideoDataMessageHandlers { get; } = new List<UpdateVideoDataMessageHandler>();
+    public IList<UpdateVideoDataHandler> UpdateVideoDataHandlers { get; } = new List<UpdateVideoDataHandler>();
 
-    public IList<UpdateVideoSizeMessageHandler> UpdateVideoSizeMessageHandlers { get; } = new List<UpdateVideoSizeMessageHandler>();
+    public IList<UpdateVideoSizeHandler> UpdateVideoSizeHandlers { get; } = new List<UpdateVideoSizeHandler>();
 
     #endregion
 }

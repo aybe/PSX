@@ -1,8 +1,8 @@
 ﻿namespace PSX.Frontend.Services.Emulation;
 
-public sealed class UpdateVideoSizeMessage
+public sealed class UpdateVideoSize
 {
-    public UpdateVideoSizeMessage(int width, int height, UpdateVideoSizeFormat format)
+    public UpdateVideoSize(int width, int height, UpdateVideoSizeFormat format)
     {
         Width  = width;
         Height = height;

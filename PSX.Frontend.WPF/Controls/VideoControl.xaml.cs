@@ -28,12 +28,12 @@ public partial class VideoControl
         switch (e.NewValue)
         {
             case true:
-                WeakReferenceMessenger.Default.Register<UpdateVideoSizeMessage>(this, OnCreateBitmap);
-                WeakReferenceMessenger.Default.Register<UpdateVideoDataMessage>(this, OnUpdateBitmap);
+                WeakReferenceMessenger.Default.Register<UpdateVideoSize>(this, OnCreateBitmap);
+                WeakReferenceMessenger.Default.Register<UpdateVideoData>(this, OnUpdateBitmap);
                 break;
             case false:
-                WeakReferenceMessenger.Default.Unregister<UpdateVideoSizeMessage>(this);
-                WeakReferenceMessenger.Default.Unregister<UpdateVideoDataMessage>(this);
+                WeakReferenceMessenger.Default.Unregister<UpdateVideoSize>(this);
+                WeakReferenceMessenger.Default.Unregister<UpdateVideoData>(this);
                 break;
         }
     }
@@ -58,37 +58,37 @@ public partial class VideoControl
 
     #region Create Bitmap
 
-    private void OnCreateBitmap(object recipient, UpdateVideoSizeMessage message)
+    private void OnCreateBitmap(object recipient, UpdateVideoSize size)
     {
-        Dispatcher.BeginInvoke(OnCreateBitmapImpl, message);
+        Dispatcher.BeginInvoke(OnCreateBitmapImpl, size);
     }
 
-    private void OnCreateBitmapImpl(UpdateVideoSizeMessage message)
+    private void OnCreateBitmapImpl(UpdateVideoSize size)
     {
-        if (message is null)
-            throw new ArgumentNullException(nameof(message));
+        if (size is null)
+            throw new ArgumentNullException(nameof(size));
 
         var pixelWidth = VideoControlType switch
         {
-            VideoControlType.Screen => message.Width,
+            VideoControlType.Screen => size.Width,
             VideoControlType.Memory => 1024,
             _                       => throw new NotSupportedException(VideoControlType.ToString())
         };
 
         var pixelHeight = VideoControlType switch
         {
-            VideoControlType.Screen => message.Height,
+            VideoControlType.Screen => size.Height,
             VideoControlType.Memory => 512,
             _                       => throw new NotSupportedException(VideoControlType.ToString())
         };
 
         var pixelFormat = VideoControlType switch
         {
-            VideoControlType.Screen => message.Format switch
+            VideoControlType.Screen => size.Format switch
             {
                 UpdateVideoSizeFormat.Direct15 => PixelFormats.Bgr555,
                 UpdateVideoSizeFormat.Direct24 => PixelFormats.Bgr24,
-                _                              => throw new NotSupportedException(message.Format.ToString())
+                _                              => throw new NotSupportedException(size.Format.ToString())
             },
             VideoControlType.Memory => PixelFormats.Bgr555,
             _                       => throw new NotSupportedException(VideoControlType.ToString())
@@ -108,12 +108,12 @@ public partial class VideoControl
 
     #region Update Bitmap
 
-    private void OnUpdateBitmap(object recipient, UpdateVideoDataMessage message)
+    private void OnUpdateBitmap(object recipient, UpdateVideoData data)
     {
-        Dispatcher.BeginInvoke(OnUpdateBitmapImpl, message);
+        Dispatcher.BeginInvoke(OnUpdateBitmapImpl, data);
     }
 
-    private void OnUpdateBitmapImpl(UpdateVideoDataMessage message)
+    private void OnUpdateBitmapImpl(UpdateVideoData data)
     {
         if (Bitmap is null)
         {
@@ -125,16 +125,16 @@ public partial class VideoControl
         switch (true)
         {
             case true when format == PixelFormats.Bgr555:
-                OnUpdateBitmap15(message);
+                OnUpdateBitmap15(data);
                 break;
             case true when format == PixelFormats.Bgr24:
-                OnUpdateBitmap24(message);
+                OnUpdateBitmap24(data);
                 break;
             default: throw new NotSupportedException(format.ToString());
         }
     }
 
-    private unsafe void OnUpdateBitmap15(UpdateVideoDataMessage message)
+    private unsafe void OnUpdateBitmap15(UpdateVideoData data)
     {
         if (Bitmap is null)
             throw new NullReferenceException(nameof(Bitmap));
@@ -142,21 +142,21 @@ public partial class VideoControl
         var pixelWidth  = GetPixelWidth();
         var pixelHeight = GetPixelHeight();
 
-        var src = message.Buffer16 as ushort[] ?? throw new InvalidOperationException();
+        var src = data.Buffer16 as ushort[] ?? throw new InvalidOperationException();
         var dst = (ushort*)Bitmap.BackBuffer;
 
         Bitmap.Lock();
 
         var startX = VideoControlType switch
         {
-            VideoControlType.Screen => message.StartX,
+            VideoControlType.Screen => data.StartX,
             VideoControlType.Memory => 0,
             _                       => throw new NotSupportedException(VideoControlType.ToString())
         };
 
         var startY = VideoControlType switch
         {
-            VideoControlType.Screen => message.StartY,
+            VideoControlType.Screen => data.StartY,
             VideoControlType.Memory => 0,
             _                       => throw new NotSupportedException(VideoControlType.ToString())
         };
@@ -179,7 +179,7 @@ public partial class VideoControl
         Bitmap.Unlock();
     }
 
-    private unsafe void OnUpdateBitmap24(UpdateVideoDataMessage message)
+    private unsafe void OnUpdateBitmap24(UpdateVideoData data)
     {
         if (Bitmap is null)
             throw new NullReferenceException(nameof(Bitmap));
@@ -189,14 +189,14 @@ public partial class VideoControl
 
         Bitmap.Lock();
 
-        var src = MemoryMarshal.Cast<ushort, byte>(message.Buffer16 as ushort[] ?? throw new InvalidOperationException());
+        var src = MemoryMarshal.Cast<ushort, byte>(data.Buffer16 as ushort[] ?? throw new InvalidOperationException());
         var dst = (byte*)Bitmap.BackBuffer;
 
         for (var y = 0; y < pixelHeight; y++)
         {
             for (var x = 0; x < pixelWidth; x++)
             {
-                var i = (y + message.StartY) * 2048 + x * 3 + message.StartX * 2;
+                var i = (y + data.StartY) * 2048 + x * 3 + data.StartX * 2;
                 var r = src[i + 0];
                 var g = src[i + 1];
                 var b = src[i + 2];

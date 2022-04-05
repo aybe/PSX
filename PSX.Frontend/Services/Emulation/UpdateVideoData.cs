@@ -1,8 +1,8 @@
 ﻿namespace PSX.Frontend.Services.Emulation;
 
-public sealed class UpdateVideoDataMessage
+public sealed class UpdateVideoData
 {
-    public UpdateVideoDataMessage(int startX, int startY, int xMin, int xMax, int yMin, int yMax, Array buffer16, Array buffer24)
+    public UpdateVideoData(int startX, int startY, int xMin, int xMax, int yMin, int yMax, Array buffer16, Array buffer24)
     {
         StartX   = startX;
         StartY   = startY;

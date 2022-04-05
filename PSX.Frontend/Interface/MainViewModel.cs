@@ -41,14 +41,14 @@ public sealed class MainViewModel : ObservableRecipient
     {
         base.OnActivated();
 
-        EmulatorDisplayService.UpdateAudioDataMessageHandlers.Add(UpdateAudioData);
+        EmulatorDisplayService.UpdateAudioDataHandlers.Add(UpdateAudioData);
     }
 
     protected override void OnDeactivated()
     {
         base.OnDeactivated();
 
-        EmulatorDisplayService.UpdateAudioDataMessageHandlers.Remove(UpdateAudioData);
+        EmulatorDisplayService.UpdateAudioDataHandlers.Remove(UpdateAudioData);
     }
 
     private void UpdateAudioData(UpdateAudioDataMessage message)

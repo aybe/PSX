@@ -2,11 +2,11 @@
 
 namespace PSX.Frontend.Services.Emulation;
 
-public interface IEmulatorDisplayService : IHostWindow // TODO rename all members and types
+public interface IEmulatorDisplayService : IHostWindow
 {
-    IList<UpdateAudioDataMessageHandler> UpdateAudioDataMessageHandlers { get; }
+    IList<UpdateAudioDataHandler> UpdateAudioDataHandlers { get; }
 
-    IList<UpdateVideoDataMessageHandler> UpdateVideoDataMessageHandlers { get; }
+    IList<UpdateVideoDataHandler> UpdateVideoDataHandlers { get; }
 
-    IList<UpdateVideoSizeMessageHandler> UpdateVideoSizeMessageHandlers { get; }
+    IList<UpdateVideoSizeHandler> UpdateVideoSizeHandlers { get; }
 }
