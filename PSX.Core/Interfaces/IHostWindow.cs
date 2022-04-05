@@ -2,13 +2,13 @@
 
 public interface IHostWindow
 {
-    void SetVRAMStart(ushort displayVRamStartX, ushort displayVRamStartY);
+    void SetDisplayAreaStart(ushort displayVRamStartX, ushort displayVRamStartY);
 
     void SetDisplayMode(int horizontalRes, int verticalRes, bool is24BitDepth);
 
-    void SetHorizontalRange(ushort displayX1, ushort displayX2);
+    void SetDisplayHorizontalRange(ushort displayX1, ushort displayX2);
 
-    void SetVerticalRange(ushort displayY1, ushort displayY2);
+    void SetDisplayVerticalRange(ushort displayY1, ushort displayY2);
 
     void Render(int[] buffer24, ushort[] buffer16);
 

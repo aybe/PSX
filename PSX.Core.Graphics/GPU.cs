@@ -1452,7 +1452,7 @@ public partial class GPU
 
         Logger?.Debug("GP1_05_DisplayVRAMStart: X = {X}, Y = {X}", DisplayVRAMStartX, DisplayVRAMStartY);
 
-        Window.SetVRAMStart(DisplayVRAMStartX, DisplayVRAMStartY);
+        Window.SetDisplayAreaStart(DisplayVRAMStartX, DisplayVRAMStartY);
     }
 
     private void GP1_06_DisplayHorizontalRange(uint value)
@@ -1462,7 +1462,7 @@ public partial class GPU
 
         Logger?.Debug("GP1_06_DisplayHorizontalRange: X1 = {X1}, Y2 = {X2}", DisplayX1, DisplayX2);
 
-        Window.SetHorizontalRange(DisplayX1, DisplayX2);
+        Window.SetDisplayHorizontalRange(DisplayX1, DisplayX2);
     }
 
     private void GP1_07_DisplayVerticalRange(uint value)
@@ -1472,7 +1472,7 @@ public partial class GPU
 
         Logger?.Debug("GP1_07_DisplayVerticalRange: Y1 = {Y1}, Y2 = {Y2}", DisplayY1, DisplayY2);
 
-        Window.SetVerticalRange(DisplayY1, DisplayY2);
+        Window.SetDisplayVerticalRange(DisplayY1, DisplayY2);
     }
 
     private void GP1_08_DisplayMode(uint value)

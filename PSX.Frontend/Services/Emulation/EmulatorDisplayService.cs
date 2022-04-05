@@ -16,7 +16,7 @@ public sealed class EmulatorDisplayService : IEmulatorDisplayService
 
     private ushort DisplayY1 { get; set; }
 
-    public void SetVRAMStart(ushort displayVRamStartX, ushort displayVRamStartY)
+    public void SetDisplayAreaStart(ushort displayVRamStartX, ushort displayVRamStartY)
     {
         DisplayVRamXStart = displayVRamStartX;
         DisplayVRamYStart = displayVRamStartY;
@@ -32,13 +32,13 @@ public sealed class EmulatorDisplayService : IEmulatorDisplayService
         }
     }
 
-    public void SetHorizontalRange(ushort displayX1, ushort displayX2)
+    public void SetDisplayHorizontalRange(ushort displayX1, ushort displayX2)
     {
         DisplayX1 = displayX1;
         DisplayX2 = displayX2;
     }
 
-    public void SetVerticalRange(ushort displayY1, ushort displayY2)
+    public void SetDisplayVerticalRange(ushort displayY1, ushort displayY2)
     {
         DisplayY1 = displayY1;
         DisplayY2 = displayY2;
