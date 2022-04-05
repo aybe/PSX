@@ -45,7 +45,6 @@ public sealed class AppStartup
             .AddSingleton<IEmulatorDisplayService, EmulatorDisplayService>()
             .AddSingleton<MainModel>()
             .AddSingleton<MainViewModel>()
-            .AddSingleton<VideoScreenModel>()
             .AddTransient<VideoViewModel>()
             ;
     }
