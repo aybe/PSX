@@ -24,7 +24,11 @@ public sealed class EmulatorDisplayService : IEmulatorDisplayService
 
     public void SetDisplayMode(int horizontalRes, int verticalRes, bool is24BitDepth)
     {
-        var message = new UpdateVideoSizeMessage(new IntSize(horizontalRes, verticalRes), is24BitDepth);
+        var message = new UpdateVideoSizeMessage(
+            horizontalRes,
+            verticalRes,
+            is24BitDepth ? UpdateVideoFormat.Direct24 : UpdateVideoFormat.Direct15
+        );
 
         foreach (var handler in UpdateVideoSizeMessageHandlers)
         {
@@ -46,10 +50,16 @@ public sealed class EmulatorDisplayService : IEmulatorDisplayService
 
     public void Render(int[] buffer24, ushort[] buffer16)
     {
-        var size = new IntSize(DisplayVRamXStart, DisplayVRamYStart);
-        var rect = new IntRect(DisplayX1, DisplayY1, DisplayX2, DisplayY2);
-
-        var message = new UpdateVideoDataMessage(size, rect, buffer24, buffer16);
+        var message = new UpdateVideoDataMessage(
+            DisplayVRamXStart,
+            DisplayVRamYStart,
+            DisplayX1,
+            DisplayX2,
+            DisplayY1,
+            DisplayY2,
+            buffer16,
+            buffer24
+        );
 
         foreach (var handler in UpdateVideoDataMessageHandlers)
         {

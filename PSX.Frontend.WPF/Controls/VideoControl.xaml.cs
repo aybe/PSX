@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using PSX.Frontend.Messages;
+using PSX.Frontend.Services.Emulation;
 
 namespace PSX.Frontend.WPF.Controls;
 
@@ -21,15 +21,19 @@ public partial class VideoControl
 
     private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
+        // NOTE: the messages can't be struct as messenger only support class messages
+        
+        // NOTE: the strong reference messenger makes animation choppy for some reason
+        
         switch (e.NewValue)
         {
             case true:
-                WeakReferenceMessenger.Default.Register<CreateBitmapMessage>(this, OnCreateBitmap);
-                WeakReferenceMessenger.Default.Register<UpdateBitmapMessage>(this, OnUpdateBitmap);
+                WeakReferenceMessenger.Default.Register<UpdateVideoSizeMessage>(this, OnCreateBitmap);
+                WeakReferenceMessenger.Default.Register<UpdateVideoDataMessage>(this, OnUpdateBitmap);
                 break;
             case false:
-                WeakReferenceMessenger.Default.Unregister<CreateBitmapMessage>(this);
-                WeakReferenceMessenger.Default.Unregister<UpdateBitmapMessage>(this);
+                WeakReferenceMessenger.Default.Unregister<UpdateVideoSizeMessage>(this);
+                WeakReferenceMessenger.Default.Unregister<UpdateVideoDataMessage>(this);
                 break;
         }
     }
@@ -54,12 +58,12 @@ public partial class VideoControl
 
     #region Create Bitmap
 
-    private void OnCreateBitmap(object recipient, CreateBitmapMessage message)
+    private void OnCreateBitmap(object recipient, UpdateVideoSizeMessage message)
     {
         Dispatcher.BeginInvoke(OnCreateBitmapImpl, message);
     }
 
-    private void OnCreateBitmapImpl(CreateBitmapMessage message)
+    private void OnCreateBitmapImpl(UpdateVideoSizeMessage message)
     {
         if (message is null)
             throw new ArgumentNullException(nameof(message));
@@ -82,8 +86,8 @@ public partial class VideoControl
         {
             VideoControlType.Screen => message.Format switch
             {
-                CreateBitmapFormat.Direct15 => PixelFormats.Bgr555,
-                CreateBitmapFormat.Direct24 => PixelFormats.Bgr24,
+                UpdateVideoFormat.Direct15 => PixelFormats.Bgr555,
+                UpdateVideoFormat.Direct24 => PixelFormats.Bgr24,
                 _                           => throw new NotSupportedException(message.Format.ToString())
             },
             VideoControlType.Memory => PixelFormats.Bgr555,
@@ -104,12 +108,12 @@ public partial class VideoControl
 
     #region UpdateBitmap
 
-    private void OnUpdateBitmap(object recipient, UpdateBitmapMessage message)
+    private void OnUpdateBitmap(object recipient, UpdateVideoDataMessage message)
     {
         Dispatcher.BeginInvoke(OnUpdateBitmapImpl, message);
     }
 
-    private void OnUpdateBitmapImpl(UpdateBitmapMessage message)
+    private void OnUpdateBitmapImpl(UpdateVideoDataMessage message)
     {
         if (Bitmap is null)
         {
@@ -130,7 +134,7 @@ public partial class VideoControl
         }
     }
 
-    private unsafe void OnUpdateBitmap15(UpdateBitmapMessage message)
+    private unsafe void OnUpdateBitmap15(UpdateVideoDataMessage message)
     {
         if (Bitmap is null)
             throw new NullReferenceException(nameof(Bitmap));
@@ -175,7 +179,7 @@ public partial class VideoControl
         Bitmap.Unlock();
     }
 
-    private unsafe void OnUpdateBitmap24(UpdateBitmapMessage message)
+    private unsafe void OnUpdateBitmap24(UpdateVideoDataMessage message)
     {
         if (Bitmap is null)
             throw new NullReferenceException(nameof(Bitmap));
