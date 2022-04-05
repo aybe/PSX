@@ -2,7 +2,7 @@
 
 public sealed class UpdateVideoSizeMessage
 {
-    public UpdateVideoSizeMessage(int width, int height, UpdateVideoFormat format)
+    public UpdateVideoSizeMessage(int width, int height, UpdateVideoSizeFormat format)
     {
         Width  = width;
         Height = height;
@@ -13,7 +13,7 @@ public sealed class UpdateVideoSizeMessage
 
     public int Height { get; }
 
-    public UpdateVideoFormat Format { get; }
+    public UpdateVideoSizeFormat Format { get; }
 
     public override string ToString()
     {

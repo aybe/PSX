@@ -86,9 +86,9 @@ public partial class VideoControl
         {
             VideoControlType.Screen => message.Format switch
             {
-                UpdateVideoFormat.Direct15 => PixelFormats.Bgr555,
-                UpdateVideoFormat.Direct24 => PixelFormats.Bgr24,
-                _                           => throw new NotSupportedException(message.Format.ToString())
+                UpdateVideoSizeFormat.Direct15 => PixelFormats.Bgr555,
+                UpdateVideoSizeFormat.Direct24 => PixelFormats.Bgr24,
+                _                              => throw new NotSupportedException(message.Format.ToString())
             },
             VideoControlType.Memory => PixelFormats.Bgr555,
             _                       => throw new NotSupportedException(VideoControlType.ToString())

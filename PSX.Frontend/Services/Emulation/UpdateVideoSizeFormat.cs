@@ -1,6 +1,6 @@
 ﻿namespace PSX.Frontend.Services.Emulation;
 
-public enum UpdateVideoFormat
+public enum UpdateVideoSizeFormat
 {
     Direct15,
     Direct24

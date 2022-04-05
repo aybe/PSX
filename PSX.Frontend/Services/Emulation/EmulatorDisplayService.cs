@@ -27,7 +27,7 @@ public sealed class EmulatorDisplayService : IEmulatorDisplayService
         var message = new UpdateVideoSizeMessage(
             horizontalRes,
             verticalRes,
-            is24BitDepth ? UpdateVideoFormat.Direct24 : UpdateVideoFormat.Direct15
+            is24BitDepth ? UpdateVideoSizeFormat.Direct24 : UpdateVideoSizeFormat.Direct15
         );
 
         foreach (var handler in UpdateVideoSizeMessageHandlers)
