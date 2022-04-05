@@ -113,113 +113,12 @@ public partial class VideoControl
         Dispatcher.BeginInvoke(OnUpdateBitmapImpl, data);
     }
 
-    private void OnUpdateBitmapImpl(UpdateVideoData data)
+    private unsafe void OnUpdateBitmapImpl(UpdateVideoData data)
     {
         if (Bitmap is null)
         {
             return; // at start, DisplayAreaStart, DisplayHorizontalRange and DisplayVerticalRange are sent before DisplayMode
         }
-
-        var format = Bitmap.Format;
-
-        switch (true)
-        {
-            case true when format == PixelFormats.Bgr555:
-                OnUpdateBitmap15(data);
-                break;
-            case true when format == PixelFormats.Bgr24:
-                OnUpdateBitmap24(data);
-                break;
-            default: throw new NotSupportedException(format.ToString());
-        }
-    }
-
-    private unsafe void OnUpdateBitmap15(UpdateVideoData data)
-    {
-        if (Bitmap is null)
-            throw new NullReferenceException(nameof(Bitmap));
-
-        var pixelWidth  = GetPixelWidth();
-        var pixelHeight = GetPixelHeight();
-
-        var src = data.Buffer16 as ushort[] ?? throw new InvalidOperationException();
-        var dst = (ushort*)Bitmap.BackBuffer;
-
-        Bitmap.Lock();
-
-        var startX = VideoControlType switch
-        {
-            VideoControlType.Screen => data.StartX,
-            VideoControlType.Memory => 0,
-            _                       => throw new NotSupportedException(VideoControlType.ToString())
-        };
-
-        var startY = VideoControlType switch
-        {
-            VideoControlType.Screen => data.StartY,
-            VideoControlType.Memory => 0,
-            _                       => throw new NotSupportedException(VideoControlType.ToString())
-        };
-
-        for (var y = 0; y < pixelHeight; y++)
-        {
-            for (var x = 0; x < pixelWidth; x++)
-            {
-                var i = (y + startY) * 1024 + x + startX;
-                var p = src[i];
-                var r = (p >> 00) & 0b11111;
-                var g = (p >> 05) & 0b11111;
-                var b = (p >> 10) & 0b11111;
-                *dst++ = (ushort)((r << 10) | (g << 5) | (b << 0));
-            }
-        }
-
-        Bitmap.AddDirtyRect(new Int32Rect(0, 0, pixelWidth, pixelHeight));
-
-        Bitmap.Unlock();
-    }
-
-    private unsafe void OnUpdateBitmap24(UpdateVideoData data)
-    {
-        if (Bitmap is null)
-            throw new NullReferenceException(nameof(Bitmap));
-
-        var pixelWidth  = GetPixelWidth();
-        var pixelHeight = GetPixelHeight();
-
-        Bitmap.Lock();
-
-        var src = MemoryMarshal.Cast<ushort, byte>(data.Buffer16 as ushort[] ?? throw new InvalidOperationException());
-        var dst = (byte*)Bitmap.BackBuffer;
-
-        for (var y = 0; y < pixelHeight; y++)
-        {
-            for (var x = 0; x < pixelWidth; x++)
-            {
-                var i = (y + data.StartY) * 2048 + x * 3 + data.StartX * 2;
-                var r = src[i + 0];
-                var g = src[i + 1];
-                var b = src[i + 2];
-
-                *dst++ = b;
-                *dst++ = g;
-                *dst++ = r;
-            }
-        }
-
-        Bitmap.AddDirtyRect(new Int32Rect(0, 0, pixelWidth, pixelHeight));
-
-        Bitmap.Unlock();
-    }
-
-    #endregion
-
-    #region Getters
-
-    private int GetPixelWidth()
-    {
-        if (Bitmap is null)
-            throw new NullReferenceException(nameof(Bitmap));
 
         var pixelWidth = VideoControlType switch
         {
@@ -228,14 +127,6 @@ public partial class VideoControl
             _                       => throw new NotSupportedException(VideoControlType.ToString())
         };
 
-        return pixelWidth;
-    }
-
-    private int GetPixelHeight()
-    {
-        if (Bitmap is null)
-            throw new NullReferenceException(nameof(Bitmap));
-
         var pixelHeight = VideoControlType switch
         {
             VideoControlType.Screen => Bitmap.PixelHeight,
@@ -243,7 +134,76 @@ public partial class VideoControl
             _                       => throw new NotSupportedException(VideoControlType.ToString())
         };
 
-        return pixelHeight;
+        var format = Bitmap.Format;
+
+        switch (true)
+        {
+            case true when format == PixelFormats.Bgr555:
+            {
+                var src = data.Buffer16 as ushort[] ?? throw new InvalidOperationException();
+                var dst = (ushort*)Bitmap.BackBuffer;
+
+                var startX = VideoControlType switch
+                {
+                    VideoControlType.Screen => data.StartX,
+                    VideoControlType.Memory => 0,
+                    _                       => throw new NotSupportedException(VideoControlType.ToString())
+                };
+
+                var startY = VideoControlType switch
+                {
+                    VideoControlType.Screen => data.StartY,
+                    VideoControlType.Memory => 0,
+                    _                       => throw new NotSupportedException(VideoControlType.ToString())
+                };
+
+                Bitmap.Lock();
+
+                for (var y = 0; y < pixelHeight; y++)
+                {
+                    for (var x = 0; x < pixelWidth; x++)
+                    {
+                        var i = (y + startY) * 1024 + x + startX;
+                        var p = src[i];
+                        var r = (p >> 00) & 0b11111;
+                        var g = (p >> 05) & 0b11111;
+                        var b = (p >> 10) & 0b11111;
+                        *dst++ = (ushort)((r << 10) | (g << 5) | (b << 0));
+                    }
+                }
+
+                Bitmap.AddDirtyRect(new Int32Rect(0, 0, pixelWidth, pixelHeight));
+                Bitmap.Unlock();
+                break;
+            }
+            case true when format == PixelFormats.Bgr24:
+            {
+                var src = MemoryMarshal.Cast<ushort, byte>(data.Buffer16 as ushort[] ?? throw new InvalidOperationException());
+                var dst = (byte*)Bitmap.BackBuffer;
+
+                Bitmap.Lock();
+
+                for (var y = 0; y < pixelHeight; y++)
+                {
+                    for (var x = 0; x < pixelWidth; x++)
+                    {
+                        var i = (y + data.StartY) * 2048 + x * 3 + data.StartX * 2;
+                        var r = src[i + 0];
+                        var g = src[i + 1];
+                        var b = src[i + 2];
+
+                        *dst++ = b;
+                        *dst++ = g;
+                        *dst++ = r;
+                    }
+                }
+
+                Bitmap.AddDirtyRect(new Int32Rect(0, 0, pixelWidth, pixelHeight));
+                Bitmap.Unlock();
+                break;
+            }
+            default: throw new NotSupportedException(format.ToString());
+        }
     }
 
     #endregion
