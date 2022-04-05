@@ -16,27 +16,10 @@ public sealed class EmulatorDisplayService : IEmulatorDisplayService
 
     private ushort DisplayY1 { get; set; }
 
-    public void Play(byte[] samples)
+    public void SetVRAMStart(ushort displayVRamStartX, ushort displayVRamStartY)
     {
-        var message = new UpdateAudioDataMessage(samples);
-
-        foreach (var handler in UpdateAudioDataMessageHandlers)
-        {
-            handler(message);
-        }
-    }
-
-    public void Render(int[] buffer24, ushort[] buffer16)
-    {
-        var size = new IntSize(DisplayVRamXStart, DisplayVRamYStart);
-        var rect = new IntRect(DisplayX1, DisplayY1, DisplayX2, DisplayY2);
-
-        var message = new UpdateVideoDataMessage(size, rect, buffer24, buffer16);
-
-        foreach (var handler in UpdateVideoDataMessageHandlers)
-        {
-            handler(message);
-        }
+        DisplayVRamXStart = displayVRamStartX;
+        DisplayVRamYStart = displayVRamStartY;
     }
 
     public void SetDisplayMode(int horizontalRes, int verticalRes, bool is24BitDepth)
@@ -61,10 +44,27 @@ public sealed class EmulatorDisplayService : IEmulatorDisplayService
         DisplayY2 = displayY2;
     }
 
-    public void SetVRAMStart(ushort displayVRamStartX, ushort displayVRamStartY)
+    public void Render(int[] buffer24, ushort[] buffer16)
     {
-        DisplayVRamXStart = displayVRamStartX;
-        DisplayVRamYStart = displayVRamStartY;
+        var size = new IntSize(DisplayVRamXStart, DisplayVRamYStart);
+        var rect = new IntRect(DisplayX1, DisplayY1, DisplayX2, DisplayY2);
+
+        var message = new UpdateVideoDataMessage(size, rect, buffer24, buffer16);
+
+        foreach (var handler in UpdateVideoDataMessageHandlers)
+        {
+            handler(message);
+        }
+    }
+
+    public void Play(byte[] samples)
+    {
+        var message = new UpdateAudioDataMessage(samples);
+
+        foreach (var handler in UpdateAudioDataMessageHandlers)
+        {
+            handler(message);
+        }
     }
 
     #endregion
