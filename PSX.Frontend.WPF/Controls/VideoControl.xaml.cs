@@ -22,9 +22,9 @@ public partial class VideoControl
     private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         // NOTE: the messages can't be struct as messenger only support class messages
-        
+
         // NOTE: the strong reference messenger makes animation choppy for some reason
-        
+
         switch (e.NewValue)
         {
             case true:
@@ -106,7 +106,7 @@ public partial class VideoControl
 
     #endregion
 
-    #region UpdateBitmap
+    #region Update Bitmap
 
     private void OnUpdateBitmap(object recipient, UpdateVideoDataMessage message)
     {
