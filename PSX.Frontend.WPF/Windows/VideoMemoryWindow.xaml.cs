@@ -5,7 +5,7 @@ namespace PSX.Frontend.WPF.Windows;
 
 public partial class VideoMemoryWindow : IVideoMemoryView
 {
-    public VideoMemoryWindow(VideoMemoryViewModel model)
+    public VideoMemoryWindow(VideoViewModel model)
     {
         if (model is null)
             throw new ArgumentNullException(nameof(model));

@@ -6,7 +6,7 @@
         xmlns:interface="clr-namespace:PSX.Frontend.Interface;assembly=PSX.Frontend"
         xmlns:controls="clr-namespace:PSX.Frontend.WPF.Controls"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance interface:VideoMemoryViewModel}"
+        d:DataContext="{d:DesignInstance interface:VideoViewModel}"
         MinWidth="1024" MinHeight="512" Width="1024" Height="512"
         Title="PSX Video Memory">
     <Grid>

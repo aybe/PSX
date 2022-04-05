@@ -5,7 +5,7 @@ namespace PSX.Frontend.WPF.Windows;
 
 public partial class VideoScreenWindow : IVideoScreenView
 {
-    public VideoScreenWindow(VideoScreenViewModel model)
+    public VideoScreenWindow(VideoViewModel model)
     {
         if (model is null)
             throw new ArgumentNullException(nameof(model));

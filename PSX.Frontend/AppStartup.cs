@@ -46,9 +46,8 @@ public sealed class AppStartup
             .AddSingleton<MainModel>()
             .AddSingleton<MainViewModel>()
             .AddSingleton<VideoMemoryModel>()
-            .AddSingleton<VideoMemoryViewModel>()
             .AddSingleton<VideoScreenModel>()
-            .AddSingleton<VideoScreenViewModel>()
+            .AddTransient<VideoViewModel>()
             ;
     }
 }

@@ -5,15 +5,12 @@ using PSX.Frontend.Services.Emulation;
 
 namespace PSX.Frontend.Interface;
 
-public sealed class VideoMemoryViewModel : ObservableRecipient
+public sealed class VideoViewModel : ObservableRecipient
 {
-    public VideoMemoryViewModel(VideoMemoryModel model, IEmulatorDisplayService emulatorDisplayService)
+    public VideoViewModel(IEmulatorDisplayService emulatorDisplayService)
     {
-        Model                  = model;
         EmulatorDisplayService = emulatorDisplayService;
     }
-
-    private VideoMemoryModel Model { get; }
 
     private IEmulatorDisplayService EmulatorDisplayService { get; }
 
