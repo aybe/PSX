@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using PSX.Frontend.Interface;
 using PSX.Frontend.Services.Emulation;
 using PSX.Frontend.Services.Navigation;
+using PSX.Frontend.Services.Options;
 
 namespace PSX.Frontend;
 
@@ -15,37 +16,37 @@ public sealed class AppStartup
             ? this
             : throw new InvalidOperationException("Only a single instance is permitted");
 
-        var hostBuilder =
+        var root = (IConfigurationRoot)null!;
+
+        var host =
             new HostBuilder()
-                .ConfigureAppConfiguration(ConfigureAppConfiguration)
-                .ConfigureServices(ConfigureServices);
+                .ConfigureAppConfiguration((context, builder) =>
+                {
+                    root = builder
+                        .SetBasePath(context.HostingEnvironment.ContentRootPath)
+                        .AddJsonFile("AppSettings.json", false)
+                        .Build();
+                })
+                .ConfigureServices((context, services) =>
+                {
+                    services
+                        .AddSingleton(root as IConfiguration)
+                        .AddSingleton(root)
+                        .ConfigureWritable<AppSettings>(context.Configuration.GetSection(nameof(AppSettings)))
+                        .AddSingleton<INavigationService, NavigationService>()
+                        .AddSingleton<IEmulatorControlService, EmulatorControlService>()
+                        .AddSingleton<IEmulatorDisplayService, EmulatorDisplayService>()
+                        .AddSingleton<MainModel>()
+                        .AddSingleton<MainViewModel>()
+                        .AddTransient<VideoViewModel>();
+                });
 
-        action?.Invoke(hostBuilder);
+        action?.Invoke(host);
 
-        Host = hostBuilder.Build();
+        Host = host.Build();
     }
 
     private static AppStartup? Instance { get; set; }
 
     public IHost Host { get; }
-
-    private static void ConfigureAppConfiguration(HostBuilderContext context, IConfigurationBuilder builder)
-    {
-        builder
-            .SetBasePath(context.HostingEnvironment.ContentRootPath)
-            .AddJsonFile("AppSettings.json", false);
-    }
-
-    private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
-    {
-        services
-            .Configure<AppSettings>(context.Configuration.GetSection(nameof(AppSettings)))
-            .AddSingleton<INavigationService, NavigationService>()
-            .AddSingleton<IEmulatorControlService, EmulatorControlService>()
-            .AddSingleton<IEmulatorDisplayService, EmulatorDisplayService>()
-            .AddSingleton<MainModel>()
-            .AddSingleton<MainViewModel>()
-            .AddTransient<VideoViewModel>()
-            ;
-    }
 }
