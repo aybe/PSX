@@ -27,6 +27,17 @@
         <Menu>
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" InputGestureText="Ctrl+O" Command="{Binding OpenFile}" />
+                <MenuItem Header="Open _Recent" ItemsSource="{Binding AppSettings.Value.RecentlyUsed}">
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Command"
+                                    Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}, Path=DataContext.OpenFileDirect}" />
+                            <Setter Property="CommandParameter"
+                                    Value="{Binding}" />
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
+                </MenuItem>
+                <Separator />
                 <MenuItem Header="_Close" InputGestureText="Alt+F4" Command="{Binding Shutdown}" />
             </MenuItem>
             <MenuItem Header="_Emulator">

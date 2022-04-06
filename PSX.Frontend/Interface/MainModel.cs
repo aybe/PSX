@@ -1,5 +1,6 @@
 ﻿using PSX.Frontend.Services;
 using PSX.Frontend.Services.Emulation;
+using PSX.Frontend.Services.Options;
 
 namespace PSX.Frontend.Interface;
 
@@ -9,12 +10,14 @@ public sealed class MainModel
     public MainModel(
         IApplicationService applicationService,
         IEmulatorControlService emulatorControlService,
-        IFileService fileService
+        IFileService fileService,
+        IWritableOptions<AppSettings> appSettings
     )
     {
         ApplicationService     = applicationService ?? throw new ArgumentNullException(nameof(applicationService));
         EmulatorControlService = emulatorControlService ?? throw new ArgumentNullException(nameof(emulatorControlService));
         FileService            = fileService ?? throw new ArgumentNullException(nameof(fileService));
+        AppSettings            = appSettings;
     }
 
     private IApplicationService ApplicationService { get; }
@@ -22,6 +25,8 @@ public sealed class MainModel
     private IEmulatorControlService EmulatorControlService { get; }
 
     private IFileService FileService { get; }
+
+    private IWritableOptions<AppSettings> AppSettings { get; }
 
     public void OpenFile()
     {
@@ -31,6 +36,20 @@ public sealed class MainModel
 
         if (path is null)
             return;
+
+        AppSettings.Update(s =>
+        {
+            var list = s.RecentlyUsed;
+
+            list.RemoveAll(t => string.Equals(t, path, StringComparison.OrdinalIgnoreCase));
+
+            list.Insert(0, path);
+
+            while (list.Count > 10)
+            {
+                list.RemoveAt(list.Count - 1);
+            }
+        });
 
         EmulatorControlService.Setup(path);
     }

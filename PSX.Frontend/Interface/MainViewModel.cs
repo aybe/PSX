@@ -3,12 +3,17 @@ using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using PSX.Frontend.Services.Emulation;
 using PSX.Frontend.Services.Navigation;
+using PSX.Frontend.Services.Options;
 
 namespace PSX.Frontend.Interface;
 
 public sealed class MainViewModel : ObservableRecipient
 {
-    public MainViewModel(MainModel model, IEmulatorDisplayService emulatorDisplayService, INavigationService navigationService)
+    public MainViewModel(
+        MainModel model,
+        IEmulatorDisplayService emulatorDisplayService,
+        INavigationService navigationService,
+        IWritableOptions<AppSettings> appSettings)
     {
         Model = model;
 
@@ -16,7 +21,11 @@ public sealed class MainViewModel : ObservableRecipient
 
         NavigationService = navigationService;
 
+        AppSettings = appSettings;
+
         OpenFile = new RelayCommand(OpenFileExecute, OpenFileCanExecute);
+
+        OpenFileDirect = new RelayCommand<string>(OpenFileDirectExecute, OpenFileDirectCanExecute);
 
         Shutdown = new RelayCommand(ShutdownExecute, ShutdownCanExecute);
 
@@ -36,6 +45,8 @@ public sealed class MainViewModel : ObservableRecipient
     private IEmulatorDisplayService EmulatorDisplayService { get; }
 
     private INavigationService NavigationService { get; }
+
+    public IWritableOptions<AppSettings> AppSettings { get; }
 
     protected override void OnActivated()
     {
@@ -209,6 +220,23 @@ public sealed class MainViewModel : ObservableRecipient
         EmulationPause.NotifyCanExecuteChanged();
         EmulationFrame.NotifyCanExecuteChanged();
         EmulationContinue.NotifyCanExecuteChanged();
+    }
+
+    #endregion
+
+    #region OpenFileDirect
+
+    public RelayCommand<string> OpenFileDirect { get; }
+
+    [SuppressMessage("ReSharper", "MemberCanBeMadeStatic.Local")]
+    private bool OpenFileDirectCanExecute(string? path)
+    {
+        return File.Exists(path);
+    }
+
+    private void OpenFileDirectExecute(string? path)
+    {
+        throw new NotImplementedException();
     }
 
     #endregion
