@@ -1,11 +1,13 @@
-﻿using Microsoft.Toolkit.Mvvm.Input;
+﻿using Microsoft.Extensions.Options;
+using Microsoft.Toolkit.Mvvm.Input;
+using PSX.Frontend.Services.Dialog;
 using PSX.Frontend.Services.Navigation;
 
 namespace PSX.Frontend.Interface;
 
 public sealed class MainViewModelCommands
 {
-    public MainViewModelCommands(MainModel model, INavigationService navigationService)
+    public MainViewModelCommands(MainModel model, IDialogService dialogService, INavigationService navigationService, IOptions<AppSettings> settings)
     {
         Shutdown = new RelayCommand(
             model.Shutdown
@@ -22,11 +24,23 @@ public sealed class MainViewModelCommands
         OpenFileDirect = new RelayCommand<string>(
             path =>
             {
-                // throw new NotImplementedException();
+                if (File.Exists(path))
+                {
+                    // TODO the file should become first in position
+                    NotifyCanExecuteChanged(EmuStart, EmuStop, EmuPause, EmuFrame, EmuContinue);
+                }
+                else
+                {
+                    var message = $"The file cannot '{path}' be opened. Do you want to remove the reference to it from the Recent list?";
 
-                NotifyCanExecuteChanged(EmuStart, EmuStop, EmuPause, EmuFrame, EmuContinue);
-            },
-            File.Exists
+                    var result = dialogService.Show("PSX", message, DialogButton.YesNo, DialogImage.Error);
+
+                    if (result is DialogResult.Yes)
+                    {
+                        settings.Value.RecentlyUsed.Remove(path!);
+                    }
+                }
+            }
         );
 
         ShowVideoScreen = new RelayCommand(
