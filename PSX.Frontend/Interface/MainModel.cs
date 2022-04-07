@@ -37,22 +37,25 @@ public sealed class MainModel
         if (path is null)
             return;
 
-        var list = AppSettings.Value.RecentlyUsed;
-
-        for (var i = list.Count - 1; i >= 0; i--)
+        AppSettings.Value.Update(settings =>
         {
-            if (string.Equals(list[i], path, StringComparison.OrdinalIgnoreCase))
+            var list = settings.RecentlyUsed;
+
+            for (var i = list.Count - 1; i >= 0; i--)
             {
-                list.RemoveAt(i);
+                if (string.Equals(list[i], path, StringComparison.OrdinalIgnoreCase))
+                {
+                    list.RemoveAt(i);
+                }
             }
-        }
 
-        list.Insert(0, path);
+            list.Insert(0, path);
 
-        while (list.Count > 10)
-        {
-            list.RemoveAt(list.Count - 1);
-        }
+            while (list.Count > 10)
+            {
+                list.RemoveAt(list.Count - 1);
+            }
+        });
 
         EmulatorControlService.Setup(path);
     }

@@ -37,4 +37,11 @@ public sealed class AppSettings
 
         File.WriteAllText(fileInfo.PhysicalPath, json);
     }
+
+    public void Update(Action<AppSettings>? action = null)
+    {
+        action?.Invoke(this);
+
+        Save();
+    }
 }
