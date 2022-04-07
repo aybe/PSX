@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using PSX.Frontend.Interface;
 using PSX.Frontend.Services;
+using PSX.Frontend.Services.Dialog;
 using PSX.Frontend.Services.Navigation;
 using PSX.Frontend.WPF.Services;
 using PSX.Frontend.WPF.Windows;
@@ -40,6 +41,7 @@ public partial class App : IApplicationService
                 {
                     collection
                         .AddSingleton<IApplicationService>(this)
+                        .AddSingleton<IDialogService, DialogService>()
                         .AddSingleton<IFileService, FileService>()
                         .AddTransient<IMainView, MainWindow>()
                         .AddTransient<IVideoScreenView, VideoScreenWindow>()
