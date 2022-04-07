@@ -1,6 +1,8 @@
-﻿namespace PSX.Frontend;
+﻿using System.Collections.ObjectModel;
+
+namespace PSX.Frontend;
 
 public sealed class AppSettings
 {
-    public List<string> RecentlyUsed { get; } = new();
+    public ObservableCollection<string> RecentlyUsed { get; } = new();
 }
