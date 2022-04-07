@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+﻿using Microsoft.Extensions.Options;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using PSX.Frontend.Services.Emulation;
 using PSX.Frontend.Services.Navigation;
-using PSX.Frontend.Services.Options;
 
 namespace PSX.Frontend.Interface;
 
@@ -13,7 +13,7 @@ public sealed class MainViewModel : ObservableRecipient
         MainModel model,
         IEmulatorDisplayService emulatorDisplayService,
         INavigationService navigationService,
-        IWritableOptions<AppSettings> appSettings)
+        IOptions<AppSettings> appSettings)
     {
         Model = model;
 
@@ -38,15 +38,16 @@ public sealed class MainViewModel : ObservableRecipient
         EmulationPause    = new RelayCommand(EmulationPauseExecute,    EmulationPauseCanExecute);
         EmulationFrame    = new RelayCommand(EmulationFrameExecute,    EmulationFrameCanExecute);
         EmulationContinue = new RelayCommand(EmulationContinueExecute, EmulationContinueCanExecute);
+        AppSettings            = appSettings;
     }
 
     private MainModel Model { get; }
 
     private IEmulatorDisplayService EmulatorDisplayService { get; }
+    public IOptions<AppSettings> AppSettings { get; }
 
     private INavigationService NavigationService { get; }
 
-    public IWritableOptions<AppSettings> AppSettings { get; }
 
     protected override void OnActivated()
     {
