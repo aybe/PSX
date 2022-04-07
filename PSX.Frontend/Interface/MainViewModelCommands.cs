@@ -37,7 +37,10 @@ public sealed class MainViewModelCommands
 
                     if (result is DialogResult.Yes)
                     {
-                        settings.Value.RecentlyUsed.Remove(path!);
+                        settings.Value.Update(s =>
+                        {
+                            s.RecentlyUsed.Remove(path!);
+                        });
                     }
                 }
             }
