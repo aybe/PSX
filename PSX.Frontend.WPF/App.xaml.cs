@@ -62,6 +62,8 @@ public partial class App : IApplicationService
 
         try
         {
+            AppStartup.SaveSettings();
+
             using (AppStartup.Host)
             {
                 AppStartup.Host.StopAsync(TimeSpan.FromSeconds(5.0d));
