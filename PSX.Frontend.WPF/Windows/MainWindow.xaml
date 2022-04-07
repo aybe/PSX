@@ -28,7 +28,7 @@
         <Menu>
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" InputGestureText="Ctrl+O" Command="{Binding Commands.OpenFile}" />
-                <MenuItem Header="Open _Recent" ItemsSource="{Binding AppSettings.Value.RecentlyUsed}">
+                <MenuItem Header="Open _Recent" ItemsSource="{Binding Settings.Value.RecentlyUsed}">
                     <MenuItem.ItemContainerStyle>
                         <Style TargetType="MenuItem">
                             <Setter Property="Command"

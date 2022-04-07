@@ -11,14 +11,14 @@ public sealed class MainViewModel : ObservableRecipient
     public MainViewModel(
         MainViewModelCommands commands,
         IEmulatorDisplayService emulatorDisplayService,
-        IOptions<AppSettings> appSettings)
+        IOptions<AppSettings> settings)
     {
         Commands               = commands;
         EmulatorDisplayService = emulatorDisplayService;
-        AppSettings            = appSettings;
+        Settings               = settings;
     }
 
-    public IOptions<AppSettings> AppSettings { get; }
+    public IOptions<AppSettings> Settings { get; }
 
     public MainViewModelCommands Commands { get; }
 
