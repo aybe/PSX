@@ -71,7 +71,8 @@ public partial class App : IApplicationService
         }
         catch (Exception exception)
         {
-            MessageBox.Show(exception.Message);
+            MessageBox.Show(exception.Message, "Application Error");
+            throw;
         }
     }
 }
