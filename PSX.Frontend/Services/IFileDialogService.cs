@@ -1,6 +1,6 @@
 ﻿namespace PSX.Frontend.Services;
 
-public interface IFileService
+public interface IFileDialogService
 {
     string? OpenFile(string filter);
 }

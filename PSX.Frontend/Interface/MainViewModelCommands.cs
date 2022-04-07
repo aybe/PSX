@@ -10,7 +10,7 @@ public sealed class MainViewModelCommands
     public MainViewModelCommands(
         MainModel             model,
         ITextDialogService    textDialogService,
-        IFileService          fileService,
+        IFileDialogService    fileDialogService,
         INavigationService    navigationService,
         IOptions<AppSettings> settings
     )
@@ -24,7 +24,7 @@ public sealed class MainViewModelCommands
             {
                 const string filter = "Everything|*.exe;*.psx;*.bin;*.cue|Application|*.exe;*.psx|Image|*.bin;*.cue";
 
-                var path = fileService.OpenFile(filter);
+                var path = fileDialogService.OpenFile(filter);
 
                 if (path is null)
                     return;
