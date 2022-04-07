@@ -9,18 +9,19 @@ public sealed class MainViewModel : ObservableRecipient
     private readonly IEmulatorDisplayService EmulatorDisplayService;
 
     public MainViewModel(
-        MainViewModelCommands commands,
-        IEmulatorDisplayService emulatorDisplayService,
-        IOptions<AppSettings> settings)
+        MainViewModelCommands   commands,
+        IOptions<AppSettings>   settings,
+        IEmulatorDisplayService emulatorDisplayService
+    )
     {
-        Commands               = commands;
+        Commands = commands;
+        Settings = settings;
         EmulatorDisplayService = emulatorDisplayService;
-        Settings               = settings;
     }
 
-    public IOptions<AppSettings> Settings { get; }
-
     public MainViewModelCommands Commands { get; }
+
+    public IOptions<AppSettings> Settings { get; }
 
     protected override void OnActivated()
     {
