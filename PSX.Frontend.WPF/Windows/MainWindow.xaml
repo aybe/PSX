@@ -9,47 +9,48 @@
         WindowStartupLocation="CenterScreen"
         d:DataContext="{d:DesignInstance interface:MainViewModel}">
     <Window.InputBindings>
-        <KeyBinding Command="{Binding OpenFile}" Modifiers="Control" Key="O" />
-        <KeyBinding Command="{Binding Shutdown}" Modifiers="Alt" Key="F4" />
-        <KeyBinding Command="{Binding EmulationStart}" Key="F5" />
-        <KeyBinding Command="{Binding EmulationStop}" Key="F6" />
-        <KeyBinding Command="{Binding EmulationPause}" Key="F7" />
-        <KeyBinding Command="{Binding EmulationFrame}" Key="F8" />
-        <KeyBinding Command="{Binding EmulationContinue}" Key="F9" />
-        <KeyBinding Command="{Binding OpenVideoScreen}" Key="F1" />
-        <KeyBinding Command="{Binding OpenVideoMemory}" Key="F2" />
+        <KeyBinding Command="{Binding Commands.OpenFile}" Modifiers="Control" Key="O" />
+        <KeyBinding Command="{Binding Commands.Shutdown}" Modifiers="Alt" Key="F4" />
+        <KeyBinding Command="{Binding Commands.EmuStart}" Key="F5" />
+        <KeyBinding Command="{Binding Commands.EmuStop}" Key="F6" />
+        <KeyBinding Command="{Binding Commands.EmuPause}" Key="F7" />
+        <KeyBinding Command="{Binding Commands.EmuFrame}" Key="F8" />
+        <KeyBinding Command="{Binding Commands.EmuContinue}" Key="F9" />
+        <KeyBinding Command="{Binding Commands.ShowVideoScreen}" Key="F1" />
+        <KeyBinding Command="{Binding Commands.ShowVideoMemory}" Key="F2" />
     </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
         <Menu>
             <MenuItem Header="_File">
-                <MenuItem Header="_Open" InputGestureText="Ctrl+O" Command="{Binding OpenFile}" />
+                <MenuItem Header="_Open" InputGestureText="Ctrl+O" Command="{Binding Commands.OpenFile}" />
                 <MenuItem Header="Open _Recent" ItemsSource="{Binding AppSettings.Value.RecentlyUsed}">
                     <MenuItem.ItemContainerStyle>
                         <Style TargetType="MenuItem">
                             <Setter Property="Command"
-                                    Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}, Path=DataContext.OpenFileDirect}" />
+                                    Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=MenuItem}, Path=DataContext.Commands.OpenFileDirect}" />
                             <Setter Property="CommandParameter"
                                     Value="{Binding}" />
                         </Style>
                     </MenuItem.ItemContainerStyle>
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="_Close" InputGestureText="Alt+F4" Command="{Binding Shutdown}" />
+                <MenuItem Header="_Close" InputGestureText="Alt+F4" Command="{Binding Commands.Shutdown}" />
             </MenuItem>
             <MenuItem Header="_Emulator">
-                <MenuItem Header="_Start" InputGestureText="F5" Command="{Binding EmulationStart}" />
-                <MenuItem Header="_Stop" InputGestureText="F6" Command="{Binding EmulationStop}" />
-                <MenuItem Header="_Pause" InputGestureText="F7" Command="{Binding EmulationPause}" />
-                <MenuItem Header="_Frame" InputGestureText="F8" Command="{Binding EmulationFrame}" />
-                <MenuItem Header="_Continue" InputGestureText="F9" Command="{Binding EmulationContinue}" />
+                <MenuItem Header="_Start" InputGestureText="F5" Command="{Binding Commands.EmuStart}" />
+                <MenuItem Header="_Stop" InputGestureText="F6" Command="{Binding Commands.EmuStop}" />
+                <MenuItem Header="_Pause" InputGestureText="F7" Command="{Binding Commands.EmuPause}" />
+                <MenuItem Header="_Frame" InputGestureText="F8" Command="{Binding Commands.EmuFrame}" />
+                <MenuItem Header="_Continue" InputGestureText="F9" Command="{Binding Commands.EmuContinue}" />
             </MenuItem>
             <MenuItem Header="_Window">
-                <MenuItem Header="Video _Screen" InputGestureText="F1" Command="{Binding OpenVideoScreen}" />
-                <MenuItem Header="Video _Memory" InputGestureText="F2" Command="{Binding OpenVideoMemory}" />
+                <MenuItem Header="Video _Screen" InputGestureText="F1" Command="{Binding Commands.ShowVideoScreen}" />
+                <MenuItem Header="Video _Memory" InputGestureText="F2" Command="{Binding Commands.ShowVideoMemory}" />
             </MenuItem>
         </Menu>
     </Grid>
