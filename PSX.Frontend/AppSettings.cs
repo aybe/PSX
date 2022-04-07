@@ -11,6 +11,29 @@ public sealed class AppSettings
 {
     public ObservableCollection<string> RecentlyUsed { get; } = new();
 
+    public int RecentlyUsedLength { get; set; } = 10;
+
+    public void AddToRecentlyUsed(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(path));
+
+        for (var i = RecentlyUsed.Count - 1; i >= 0; i--)
+        {
+            if (string.Equals(RecentlyUsed[i], path, StringComparison.OrdinalIgnoreCase))
+            {
+                RecentlyUsed.RemoveAt(i);
+            }
+        }
+
+        RecentlyUsed.Insert(0, path);
+
+        while (RecentlyUsed.Count > RecentlyUsedLength)
+        {
+            RecentlyUsed.RemoveAt(RecentlyUsed.Count - 1);
+        }
+    }
+
     public void Save()
     {
         var services = AppStartup.Instance?.Host.Services ?? throw new InvalidOperationException();
