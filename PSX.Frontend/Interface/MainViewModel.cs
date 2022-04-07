@@ -6,6 +6,8 @@ namespace PSX.Frontend.Interface;
 
 public sealed class MainViewModel : ObservableRecipient
 {
+    private readonly IEmulatorDisplayService EmulatorDisplayService;
+
     public MainViewModel(
         MainViewModelCommands commands,
         IEmulatorDisplayService emulatorDisplayService,
@@ -16,7 +18,6 @@ public sealed class MainViewModel : ObservableRecipient
         AppSettings            = appSettings;
     }
 
-    private IEmulatorDisplayService EmulatorDisplayService { get; }
     public IOptions<AppSettings> AppSettings { get; }
 
     public MainViewModelCommands Commands { get; }
