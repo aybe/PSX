@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace PSX.Frontend.Services.Dialog;
+namespace PSX.Frontend.Services;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public enum DialogResult
+public enum TextDialogResult
 {
     None,
     OK,

@@ -1,6 +1,6 @@
-﻿namespace PSX.Frontend.Services.Dialog;
+﻿namespace PSX.Frontend.Services;
 
-public enum DialogImage
+public enum TextDialogImage
 {
     None,
     Error,

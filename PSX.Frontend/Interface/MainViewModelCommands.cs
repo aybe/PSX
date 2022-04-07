@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.Toolkit.Mvvm.Input;
 using PSX.Frontend.Services;
-using PSX.Frontend.Services.Dialog;
 using PSX.Frontend.Services.Navigation;
 
 namespace PSX.Frontend.Interface;
@@ -10,7 +9,7 @@ public sealed class MainViewModelCommands
 {
     public MainViewModelCommands(
         MainModel             model,
-        IDialogService        dialogService,
+        ITextDialogService    textDialogService,
         IFileService          fileService,
         INavigationService    navigationService,
         IOptions<AppSettings> settings
@@ -54,9 +53,9 @@ public sealed class MainViewModelCommands
                 {
                     var message = $"The file cannot '{path}' be opened. Do you want to remove the reference to it from the Recent list?";
 
-                    var result = dialogService.Show("PSX", message, DialogButton.YesNo, DialogImage.Error);
+                    var result = textDialogService.Show("PSX", message, TextDialogButton.YesNo, TextDialogImage.Error);
 
-                    if (result is DialogResult.Yes)
+                    if (result is TextDialogResult.Yes)
                     {
                         settings.Value.Update(s =>
                         {
