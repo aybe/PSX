@@ -85,7 +85,10 @@ internal sealed class EmulatorControlService : IEmulatorControlService
         if (string.IsNullOrWhiteSpace(content))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(content));
 
-        EmulatorState = EmulatorPlayerState.Stopped;
+        if (CanStop)
+        {
+            Stop();
+        }
 
         if (Emulator is not null)
         {

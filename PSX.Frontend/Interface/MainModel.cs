@@ -28,6 +28,7 @@ public sealed class MainModel
             throw new FileNotFoundException(null, path);
 
         EmulatorControlService.Setup(path);
+        EmulatorControlService.Start();
     }
 
     public void Shutdown()
