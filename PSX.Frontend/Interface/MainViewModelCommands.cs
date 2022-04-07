@@ -26,7 +26,11 @@ public sealed class MainViewModelCommands
             {
                 if (File.Exists(path))
                 {
-                    // TODO the file should become first in position
+                    settings.Value.Update(s =>
+                    {
+                        s.AddToRecentlyUsed(path);
+                    });
+
                     NotifyCanExecuteChanged(EmuStart, EmuStop, EmuPause, EmuFrame, EmuContinue);
                 }
                 else
