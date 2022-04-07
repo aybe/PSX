@@ -4,6 +4,7 @@ using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using PSX.Frontend.Interface;
 using PSX.Frontend.Services;
 using PSX.Frontend.Services.Navigation;
@@ -62,7 +63,9 @@ public partial class App : IApplicationService
 
         try
         {
-            AppStartup.SaveSettings();
+            var settings = AppStartup.Host.Services.GetRequiredService<IOptions<AppSettings>>();
+
+            settings.Value.Save();
 
             using (AppStartup.Host)
             {
