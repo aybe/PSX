@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using PSX.Frontend.Services;
+﻿using PSX.Frontend.Services;
 using PSX.Frontend.Services.Emulation;
 
 namespace PSX.Frontend.Interface;
@@ -8,16 +7,14 @@ public sealed class MainModel
     : IEmulatorControlService // for view model commands
 {
     public MainModel(
-        IApplicationService applicationService,
+        IApplicationService     applicationService,
         IEmulatorControlService emulatorControlService,
-        IFileService fileService,
-        IOptions<AppSettings> appSettings
+        IFileService            fileService
     )
     {
         ApplicationService     = applicationService ?? throw new ArgumentNullException(nameof(applicationService));
         EmulatorControlService = emulatorControlService ?? throw new ArgumentNullException(nameof(emulatorControlService));
         FileService            = fileService ?? throw new ArgumentNullException(nameof(fileService));
-        AppSettings            = appSettings;
     }
 
     private IApplicationService ApplicationService { get; }
@@ -26,21 +23,25 @@ public sealed class MainModel
 
     private IFileService FileService { get; }
 
-    private IOptions<AppSettings> AppSettings { get; }
-
     public void OpenFile()
     {
         const string filter = "Everything|*.exe;*.psx;*.bin;*.cue|Application|*.exe;*.psx|Image|*.bin;*.cue";
 
         var path = FileService.OpenFile(filter);
 
-        if (path is null)
-            return;
-
-        AppSettings.Value.Update(s =>
+        if (path is not null)
         {
-            s.AddToRecentlyUsed(path);
-        });
+            OpenFile(path);
+        }
+    }
+
+    public void OpenFile(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(path));
+
+        if (File.Exists(path) is false)
+            throw new FileNotFoundException(null, path);
 
         EmulatorControlService.Setup(path);
     }

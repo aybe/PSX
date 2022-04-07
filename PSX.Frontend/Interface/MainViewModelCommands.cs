@@ -31,6 +31,8 @@ public sealed class MainViewModelCommands
                         s.AddToRecentlyUsed(path);
                     });
 
+                    model.OpenFile(path);
+
                     NotifyCanExecuteChanged(EmuStart, EmuStop, EmuPause, EmuFrame, EmuContinue);
                 }
                 else
