@@ -8,32 +8,16 @@ public sealed class MainModel
 {
     public MainModel(
         IApplicationService     applicationService,
-        IEmulatorControlService emulatorControlService,
-        IFileService            fileService
+        IEmulatorControlService emulatorControlService
     )
     {
         ApplicationService     = applicationService ?? throw new ArgumentNullException(nameof(applicationService));
         EmulatorControlService = emulatorControlService ?? throw new ArgumentNullException(nameof(emulatorControlService));
-        FileService            = fileService ?? throw new ArgumentNullException(nameof(fileService));
     }
 
     private IApplicationService ApplicationService { get; }
 
     private IEmulatorControlService EmulatorControlService { get; }
-
-    private IFileService FileService { get; }
-
-    public void OpenFile()
-    {
-        const string filter = "Everything|*.exe;*.psx;*.bin;*.cue|Application|*.exe;*.psx|Image|*.bin;*.cue";
-
-        var path = FileService.OpenFile(filter);
-
-        if (path is not null)
-        {
-            OpenFile(path);
-        }
-    }
 
     public void OpenFile(string path)
     {

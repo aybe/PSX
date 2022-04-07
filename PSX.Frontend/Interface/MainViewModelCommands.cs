@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.Toolkit.Mvvm.Input;
+using PSX.Frontend.Services;
 using PSX.Frontend.Services.Dialog;
 using PSX.Frontend.Services.Navigation;
 
@@ -7,7 +8,13 @@ namespace PSX.Frontend.Interface;
 
 public sealed class MainViewModelCommands
 {
-    public MainViewModelCommands(MainModel model, IDialogService dialogService, INavigationService navigationService, IOptions<AppSettings> settings)
+    public MainViewModelCommands(
+        MainModel             model,
+        IDialogService        dialogService,
+        IFileService          fileService,
+        INavigationService    navigationService,
+        IOptions<AppSettings> settings
+    )
     {
         Shutdown = new RelayCommand(
             model.Shutdown
@@ -16,7 +23,15 @@ public sealed class MainViewModelCommands
         OpenFile = new RelayCommand(
             () =>
             {
-                model.OpenFile();
+                const string filter = "Everything|*.exe;*.psx;*.bin;*.cue|Application|*.exe;*.psx|Image|*.bin;*.cue";
+
+                var path = fileService.OpenFile(filter);
+
+                if (path is null)
+                    return;
+
+                model.OpenFile(path);
+
                 NotifyCanExecuteChanged(EmuStart, EmuStop, EmuPause, EmuFrame, EmuContinue);
             }
         );
