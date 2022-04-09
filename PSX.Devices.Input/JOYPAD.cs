@@ -86,6 +86,7 @@ public class JOYPAD
         if (Counter > 0)
         {
             Counter -= 100;
+
             if (Counter == 0)
             {
                 //Console.WriteLine("[IRQ] TICK Triggering JOYPAD");
@@ -94,7 +95,8 @@ public class JOYPAD
             }
         }
 
-        if (InterruptRequest) return true;
+        if (InterruptRequest)
+            return true;
 
         return false;
     }
@@ -149,7 +151,8 @@ public class JOYPAD
                     {
                         JOY_RX_DATA   = Controller.Process(JOY_TX_DATA);
                         ACKInputLevel = Controller.ACK;
-                        if (ACKInputLevel) Counter = 500;
+                        if (ACKInputLevel)
+                            Counter = 500;
                         //Console.WriteLine($"[JOYPAD] Controller TICK Enqueued RX response {JOY_RX_DATA:x2} ACK: {ackInputLevel}");
                         //Console.ReadLine();
                     }
@@ -157,7 +160,8 @@ public class JOYPAD
                     {
                         JOY_RX_DATA   = MemoryCard.Process(JOY_TX_DATA);
                         ACKInputLevel = MemoryCard.Ack;
-                        if (ACKInputLevel) Counter = 500;
+                        if (ACKInputLevel)
+                            Counter = 500;
                         //Console.WriteLine($"[JOYPAD] MemCard TICK Enqueued RX response {JOY_RX_DATA:x2} ACK: {ackInputLevel}");
                         //Console.ReadLine();
                     }
@@ -166,7 +170,8 @@ public class JOYPAD
                         ACKInputLevel = false;
                     }
 
-                    if (ACKInputLevel == false) JoypadDevice = JoypadDevice.None;
+                    if (ACKInputLevel == false)
+                        JoypadDevice = JoypadDevice.None;
                 }
                 else
                 {
