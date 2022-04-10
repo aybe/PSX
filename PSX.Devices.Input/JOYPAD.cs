@@ -7,35 +7,11 @@ namespace PSX.Devices.Input;
 // ReSharper disable once InconsistentNaming
 public class JOYPAD
 {
-    public IController Controller;
-
     private readonly IMemoryCard MemoryCard;
 
-    private bool ACKInputLevel;
-
-    private bool ACKInterruptEnable;
-
-    //1F801048 JOY_MODE(R/W)
-
-    private uint BaudRateReloadFactor;
-
-    private int BaudRateTimer;
-
-    private uint CharacterLength;
-
-    private bool ClkOutputPolarity;
-
-    private bool ControlAck;
-
-    private bool ControlReset;
+    public IController Controller;
 
     private int Counter;
-
-    private uint DesiredSlotNumber;
-
-    private bool FifoFull;
-
-    private bool InterruptRequest;
 
     private ushort JOY_BAUD; //1F80104Eh JOY_BAUD(R/W) (usually 0088h, ie.circa 250kHz, when Factor = MUL1)
 
@@ -43,37 +19,7 @@ public class JOYPAD
 
     private byte JOY_TX_DATA; // 1F801040h JOY_TX_DATA(W)
 
-    private bool JoyControlUnknownBit3;
-
-    private bool JoyControlUnknownBit5;
-
-    private bool JoyOutput;
-
     private JoypadDevice JoypadDevice = JoypadDevice.None;
-
-    private bool ParityEnable;
-
-    private bool ParityTypeOdd;
-
-    private bool RXEnable;
-
-    private bool RXInterruptEnable;
-
-    private uint RXInterruptMode;
-
-    private bool RXParityError;
-
-    //1F80104Ah JOY_CTRL (R/W) (usually 1003h,3003h,0000h)
-
-    private bool TXEnable;
-
-    private bool TXInterruptEnable;
-
-    //1F801044 JOY_STAT(R)
-
-    private bool TXReadyFlag1 = true;
-
-    private bool TXReadyFlag2 = true;
 
     public JOYPAD(IController controller, IMemoryCard memoryCard)
     {
@@ -204,6 +150,114 @@ public class JOYPAD
         }
     }
 
+    public uint Load(uint address)
+    {
+        switch (address & 0xFF)
+        {
+            case 0x40:
+                //Console.WriteLine($"[JOYPAD] GET RX DATA {JOY_RX_DATA:x2}");
+                FifoFull = false;
+                return JOY_RX_DATA;
+            case 0x44:
+                //Console.WriteLine($"[JOYPAD] GET STAT {GetJoyStat():x8}");
+                return GetJoyStat();
+            case 0x48:
+                //Console.WriteLine($"[JOYPAD] GET MODE {GetJoyMode():x8}");
+                return GetJoyMode();
+            case 0x4A:
+                //Console.WriteLine($"[JOYPAD] GET CONTROL {GetJoyCtrl():x8}");
+                return GetJoyCtrl();
+            case 0x4E:
+                //Console.WriteLine($"[JOYPAD] GET BAUD {JOY_BAUD:x8}");
+                return JOY_BAUD;
+            default:
+                //Console.WriteLine($"[JOYPAD] Unhandled Read at {address}"); Console.ReadLine();
+                return 0xFFFF_FFFF;
+        }
+    }
+
+    #region 1F801044h JOY_STAT (R)
+
+    private uint GetJoyStat()
+    {
+        uint joyStat = 0;
+
+        joyStat |= TXReadyFlag1 ? 1u : 0u;
+        joyStat |= (FifoFull ? 1u : 0u) << 1;
+        joyStat |= (TXReadyFlag2 ? 1u : 0u) << 2;
+        joyStat |= (RXParityError ? 1u : 0u) << 3;
+        joyStat |= (ACKInputLevel ? 1u : 0u) << 7;
+        joyStat |= (InterruptRequest ? 1u : 0u) << 9;
+        joyStat |= (uint)BaudRateTimer << 11;
+
+        ACKInputLevel = false;
+
+        return joyStat;
+    }
+
+    private bool TXReadyFlag1 = true;
+    private bool FifoFull;
+    private bool TXReadyFlag2 = true;
+    private bool RXParityError;
+    private bool ACKInputLevel;
+    private bool InterruptRequest;
+    private int  BaudRateTimer;
+
+    #endregion
+
+    #region 1F801048h JOY_MODE (R/W)
+
+    private uint GetJoyMode()
+    {
+        uint joyMode = 0;
+
+        joyMode |= BaudRateReloadFactor;
+        joyMode |= CharacterLength << 2;
+        joyMode |= (ParityEnable ? 1u : 0u) << 4;
+        joyMode |= (ParityTypeOdd ? 1u : 0u) << 5;
+        joyMode |= (ClkOutputPolarity ? 1u : 0u) << 4;
+
+        return joyMode;
+    }
+
+    private void SetJoyMode(uint value)
+    {
+        BaudRateReloadFactor = value & 0x3;
+        CharacterLength      = (value >> 2) & 0x3;
+        ParityEnable         = ((value >> 4) & 0x1) != 0;
+        ParityTypeOdd        = ((value >> 5) & 0x1) != 0;
+        ClkOutputPolarity    = ((value >> 8) & 0x1) != 0;
+    }
+
+    private uint BaudRateReloadFactor;
+    private uint CharacterLength;
+    private bool ParityEnable;
+    private bool ParityTypeOdd;
+    private bool ClkOutputPolarity;
+
+    #endregion
+
+    #region 1F80104Ah JOY_CTRL (R/W)
+
+    private uint GetJoyCtrl()
+    {
+        uint joyCtrl = 0;
+        joyCtrl |= TXEnable ? 1u : 0u;
+        joyCtrl |= (JoyOutput ? 1u : 0u) << 1;
+        joyCtrl |= (RXEnable ? 1u : 0u) << 2;
+        joyCtrl |= (JoyControlUnknownBit3 ? 1u : 0u) << 3;
+        //joy_ctrl |= (ACK ? 1u : 0u) << 4; // only writable
+        joyCtrl |= (JoyControlUnknownBit5 ? 1u : 0u) << 5;
+        //joy_ctrl |= (reset ? 1u : 0u) << 6; // only writable
+        //bit 7 always 0
+        joyCtrl |= RXInterruptMode << 8;
+        joyCtrl |= (TXInterruptEnable ? 1u : 0u) << 10;
+        joyCtrl |= (RXInterruptEnable ? 1u : 0u) << 11;
+        joyCtrl |= (ACKInterruptEnable ? 1u : 0u) << 12;
+        joyCtrl |= DesiredSlotNumber << 13;
+        return joyCtrl;
+    }
+
     private void SetJoyCtrl(uint value)
     {
         TXEnable              = (value & 0x1) != 0;
@@ -256,87 +310,18 @@ public class JOYPAD
         }
     }
 
-    private void SetJoyMode(uint value)
-    {
-        BaudRateReloadFactor = value & 0x3;
-        CharacterLength      = (value >> 2) & 0x3;
-        ParityEnable         = ((value >> 4) & 0x1) != 0;
-        ParityTypeOdd        = ((value >> 5) & 0x1) != 0;
-        ClkOutputPolarity    = ((value >> 8) & 0x1) != 0;
-    }
+    private bool TXEnable;
+    private bool JoyOutput;
+    private bool RXEnable;
+    private bool JoyControlUnknownBit3;
+    private bool ControlAck;
+    private bool JoyControlUnknownBit5;
+    private bool ControlReset;
+    private uint RXInterruptMode;
+    private bool TXInterruptEnable;
+    private bool RXInterruptEnable;
+    private bool ACKInterruptEnable;
+    private uint DesiredSlotNumber;
 
-    public uint Load(uint address)
-    {
-        switch (address & 0xFF)
-        {
-            case 0x40:
-                //Console.WriteLine($"[JOYPAD] GET RX DATA {JOY_RX_DATA:x2}");
-                FifoFull = false;
-                return JOY_RX_DATA;
-            case 0x44:
-                //Console.WriteLine($"[JOYPAD] GET STAT {GetJoyStat():x8}");
-                return GetJoyStat();
-            case 0x48:
-                //Console.WriteLine($"[JOYPAD] GET MODE {GetJoyMode():x8}");
-                return GetJoyMode();
-            case 0x4A:
-                //Console.WriteLine($"[JOYPAD] GET CONTROL {GetJoyCtrl():x8}");
-                return GetJoyCtrl();
-            case 0x4E:
-                //Console.WriteLine($"[JOYPAD] GET BAUD {JOY_BAUD:x8}");
-                return JOY_BAUD;
-            default:
-                //Console.WriteLine($"[JOYPAD] Unhandled Read at {address}"); Console.ReadLine();
-                return 0xFFFF_FFFF;
-        }
-    }
-
-    private uint GetJoyCtrl()
-    {
-        uint joyCtrl = 0;
-        joyCtrl |= TXEnable ? 1u : 0u;
-        joyCtrl |= (JoyOutput ? 1u : 0u) << 1;
-        joyCtrl |= (RXEnable ? 1u : 0u) << 2;
-        joyCtrl |= (JoyControlUnknownBit3 ? 1u : 0u) << 3;
-        //joy_ctrl |= (ACK ? 1u : 0u) << 4; // only writable
-        joyCtrl |= (JoyControlUnknownBit5 ? 1u : 0u) << 5;
-        //joy_ctrl |= (reset ? 1u : 0u) << 6; // only writable
-        //bit 7 always 0
-        joyCtrl |= RXInterruptMode << 8;
-        joyCtrl |= (TXInterruptEnable ? 1u : 0u) << 10;
-        joyCtrl |= (RXInterruptEnable ? 1u : 0u) << 11;
-        joyCtrl |= (ACKInterruptEnable ? 1u : 0u) << 12;
-        joyCtrl |= DesiredSlotNumber << 13;
-        return joyCtrl;
-    }
-
-    private uint GetJoyMode()
-    {
-        uint joyMode = 0;
-
-        joyMode |= BaudRateReloadFactor;
-        joyMode |= CharacterLength << 2;
-        joyMode |= (ParityEnable ? 1u : 0u) << 4;
-        joyMode |= (ParityTypeOdd ? 1u : 0u) << 5;
-        joyMode |= (ClkOutputPolarity ? 1u : 0u) << 4;
-
-        return joyMode;
-    }
-
-    private uint GetJoyStat()
-    {
-        uint joyStat = 0;
-
-        joyStat |= TXReadyFlag1 ? 1u : 0u;
-        joyStat |= (FifoFull ? 1u : 0u) << 1;
-        joyStat |= (TXReadyFlag2 ? 1u : 0u) << 2;
-        joyStat |= (RXParityError ? 1u : 0u) << 3;
-        joyStat |= (ACKInputLevel ? 1u : 0u) << 7;
-        joyStat |= (InterruptRequest ? 1u : 0u) << 9;
-        joyStat |= (uint)BaudRateTimer << 11;
-
-        ACKInputLevel = false;
-
-        return joyStat;
-    }
+    #endregion
 }
