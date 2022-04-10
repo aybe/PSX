@@ -19,6 +19,8 @@ public sealed class Emulator : IDisposable
     private const int CYCLES_PER_FRAME = PSX_MHZ / 60;
     private const int SYNC_LOOPS       = CYCLES_PER_FRAME / (SYNC_CYCLES * MIPS_UNDERCLOCK) + 1;
 
+    private readonly JOYPAD Joypad;
+
     public Emulator(IHostWindow window, string path)
     {
         if (window == null)
@@ -27,19 +29,19 @@ public sealed class Emulator : IDisposable
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(path));
 
-        Controller = new DigitalController();
-
         var card          = new MemoryCard();
         var irqController = new InterruptController();
         var cd            = new CD(path);
         var spu           = new SPU(window, irqController, new Sector(Sector.XA_BUFFER));
-        var joypad        = new JOYPAD(Controller, card);
-        var timers        = new TIMERS();
-        var mdec          = new MDEC();
+
+        Joypad = new JOYPAD(new DigitalController(), card);
+
+        var timers = new TIMERS();
+        var mdec   = new MDEC();
 
         Cdrom = new CDROM(cd, spu);
         Gpu   = new GPU(window);
-        Bus   = new BUS(Gpu, Cdrom, spu, joypad, timers, mdec, irqController);
+        Bus   = new BUS(Gpu, Cdrom, spu, Joypad, timers, mdec, irqController);
         Cpu   = new CPU(Bus);
 
         Bus.loadBios();
@@ -58,7 +60,11 @@ public sealed class Emulator : IDisposable
 
     private CDROM Cdrom { get; }
 
-    private Controller Controller { get; }
+    public IController Controller
+    {
+        get => Joypad.Controller;
+        set => Joypad.Controller = value;
+    }
 
     public void Dispose()
     {
