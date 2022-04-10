@@ -19,52 +19,21 @@ public sealed class MainViewModelCommands
             model.Shutdown
         );
 
-        OpenFile = new RelayCommand(
+        OpenFile = new RelayCommand( // BUG not saved in recent
             () =>
             {
                 const string filter = "Everything|*.exe;*.psx;*.bin;*.cue|Application|*.exe;*.psx|Image|*.bin;*.cue";
 
                 var path = fileDialogService.OpenFile(filter);
 
-                if (path is null)
-                    return;
-
-                model.OpenFile(path);
-
-                NotifyCanExecuteChanged(EmuStart, EmuStop, EmuPause, EmuFrame, EmuContinue);
-            }
-        );
-
-        OpenFileDirect = new RelayCommand<string>(
-            path =>
-            {
-                if (File.Exists(path))
+                if (path is not null)
                 {
-                    settings.Value.Update(s =>
-                    {
-                        s.AddToRecentlyUsed(path);
-                    });
-
-                    model.OpenFile(path);
-
-                    NotifyCanExecuteChanged(EmuStart, EmuStop, EmuPause, EmuFrame, EmuContinue);
-                }
-                else
-                {
-                    var message = $"The file cannot '{path}' be opened. Do you want to remove the reference to it from the Recent list?";
-
-                    var result = textDialogService.Show("PSX", message, TextDialogButton.YesNo, TextDialogImage.Error);
-
-                    if (result is TextDialogResult.Yes)
-                    {
-                        settings.Value.Update(s =>
-                        {
-                            s.RecentlyUsed.Remove(path!);
-                        });
-                    }
+                    OpenFileExecute(path);
                 }
             }
         );
+
+        OpenFileDirect = new RelayCommand<string>(OpenFileExecute);
 
         ShowVideoScreen = new RelayCommand(
             navigationService.Navigate<IVideoScreenView>
@@ -124,6 +93,35 @@ public sealed class MainViewModelCommands
             foreach (var command in commands)
             {
                 command?.NotifyCanExecuteChanged();
+            }
+        }
+
+        void OpenFileExecute(string? path)
+        {
+            if (File.Exists(path))
+            {
+                settings.Value.Update(s =>
+                {
+                    s.AddToRecentlyUsed(path);
+                });
+
+                model.OpenFile(path);
+
+                NotifyCanExecuteChanged(EmuStart, EmuStop, EmuPause, EmuFrame, EmuContinue);
+            }
+            else
+            {
+                var message = $"The file cannot '{path}' be opened. Do you want to remove the reference to it from the Recent list?";
+
+                var result = textDialogService.Show("PSX", message, TextDialogButton.YesNo, TextDialogImage.Error);
+
+                if (result is TextDialogResult.Yes)
+                {
+                    settings.Value.Update(s =>
+                    {
+                        s.RecentlyUsed.Remove(path!);
+                    });
+                }
             }
         }
     }
