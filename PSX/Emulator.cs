@@ -21,7 +21,7 @@ public sealed class Emulator : IDisposable
 
     private readonly JOYPAD Joypad;
 
-    public Emulator(IHostWindow window, string path)
+    public Emulator(IHostWindow window, string path, IController? controller1 = null, IController? controller2 = null)
     {
         if (window == null)
             throw new ArgumentNullException(nameof(window));
@@ -29,12 +29,15 @@ public sealed class Emulator : IDisposable
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(path));
 
+        controller1 ??= new NullController(new NullControllerSource());
+        controller2 ??= new NullController(new NullControllerSource());
+
         var card          = new MemoryCard();
         var irqController = new InterruptController();
         var cd            = new CD(path);
         var spu           = new SPU(window, irqController, new Sector(Sector.XA_BUFFER));
 
-        Joypad = new JOYPAD(new NullController(new NullControllerSource()), new NullController(new NullControllerSource()), card);
+        Joypad = new JOYPAD(controller1, controller2, card);
 
         var timers = new TIMERS();
         var mdec   = new MDEC();
