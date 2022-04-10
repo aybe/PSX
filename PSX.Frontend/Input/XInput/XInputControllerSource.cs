@@ -73,15 +73,15 @@ public sealed class XInputControllerSource : BaseControllerSource
         var ls = FilterStick(state.LeftThumbStickX,  state.LeftThumbStickY,  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
         var rs = FilterStick(state.RightThumbStickX, state.RightThumbStickY, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
 
-        const short sMin = short.MinValue;
-        const short sMax = short.MaxValue;
+        const float sMin = -1.0f;
+        const float sMax = +1.0f;
         const byte  tMin = byte.MinValue;
         const byte  tMax = byte.MaxValue;
 
         Dictionary[LeftX] = Normalize(ls.X, sMin, sMax, tMin, tMax);
-        Dictionary[LeftY] = Normalize(ls.Y, sMin, sMax, tMin, tMax);
+        Dictionary[LeftY] = Normalize(ls.Y, sMin, sMax, tMax, tMin);
 
         Dictionary[RightX] = Normalize(rs.X, sMin, sMax, tMin, tMax);
-        Dictionary[RightY] = Normalize(rs.Y, sMin, sMax, tMin, tMax);
+        Dictionary[RightY] = Normalize(rs.Y, sMin, sMax, tMax, tMin);
     }
 }
