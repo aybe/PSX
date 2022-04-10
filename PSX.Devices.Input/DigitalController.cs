@@ -1,6 +1,6 @@
 ﻿namespace PSX.Devices.Input;
 
-public sealed class DigitalController : ControllerBase
+public class DigitalController : ControllerBase
 {
     public DigitalController(IControllerSource source) : base(source)
     {
