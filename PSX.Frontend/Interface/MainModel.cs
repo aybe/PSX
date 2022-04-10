@@ -1,5 +1,6 @@
 ﻿using PSX.Frontend.Services;
 using PSX.Frontend.Services.Emulation;
+using PSX.Frontend.Services.Navigation;
 
 namespace PSX.Frontend.Interface;
 
@@ -8,16 +9,20 @@ public sealed class MainModel
 {
     public MainModel(
         IApplicationService     applicationService,
-        IEmulatorControlService emulatorControlService
+        IEmulatorControlService emulatorControlService,
+        INavigationService      navigationService
     )
     {
         ApplicationService     = applicationService ?? throw new ArgumentNullException(nameof(applicationService));
         EmulatorControlService = emulatorControlService ?? throw new ArgumentNullException(nameof(emulatorControlService));
+        NavigationService      = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
     }
 
     private IApplicationService ApplicationService { get; }
 
     private IEmulatorControlService EmulatorControlService { get; }
+
+    private INavigationService NavigationService { get; }
 
     public void OpenFile(string path)
     {
@@ -26,6 +31,10 @@ public sealed class MainModel
 
         if (File.Exists(path) is false)
             throw new FileNotFoundException(null, path);
+
+        // BUG atm if a view is opened after emu has started it will be blank as it hasn't received SetDisplayMode, should be cached
+
+        NavigationService.Navigate<IVideoScreenView>(); // TODO remove this navigation to screen view once above is fixed
 
         EmulatorControlService.Setup(path);
         EmulatorControlService.Start();
