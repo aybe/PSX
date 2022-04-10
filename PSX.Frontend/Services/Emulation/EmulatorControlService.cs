@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using PSX.Devices.Input;
+using PSX.Frontend.Input.XInput;
 
 namespace PSX.Frontend.Services.Emulation;
 
@@ -99,7 +101,7 @@ internal sealed class EmulatorControlService : IEmulatorControlService
             Emulator = null;
         }
 
-        Emulator = new Emulator(EmulatorDisplayService, content);
+        Emulator = new Emulator(EmulatorDisplayService, content, new DigitalController(new XInputControllerSource(0)));
     }
 
     public void Start()
