@@ -7,7 +7,7 @@ namespace PSX.Devices.Input;
 // ReSharper disable once InconsistentNaming
 public class JOYPAD
 {
-    private readonly Controller Controller;
+    public IController Controller;
 
     private readonly IMemoryCard MemoryCard;
 
@@ -75,7 +75,7 @@ public class JOYPAD
 
     private bool TXReadyFlag2 = true;
 
-    public JOYPAD(Controller controller, IMemoryCard memoryCard)
+    public JOYPAD(IController controller, IMemoryCard memoryCard)
     {
         Controller = controller;
         MemoryCard = memoryCard;

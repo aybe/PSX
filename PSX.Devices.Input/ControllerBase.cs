@@ -1,33 +1,21 @@
 ﻿namespace PSX.Devices.Input;
 
-public abstract class Controller
+public abstract class ControllerBase : IController
 {
     protected readonly Queue<byte> TransferDataFifo = new();
-
-    public bool ACK;
 
     protected ushort Buttons = 0xFFFF;
 
     private ControllerMode Mode = ControllerMode.Idle;
 
-    protected abstract ushort ControllerType { get; }
+    public bool ACK { get; private set; }
 
-    public void HandleJoyPadDown(KeyboardInput inputCode) // TODO delete
-    {
-        Buttons &= (ushort)~(Buttons & (ushort)inputCode);
-        //Console.WriteLine(buttons.ToString("x8"));
-    }
+    public abstract ushort Type { get; }
 
-    public void HandleJoyPadUp(KeyboardInput inputCode) // TODO delete
+    public virtual void GenerateResponse()
     {
-        Buttons |= (ushort)inputCode;
-        //Console.WriteLine(buttons.ToString("x8"));
-    }
-
-    protected virtual void GenerateResponse()
-    {
-        var b0 = (byte)((ControllerType >> 0) & 0xFF);
-        var b1 = (byte)((ControllerType >> 8) & 0xFF);
+        var b0 = (byte)((Type >> 0) & 0xFF);
+        var b1 = (byte)((Type >> 8) & 0xFF);
 
         TransferDataFifo.Enqueue(b0);
         TransferDataFifo.Enqueue(b1);
@@ -90,6 +78,20 @@ public abstract class Controller
     public virtual void ResetToIdle()
     {
         Mode = ControllerMode.Idle;
+    }
+
+    [Obsolete] // TODO delete
+    public void HandleJoyPadDown(KeyboardInput inputCode)
+    {
+        Buttons &= (ushort)~(Buttons & (ushort)inputCode);
+        //Console.WriteLine(buttons.ToString("x8"));
+    }
+
+    [Obsolete] // TODO delete
+    public void HandleJoyPadUp(KeyboardInput inputCode)
+    {
+        Buttons |= (ushort)inputCode;
+        //Console.WriteLine(buttons.ToString("x8"));
     }
 
     private enum ControllerMode

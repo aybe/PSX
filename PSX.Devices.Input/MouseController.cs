@@ -4,15 +4,15 @@ using System.Runtime.InteropServices;
 
 namespace PSX.Devices.Input;
 
-public sealed class MouseController : Controller
+public sealed class MouseController : ControllerBase
     // TODO albeit working it still needs a lot of polish
     // BUG there are artifacts on display while moving mouse
 {
     private POINT Point;
 
-    protected override ushort ControllerType { get; } = 0x5A12;
+    public override ushort Type { get; } = 0x5A12;
 
-    protected override void GenerateResponse()
+    public override void GenerateResponse()
     {
         base.GenerateResponse();
 

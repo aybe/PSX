@@ -1,10 +1,10 @@
 ﻿namespace PSX.Devices.Input;
 
-public sealed class DigitalController : Controller
+public sealed class DigitalController : ControllerBase
 {
-    protected override ushort ControllerType { get; } = 0x5A41;
+    public override ushort Type { get; } = 0x5A41;
 
-    protected override void GenerateResponse()
+    public override void GenerateResponse()
     {
         base.GenerateResponse();
 
