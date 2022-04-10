@@ -88,18 +88,6 @@ public sealed class Emulator : IDisposable
         }
     }
 
-    [Obsolete] // TODO delete
-    public void JoyPadUp(KeyboardInput button)
-    {
-        // Controller.HandleJoyPadUp(button);
-    }
-
-    [Obsolete] // TODO delete
-    public void JoyPadDown(KeyboardInput button)
-    {
-        // Controller.HandleJoyPadDown(button);
-    }
-
     public void ToggleDebug()
     {
         Cpu.debug     = !Cpu.debug;
