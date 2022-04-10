@@ -4,9 +4,15 @@ public sealed class NullController : ControllerBase
 {
     private const int HiZ = 0xFF;
 
-    public override ushort Type { get; } = 0xFFFF;
+    public NullController(IControllerSource source) : base(source)
+    {
+    }
 
-    public override void GenerateResponse()
+    protected override ushort Type { get; } = 0xFFFF;
+
+    protected override Dictionary<InputAction, float> InputActions { get; } = new();
+
+    protected override void GenerateResponse()
     {
         base.GenerateResponse();
 

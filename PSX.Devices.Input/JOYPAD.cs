@@ -6,10 +6,24 @@ namespace PSX.Devices.Input;
 
 // ReSharper disable once InconsistentNaming
 public class JOYPAD
+// BUG add MC #2
 {
     private readonly IMemoryCard MemoryCard;
 
-    public IController Controller;
+    private IController Controller
+    {
+        get
+        {
+            return DesiredSlotNumber switch
+            {
+                0 => Controller1,
+                1 => Controller2,
+                _ => throw new InvalidOperationException($"{nameof(DesiredSlotNumber)}: {DesiredSlotNumber}")
+            };
+        }
+    }
+
+    public IController Controller1, Controller2;
 
     private int Counter;
 
@@ -21,10 +35,11 @@ public class JOYPAD
 
     private JoypadDevice JoypadDevice = JoypadDevice.None;
 
-    public JOYPAD(IController controller, IMemoryCard memoryCard)
+    public JOYPAD(IController controller1, IController controller2, IMemoryCard memoryCard)
     {
-        Controller = controller;
-        MemoryCard = memoryCard;
+        Controller1 = controller1;
+        Controller2 = controller2;
+        MemoryCard  = memoryCard;
     }
 
     public bool Tick()
@@ -66,68 +81,66 @@ public class JOYPAD
                 TXReadyFlag1 = true;
                 TXReadyFlag2 = false;
 
+                var controller = Controller;
+
                 if (JoyOutput)
                 {
                     TXReadyFlag2 = true;
 
                     //Console.WriteLine("[JOYPAD] DesiredSlot == " + desiredSlotNumber);
-                    if (DesiredSlotNumber == 1)
-                    {
-                        JOY_RX_DATA   = 0xFF;
-                        ACKInputLevel = false;
-                        return;
-                    }
 
-                    if (JoypadDevice == JoypadDevice.None)
+                    if (true)
                     {
-                        //Console.ForegroundColor = ConsoleColor.Red;
-                        if (value == 0x01)
+                        if (JoypadDevice == JoypadDevice.None)
                         {
-                            //Console.ForegroundColor = ConsoleColor.Green;
-                            JoypadDevice = JoypadDevice.Controller;
+                            //Console.ForegroundColor = ConsoleColor.Red;
+                            if (value == 0x01)
+                            {
+                                //Console.ForegroundColor = ConsoleColor.Green;
+                                JoypadDevice = JoypadDevice.Controller;
+                            }
+                            else if (value == 0x81)
+                            {
+                                //Console.ForegroundColor = ConsoleColor.Blue;
+                                JoypadDevice = JoypadDevice.MemoryCard;
+                            }
                         }
-                        else if (value == 0x81)
+
+                        if (JoypadDevice == JoypadDevice.Controller)
                         {
-                            //Console.ForegroundColor = ConsoleColor.Blue;
-                            JoypadDevice = JoypadDevice.MemoryCard;
+                            JOY_RX_DATA   = controller.Process(JOY_TX_DATA);
+                            ACKInputLevel = controller.ACK;
+                            if (ACKInputLevel)
+                                Counter = 500;
+                            //Console.WriteLine($"[JOYPAD] Controller TICK Enqueued RX response {JOY_RX_DATA:x2} ACK: {ackInputLevel}");
+                            //Console.ReadLine();
                         }
-                    }
+                        else if (JoypadDevice == JoypadDevice.MemoryCard)
+                        {
+                            JOY_RX_DATA   = MemoryCard.Process(JOY_TX_DATA);
+                            ACKInputLevel = MemoryCard.Ack;
+                            if (ACKInputLevel)
+                                Counter = 500;
+                            //Console.WriteLine($"[JOYPAD] MemCard TICK Enqueued RX response {JOY_RX_DATA:x2} ACK: {ackInputLevel}");
+                            //Console.ReadLine();
+                        }
+                        else
+                        {
+                            ACKInputLevel = false;
+                        }
 
-                    if (JoypadDevice == JoypadDevice.Controller)
-                    {
-                        JOY_RX_DATA   = Controller.Process(JOY_TX_DATA);
-                        ACKInputLevel = Controller.ACK;
-                        if (ACKInputLevel)
-                            Counter = 500;
-                        //Console.WriteLine($"[JOYPAD] Controller TICK Enqueued RX response {JOY_RX_DATA:x2} ACK: {ackInputLevel}");
-                        //Console.ReadLine();
+                        if (ACKInputLevel == false)
+                            JoypadDevice = JoypadDevice.None;
                     }
-                    else if (JoypadDevice == JoypadDevice.MemoryCard)
-                    {
-                        JOY_RX_DATA   = MemoryCard.Process(JOY_TX_DATA);
-                        ACKInputLevel = MemoryCard.Ack;
-                        if (ACKInputLevel)
-                            Counter = 500;
-                        //Console.WriteLine($"[JOYPAD] MemCard TICK Enqueued RX response {JOY_RX_DATA:x2} ACK: {ackInputLevel}");
-                        //Console.ReadLine();
-                    }
-                    else
-                    {
-                        ACKInputLevel = false;
-                    }
-
-                    if (ACKInputLevel == false)
-                        JoypadDevice = JoypadDevice.None;
                 }
                 else
                 {
                     JoypadDevice = JoypadDevice.None;
                     MemoryCard.ResetToIdle();
-                    Controller.ResetToIdle();
+                    controller.ResetToIdle();
 
                     ACKInputLevel = false;
                 }
-
 
                 break;
             case 0x48:

@@ -4,22 +4,20 @@ public abstract class ControllerBase : IController
 {
     protected readonly Queue<byte> TransferDataFifo = new();
 
-    protected ushort Buttons = 0xFFFF;
-
     private ControllerMode Mode = ControllerMode.Idle;
 
-    public bool ACK { get; private set; }
-
-    public abstract ushort Type { get; }
-
-    public virtual void GenerateResponse()
+    protected ControllerBase(IControllerSource source)
     {
-        var b0 = (byte)((Type >> 0) & 0xFF);
-        var b1 = (byte)((Type >> 8) & 0xFF);
-
-        TransferDataFifo.Enqueue(b0);
-        TransferDataFifo.Enqueue(b1);
+        Source = source ?? throw new ArgumentNullException(nameof(source));
     }
+
+    private IControllerSource Source { get; }
+
+    protected abstract ushort Type { get; }
+
+    protected abstract Dictionary<InputAction, float> InputActions { get; }
+
+    public bool ACK { get; private set; }
 
     public virtual byte Process(byte b)
     {
@@ -80,18 +78,20 @@ public abstract class ControllerBase : IController
         Mode = ControllerMode.Idle;
     }
 
-    [Obsolete] // TODO delete
-    public void HandleJoyPadDown(KeyboardInput inputCode)
+    public virtual void Update()
     {
-        Buttons &= (ushort)~(Buttons & (ushort)inputCode);
-        //Console.WriteLine(buttons.ToString("x8"));
+        Source.Update();
+
+        foreach (var key in InputActions.Keys)
+        {
+            InputActions[key] = Source.GetValue(key);
+        }
     }
 
-    [Obsolete] // TODO delete
-    public void HandleJoyPadUp(KeyboardInput inputCode)
+    protected virtual void GenerateResponse()
     {
-        Buttons |= (ushort)inputCode;
-        //Console.WriteLine(buttons.ToString("x8"));
+        TransferDataFifo.Enqueue((byte)((Type >> 0) & 0xFF));
+        TransferDataFifo.Enqueue((byte)((Type >> 8) & 0xFF));
     }
 
     private enum ControllerMode

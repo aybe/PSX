@@ -34,7 +34,7 @@ public sealed class Emulator : IDisposable
         var cd            = new CD(path);
         var spu           = new SPU(window, irqController, new Sector(Sector.XA_BUFFER));
 
-        Joypad = new JOYPAD(new DigitalController(), card);
+        Joypad = new JOYPAD(new NullController(new NullControllerSource()), new NullController(new NullControllerSource()), card);
 
         var timers = new TIMERS();
         var mdec   = new MDEC();
@@ -60,10 +60,16 @@ public sealed class Emulator : IDisposable
 
     private CDROM Cdrom { get; }
 
-    public IController Controller
+    public IController Controller1
     {
-        get => Joypad.Controller;
-        set => Joypad.Controller = value;
+        get => Joypad.Controller1;
+        set => Joypad.Controller1 = value;
+    }
+
+    public IController Controller2
+    {
+        get => Joypad.Controller2;
+        set => Joypad.Controller2 = value;
     }
 
     public void Dispose()
@@ -73,6 +79,9 @@ public sealed class Emulator : IDisposable
 
     public void RunFrame()
     {
+        Controller1.Update();
+        Controller2.Update();
+
         // a lame main loop with a workaround to be able to underclock
 
         for (var i = 0; i < SYNC_LOOPS; i++)

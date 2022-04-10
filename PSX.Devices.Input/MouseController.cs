@@ -9,10 +9,22 @@ public sealed class MouseController : ControllerBase
     // BUG there are artifacts on display while moving mouse
 {
     private POINT Point;
+    
+    public MouseController(IControllerSource source) : base(source)
+    {
+    }
 
-    public override ushort Type { get; } = 0x5A12;
+    protected override ushort Type { get; } = 0x5A12;
 
-    public override void GenerateResponse()
+    protected override Dictionary<InputAction, float> InputActions { get; } = new()
+    {
+        { InputAction.MouseL, default },
+        { InputAction.MouseR, default },
+        { InputAction.MouseX, default },
+        { InputAction.MouseY, default }
+    };
+
+    protected override void GenerateResponse()
     {
         base.GenerateResponse();
 
