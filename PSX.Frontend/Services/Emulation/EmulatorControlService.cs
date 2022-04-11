@@ -101,7 +101,10 @@ internal sealed class EmulatorControlService : IEmulatorControlService
             Emulator = null;
         }
 
-        Emulator = new Emulator(EmulatorDisplayService, content, new DigitalController(new XInputControllerSource(0)));
+        IController controller1 = new DualAnalogController(new XInputControllerSource(0));
+        IController controller2 = new DualAnalogController(new XInputControllerSource(1));
+
+        Emulator = new Emulator(EmulatorDisplayService, content, controller1, controller2);
     }
 
     public void Start()
